@@ -1,6 +1,8 @@
 import sqlite3
 
 # Function to initialize the database and create the table if not exists
+
+
 def initialize_db():
     conn = sqlite3.connect("databases/login_database.db")
     cursor = conn.cursor()
@@ -16,14 +18,19 @@ def initialize_db():
     conn.close()
 
 # Function to add a new user to the database
-def add_user(username, password,level):
+
+
+def add_user(username, password, level):
     conn = sqlite3.connect("databases/login_database.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO users (username, password,level) VALUES (?, ?, ?)", (username, password,level))
+    cursor.execute("INSERT INTO users (username, password,level) VALUES (?, ?, ?)",
+                   (username, password, level))
     conn.commit()
     conn.close()
 
 # Function to check if the entered username and password are correct
+
+
 def check_credentials(username, password):
     conn = sqlite3.connect("databases/login_database.db")
     cursor = conn.cursor()

@@ -11,21 +11,21 @@ def CIpage(prev_homepage_frame):
     global CI_frame
     checkin_page_destroyer()
     CI_frame = tk.Frame(prev_homepage_frame.master)
-    CI_frame.master.title("ચેક ઇન")
+    CI_frame.master.title("Checkin")
     CI_frame.pack()
     
-    checkinFSL = tk.Button(CI_frame, text="FSL.માંથી ચેક ઇન કરો", background="#FFFFFF",command=fsl, font=("Helvetica", 12))
+    checkinFSL = tk.Button(CI_frame, text="Checkin From FSL", background="#FFFFFF",command=fsl, font=("Helvetica", 12))
     checkinFSL.pack()
     checkinFSL.pack(pady=20)
 
-    checkinCourt = tk.Button(CI_frame, text="કોર્ટમાંથી ચેક ઇન કરો",background="#FFFFFF", command=court, font=("Helvetica", 12))
+    checkinCourt = tk.Button(CI_frame, text="Checkin From Court",background="#FFFFFF", command=court, font=("Helvetica", 12))
     checkinCourt.pack()
     checkinCourt.pack(pady=20)
 
-    Home = tk.Button(CI_frame, text="હોમપેજ", command=go_home,background="#FFFFFF", font=("Helvetica", 12))
+    Home = tk.Button(CI_frame, text="Homepage", command=go_home,background="#FFFFFF", font=("Helvetica", 12))
     Home.pack(side='right', anchor=tk.NE, padx=12, pady=10)
 
-    back_button = tk.Button(CI_frame, text="પાછા જાઓ", command=go_back,background="#FFFFFF", font=("Helvetica", 12))
+    back_button = tk.Button(CI_frame, text="Back", command=go_back,background="#FFFFFF", font=("Helvetica", 12))
     back_button.pack(side='right', anchor=tk.NE, padx=10, pady=10)
 
     CI_frame.mainloop()

@@ -17,12 +17,12 @@ def check_login():
     password = entry_password.get()
 
     if logindb.check_credentials(username, password):
-        messagebox.showinfo("સફળતા", "લૉગિન સફળ!")
+        messagebox.showinfo("Successful", "Login Successful!")
         current_user = username
         lu.log_activity(username,"LOG-IN")
         Homepage.open_homepage(login_frame)
     else:
-        messagebox.showerror("ભૂલ", "ખોટું યૂઝર આઈડી અથવા પાસવર્ડ")
+        messagebox.showerror("Errror", "Wrong Username  Or Password.")
 
 def initloginpage(prev_main_frame):
     prev_main_frame.destroy()
@@ -37,18 +37,18 @@ def initloginpage(prev_main_frame):
     style = ttk.Style()
     style.theme_use('alt')
 
-    label_heading = ttk.Label(login_frame, text="માલખાના મેનેજમેન્ટ સિસ્ટમ", anchor=tk.W, background="#B9E6FF", font=("Verdana", 30))
+    label_heading = ttk.Label(login_frame, text="Malkhana Management System", anchor=tk.W, background="#B9E6FF", font=("Verdana", 30))
     label_heading.grid(row=0, column=0, columnspan=2, pady=(0, 5), sticky=tk.W)
    
 
-    login_frame.master.title("લૉગિન પેજ")
+    login_frame.master.title("Login Page")
     logindb.initialize_db()
     
-    label_username = ttk.Label(login_frame, text="યૂઝર આઈડી:",background="#B9E6FF", font=("Helvetica", 12))
-    label_password = ttk.Label(login_frame, text="પાસવર્ડ",background="#B9E6FF", font=("Helvetica", 12))
+    label_username = ttk.Label(login_frame, text="User ID:",background="#B9E6FF", font=("Helvetica", 12))
+    label_password = ttk.Label(login_frame, text="Password",background="#B9E6FF", font=("Helvetica", 12))
     entry_username = ttk.Entry(login_frame,background="#B9E6FF", font=("Helvetica", 12))
     entry_password = ttk.Entry(login_frame, show="*",background="#B9E6FF", font=("Helvetica", 12))
-    button_login = tk.Button(login_frame, text="પ્રવેશ કરો", command=check_login,background="#FFFFFF", font=("Helvetica", 12))
+    button_login = tk.Button(login_frame, text="Enter", command=check_login,background="#FFFFFF", font=("Helvetica", 12))
  
 
     label_username.grid(row=2, column=0, pady=10, sticky=tk.W)

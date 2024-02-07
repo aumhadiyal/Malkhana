@@ -13,13 +13,41 @@ import login.login as login
 checkout_frame = None
 
 
-def update_item_status(barcode):
+def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom,
+                       seized_items, fir_no, order_no):
     con = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = con.cursor()
     cursor.execute(
         "UPDATE items SET item_status='FSL' where barcode = ?", (barcode,))
     con.commit()
     con.close()
+    conn = sqlite3.connect("databases/fsl_records.db")
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS fsl_records (
+    barcode TEXT UNIQUE,
+    fir_no TEXT UNIQUE,
+    seized_items TEXT,
+    order_no INTEGER UNIQUE,
+    checkout_date TEXT,
+    checkout_time TEXT,
+    taken_by_whom TEXT,
+    checkin_date TEXT,
+    checkin_time TEXT,
+    examiner_name TEXT,
+    fsl_report TEXT,
+    entry_time TEXT
+    );''')
+    entry_time = datetime.datetime.now()
+    cursor.execute("INSERT INTO fsl_records (barcode,fir_no,seized_items,order_no,checkout_date,checkout_time,taken_by_whom,entry_time) values(?,?,?,?,?,?,?,?)",
+                   (barcode, fir_no, seized_items, order_no, checkout_date, checkout_time, taken_by_whom, entry_time))
+    conn.commit()
+    conn.close()
+
+    messagebox.showinfo("Successful", "Succesfully checked out from Malkhana")
+    log.update_logs(barcode, "CheckOut Into FSL",
+                    checkout_date, checkout_time)
+    activity = "Item checked out to FSL barcode no: "+barcode
+    lu.log_activity(login.current_user, activity)
 
 
 def checkout_destroyer():
@@ -36,8 +64,8 @@ def checkouttoFSL():
     checkout_time = f"{hour_var.get()}:{minute_var.get()}"
     order_no = order_no_entry.get()
 
-    barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom,
-                    seized_items, fir_no, order_no)
+    barcode_checker(barcode, fir_no, seized_items, taken_by_whom,
+                    checkout_date, checkout_time, order_no)
 
 
 def checkouttoFSL_page(root):
@@ -79,7 +107,7 @@ def checkouttoFSL_page(root):
     taken_by_whom_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     order_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-    fir_no_entry    .grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+    fir_no_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
     seized_items_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
     taken_by_whom_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
     order_no_entry.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
@@ -100,16 +128,16 @@ def checkouttoFSL_page(root):
     checkout_date_entry.grid(row=7, column=1, padx=5, pady=5, sticky=tk.W)
 
     # Checkout button
-    checkout_button = tk.Button(checkout_frame, text="FSL ને ચેકઆઉટ",
+    checkout_button = tk.Button(checkout_frame, text="Checkout to FSL ",
                                 background="#FFFFFF", command=checkouttoFSL, font=("Helvetica", 12))
     checkout_button.grid(row=8, column=0, columnspan=2, padx=5, pady=10)
 
     # Home and Back buttons
-    home_button = tk.Button(checkout_frame, text="હોમપેજ",
+    home_button = tk.Button(checkout_frame, text="Home",
                             background="#FFFFFF", command=go_home, font=("Helvetica", 12))
     home_button.grid(row=9, column=0, padx=10, pady=10, sticky=tk.E)
 
-    back_button = tk.Button(checkout_frame, text="પાછા જાઓ",
+    back_button = tk.Button(checkout_frame, text="Back",
                             background="#FFFFFF", command=go_back, font=("Helvetica", 12))
     back_button.grid(row=9, column=1, padx=10, pady=10, sticky=tk.W)
 
@@ -124,7 +152,7 @@ def go_home():
     Homepage.open_homepage_r(checkout_frame)
 
 
-def barcode_checker(barcode, date, time, taken_by_whom, seized_items, fir_no, order_no):
+def barcode_checker(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
@@ -142,8 +170,8 @@ def barcode_checker(barcode, date, time, taken_by_whom, seized_items, fir_no, or
         checkout_date_entry.set_date(None)  # Clear the date entry
         order_no_entry.delete(0, tk.END)
         return
-    already_outornot(barcode, date, time, taken_by_whom,
-                     seized_items, fir_no, order_no)
+    already_outornot(barcode, fir_no, seized_items, taken_by_whom,
+                     checkout_date, checkout_time, order_no)
     # Clear the input fields after successful checkout
     barcode_entry.delete(0, tk.END)
     fir_no_entry.delete(0, tk.END)
@@ -153,7 +181,7 @@ def barcode_checker(barcode, date, time, taken_by_whom, seized_items, fir_no, or
     order_no_entry.delete(0, tk.END)
 
 
-def already_outornot(barcode, date, time, taken_by_whom, seized_items, fir_no, order_no):
+def already_outornot(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute(
@@ -161,16 +189,11 @@ def already_outornot(barcode, date, time, taken_by_whom, seized_items, fir_no, o
     result = cursor.fetchone()
     conn.close()
     if result and result[0] in ("malkhana", "Malkhana"):
-        update_item_status(barcode)
-        log.update_logs(barcode, "FSLમાં ચેકઆઉટ કર્યું", date, time)
-        messagebox.showinfo("સફળતા", "મુદ્દામાલ સફળતાથી FSL માં મોકલ્યો છે!")
-        addfslpage(barcode, date, time, taken_by_whom,
-                   seized_items, fir_no, order_no)
-        activity = "Item checked out to FSL barcode no:"+barcode
-        lu.log_activity(login.current_user, activity)
+        update_item_status(barcode, fir_no, seized_items,
+                           taken_by_whom, checkout_date, checkout_time, order_no)
     else:
-        messagebox.showerror("મુદ્દામાલ ઉપલબ્ધ નથી",
-                             "મુદ્દામાલ માલખાનામાં ઉપલબ્ધ નથી.")
+        messagebox.showerror("Item isnt available",
+                             "Item doesnt exist in malkhana.")
         barcode_entry.delete(0, tk.END)
         fir_no_entry.delete(0, tk.END)
 
@@ -178,27 +201,3 @@ def already_outornot(barcode, date, time, taken_by_whom, seized_items, fir_no, o
         taken_by_whom_entry.delete(0, tk.END)
         checkout_date_entry.set_date(None)
         order_no_entry.delete(0, tk.END)
-
-
-def addfslpage(barcode, date, time, taken_by_whom, seized_items, fir_no, order_no):
-    conn = sqlite3.connect("databases/fsl_records.db")
-    cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS fsl_records (
-    barcode TEXT UNIQUE,
-    fir_no TEXT UNIQUE,
-    seized_items TEXT,
-    order_no INTEGER UNIQUE,
-    checkout_date TEXT,
-    checkout_time TEXT,
-    taken_by_whom TEXT,
-    checkin_date TEXT,
-    checkin_time TEXT,
-    examiner_name TEXT,
-    fsl_report TEXT,
-    entry_time TEXT
-    );''')
-    entry_time = datetime.datetime.now()
-    cursor.execute("INSERT INTO fsl_records (barcode,fir_number,item_name,order_no,checkout_date,checkout_time,taken_by_whom,entry_time) values(?,?,?,?,?,?,?,?)",
-                   (barcode, fir_no, seized_items, order_no, date, time, taken_by_whom, entry_time))
-    conn.commit()
-    conn.close()

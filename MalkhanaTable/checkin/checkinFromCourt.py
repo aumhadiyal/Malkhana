@@ -12,31 +12,44 @@ import logger as lu
 checkin_frame = None
 
 
-def update_item_status(barcode):
+def update_item_status(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE items SET item_status='malkhana' where barcode = ?", (barcode,))
     conn.commit()
     conn.close()
+    conn = sqlite3.connect("databases/court_records.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE court_records SET checkin_date = ?,checkin_time=?,order_details=? WHERE barcode = ?",
+                   (checkin_date, checkin_time, order_details, barcode))
+    barcode_entry.delete(0, tk.END)
+    order_details_entry.delete("1.0", "end-1c")
+    conn.commit()
+    conn.close()
+    messagebox.showinfo("Successful", "Succesfully entered into Malkhana")
+    log.update_logs(barcode, "Checkin From Court",
+                    checkin_date, checkin_time)
+    activity = "Item checked in from Court barcode no: "+barcode
+    lu.log_activity(login.current_user, activity)
 
 
 def checkin():
-    barcode = barcode_entery.get()
+    barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
-    checkin_date = entry_checkin_date.get_date()
-    order_details = text_order_details.get("1.0", "end-1c")
+    checkin_date = checkin_date_entry.get_date()
+    order_details = order_details_entry.get("1.0", "end-1c")
 
-    barcode_checker(barcode, checkin_date, checkin_time)
+    barcode_checker(barcode, checkin_date, checkin_time, order_details)
 
     # Clear the input fields after check-in
-    barcode_entery.delete(0, tk.END)
-    entry_checkin_date.set_date(None)  # Clear the date entry
-    text_order_details.delete("1.0", tk.END)
+    barcode_entry.delete(0, tk.END)
+    checkin_date_entry.set_date(None)  # Clear the date entry
+    order_details_entry.delete("1.0", tk.END)
 
 
 def checkin_page_2(root):
-    global checkin_frame, barcode_entery, entry_checkin_date, hour_var, minute_var, text_order_details
+    global checkin_frame, barcode_entry, checkin_date_entry, hour_var, minute_var, order_details_entry
     checkin_frame = tk.Frame(root.master)
     checkin_frame.master.title("Checkin From Court")
 
@@ -44,36 +57,24 @@ def checkin_page_2(root):
     checkin_frame.pack(fill=tk.BOTH, expand=True)
 
     # Labels
-<<<<<<< HEAD
-    label_barcode_no = ttk.Label(checkin_frame, text="Barcode No:",  background="#B9E6FF",font=("Helvetica", 12))
-    label_checkin_time = ttk.Label(checkin_frame, text="Checkin Time:", background="#B9E6FF", font=("Helvetica", 12))
-    label_checkin_date = ttk.Label(checkin_frame, text="Checkin Date:", background="#B9E6FF", font=("Helvetica", 12))
-    label_order_details = ttk.Label(checkin_frame, text="Order Details:", background="#B9E6FF", font=("Helvetica", 12))
-=======
-    label_barcode_no = ttk.Label(
-        checkin_frame, text="બારકોડ નંબર:",  background="#B9E6FF", font=("Helvetica", 12))
+    label_barcode = ttk.Label(
+        checkin_frame, text="Barcode No:",  background="#B9E6FF", font=("Helvetica", 12))
     label_checkin_time = ttk.Label(
-        checkin_frame, text="ચેક-ઇન સમય:", background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Checkin Time:", background="#B9E6FF", font=("Helvetica", 12))
     label_checkin_date = ttk.Label(
-        checkin_frame, text="ચેક-ઇન તારીખ:", background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Checkin Date:", background="#B9E6FF", font=("Helvetica", 12))
     label_order_details = ttk.Label(
-        checkin_frame, text="ઓર્ડરની વિગતો:", background="#B9E6FF", font=("Helvetica", 12))
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
+        checkin_frame, text="Order Details:", background="#B9E6FF", font=("Helvetica", 12))
 
-    label_barcode_no.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+    label_barcode.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
     label_checkin_time.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
     label_checkin_date.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
     label_order_details.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
 
     # Entry fields
-<<<<<<< HEAD
-    barcode_entery = ttk.Entry(checkin_frame, font=("Helvetica", 12))
-    barcode_entery.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)  # Use sticky=tk.W for left alignment
-=======
-    entry_barcode_no = ttk.Entry(checkin_frame, font=("Helvetica", 12))
+    barcode_entry = ttk.Entry(checkin_frame, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    entry_barcode_no.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
+    barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
     hour_var = tk.StringVar(checkin_frame, value='00')
     minute_var = tk.StringVar(checkin_frame, value='00')
@@ -86,43 +87,28 @@ def checkin_page_2(root):
     minute_menu.grid(row=1, column=2, padx=1, pady=5, sticky=tk.W)
 
     # Date field using tkcalendar
-<<<<<<< HEAD
-    checkin_date_entery = DateEntry(checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
-    checkin_date_entery.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)  # Use sticky=tk.W for left alignment
-=======
-    entry_checkin_date = DateEntry(
+    checkin_date_entry = DateEntry(
         checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
     # Use sticky=tk.W for left alignment
-    entry_checkin_date.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
+    checkin_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
 
     # Text area for order details
-    text_order_details = tk.Text(
+    order_details_entry = tk.Text(
         checkin_frame, height=5, width=30, background="#FFFFFF", font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    text_order_details.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+    order_details_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 
     # Check-in button
-<<<<<<< HEAD
-    checkin_button = tk.Button(checkin_frame, text="Checkin", command=checkin,  background="#FFFFFF",font=("Helvetica", 12))
-    checkin_button.grid(row=4, column=0, columnspan=2, padx=5, pady=10)
-
-    Home = tk.Button(checkin_frame, text="Homepage", command=go_home, background="#FFFFFF", font=("Helvetica", 12))
-    Home.grid(row=5, column=0, padx=10, pady=10, sticky=tk.E)
-
-    back_button = tk.Button(checkin_frame, text="Back", command=go_back, background="#FFFFFF", font=("Helvetica", 12))
-=======
-    checkin_button = tk.Button(checkin_frame, text="ચેક-ઇન",
+    checkin_button = tk.Button(checkin_frame, text="Checkin",
                                command=checkin,  background="#FFFFFF", font=("Helvetica", 12))
     checkin_button.grid(row=4, column=0, columnspan=2, padx=5, pady=10)
 
-    Home = tk.Button(checkin_frame, text="હોમપેજ", command=go_home,
+    Home = tk.Button(checkin_frame, text="Homepage", command=go_home,
                      background="#FFFFFF", font=("Helvetica", 12))
     Home.grid(row=5, column=0, padx=10, pady=10, sticky=tk.E)
 
-    back_button = tk.Button(checkin_frame, text="પાછા જાઓ",
-                            command=go_back, background="#FFFFFF", font=("Helvetica", 12))
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
+    back_button = tk.Button(checkin_frame, text="Back", command=go_back,
+                            background="#FFFFFF", font=("Helvetica", 12))
     back_button.grid(row=5, column=1, padx=10, pady=10, sticky=tk.W)
 
 
@@ -141,7 +127,7 @@ def checkin_destroyer():
         checkin_frame.destroy()
 
 
-def barcode_checker(barcode, date, time):
+def barcode_checker(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
@@ -149,25 +135,20 @@ def barcode_checker(barcode, date, time):
     conn.close()
 
     if not result:
-<<<<<<< HEAD
-        messagebox.showerror("Barcode Not Found", "Barcode Entered Is Not Found In The Database.")
-        barcode_entery.delete(0, tk.END)
-=======
-        messagebox.showerror("બારકોડ મળ્યો નથી",
-                             "દાખલ કરેલો બારકોડ ડેટાબેઝમાં અસ્તિત્વમાં નથી.")
-        entry_barcode_no.delete(0, tk.END)
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
-        entry_checkin_date.set_date(None)  # Clear the date entry
-        text_order_details.delete("1.0", tk.END)
+        messagebox.showerror("Barcode Not Found",
+                             "Barcode Entered Is Not Found In The Database.")
+        barcode_entry.delete(0, tk.END)
+        checkin_date_entry.set_date(None)  # Clear the date entry
+        order_details_entry.delete("1.0", tk.END)
         return
-    already_in_or_not(barcode, date, time)
+    already_in_or_not(barcode, checkin_date, checkin_time, order_details)
     # Clear the input fields after successful checkout
-    barcode_entery.delete(0, tk.END)
-    entry_checkin_date.set_date(None)  # Clear the date entry
-    text_order_details.delete("1.0", tk.END)
+    barcode_entry.delete(0, tk.END)
+    checkin_date_entry.set_date(None)  # Clear the date entry
+    order_details_entry.delete("1.0", tk.END)
 
 
-def already_in_or_not(barcode, date, time):
+def already_in_or_not(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute(
@@ -175,25 +156,10 @@ def already_in_or_not(barcode, date, time):
     result = cursor.fetchone()
     conn.close()
     if result and result[0] in ("court", "Court"):
-        update_item_status(barcode)
-<<<<<<< HEAD
-        log.update_logs(barcode, "Checkin From Court", date, time)
-        messagebox.showinfo("Successful", "Succesfully Entered in Malkhana")
-=======
-        log.update_logs(barcode, "કોર્ટમાંથી ચેક-ઇન", date, time)
-        messagebox.showinfo(
-            "સફળતા", "મુદ્દામાલ સફળતાથી માલખાનામાં પ્રાપ્ત કરવામાં આવ્યો છે!")
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
-        activity = "Item checked in from Court barcode no:"+barcode
-        lu.log_activity(login.current_user, activity)
+        update_item_status(barcode, checkin_date, checkin_time, order_details)
     else:
-<<<<<<< HEAD
-        messagebox.showerror("Item Exists In Malkhana", "Item Exists In Malkhana.")
-        barcode_entery.delete(0, tk.END)
-=======
-        messagebox.showerror("મુદ્દામાલ પહેલેથીજ માલખાના છે",
-                             "મુદ્દામાલ પહેલેથીજ માલખાના છે.")
-        entry_barcode_no.delete(0, tk.END)
->>>>>>> 5b9a97ccbce490881b970bc33bcd705528d5c1e5
-        entry_checkin_date.set_date(None)  # Clear the date entry
-        text_order_details.delete("1.0", tk.END)
+        messagebox.showerror("Item Exists In Malkhana",
+                             "Item Exists In Malkhana.")
+        barcode_entry.delete(0, tk.END)
+        checkin_date_entry.set_date(None)  # Clear the date entry
+        order_details_entry.delete("1.0", tk.END)

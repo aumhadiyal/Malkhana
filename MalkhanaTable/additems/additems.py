@@ -158,7 +158,7 @@ def insert_data():
         cursor = conn.cursor()
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS items (
-                            barcode INTEGER PRIMARY KEY AUTOINCREMENT,
+                            barcode INTEGER PRIMARY KEY ,
                             fir_no TEXT,
                             seized_items TEXT,
                             ipc_section TEXT,

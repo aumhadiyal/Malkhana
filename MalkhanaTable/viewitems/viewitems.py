@@ -45,22 +45,6 @@ def viewitems(prev_malkhana_frame):
         "Crime Witness",
         "Crime Inspector",
         "Item Status",
-        "Where Kepts",
-        "Item Description"
-        # "attachments"
-    )
-    # Define columns
-    tree["columns"] = (
-        "Barcode",
-        "FIR Number",
-        "Seized Items",
-        "IPC Section",
-        "Crime Location",
-        "Crime Date",
-        "Crime Time",
-        "Crime Witness",
-        "Crime Inspector",
-        "Item Status",
         "Where Kept",
         "Item Description"
         # "attachments"

@@ -1,4 +1,5 @@
 import tkinter as tk
+from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutCourt as c
 import MalkhanaTable.checkout.checkoutFSL as f
@@ -12,26 +13,35 @@ def COpage(prev_homepage_frame):
     global CO_frame
     checkout_page_destroyer()
     CO_frame = tk.Frame(prev_homepage_frame.master)
-    CO_frame.master.title("ચેક આઉટ​")
-    CO_frame.pack()
+    CO_frame.master.title("Check Out ")
+    CO_frame.pack(fill=tk.BOTH, expand=True)
 
-    checkoutFSL = tk.Button(CO_frame, text="Checkout to FSL",
-                            command=fsl, background="#FFFFFF", font=("Helvetica", 12))
-    checkoutFSL.pack()
-    checkoutFSL.pack(pady=20)
+    # Apply Radiance theme
+    style = ThemedStyle(CO_frame)
+    style.theme_use('radiance')
 
-    checkoutCourt = tk.Button(CO_frame, text="Checkout to Court",
-                              command=court, background="#FFFFFF", font=("Helvetica", 12))
-    checkoutCourt.pack()
-    checkoutCourt.pack(pady=20)
+    # Create container frame
+    container_frame = tk.Frame(
+        CO_frame, background=style.lookup('TFrame', 'background'))
+    container_frame.pack(padx=20, pady=20)
 
-    Home = tk.Button(CO_frame, text="Home", command=go_home,
-                     background="#FFFFFF", font=("Helvetica", 12))
-    Home.pack(side='right', anchor=tk.NE, padx=12, pady=10)
+    # Checkout buttons
+    checkoutFSL = tk.Button(container_frame, text="Checkout to FSL",
+                            command=fsl, font=("Helvetica", 15), width=15, height=1)
+    checkoutFSL.grid(row=0, column=0, pady=20)
 
-    back_button = tk.Button(CO_frame, text="Back", command=go_back,
-                            background="#FFFFFF", font=("Helvetica", 12))
-    back_button.pack(side='right', anchor=tk.NE, padx=10, pady=10)
+    checkoutCourt = tk.Button(container_frame, text="Checkout to Court",
+                              command=court, font=("Helvetica", 15), width=15, height=1)
+    checkoutCourt.grid(row=1, column=0, pady=20)
+
+    # Navigation buttons
+    Home = tk.Button(container_frame, text="Home", command=go_home,
+                     font=("Helvetica", 15), width=10, height=1)
+    Home.grid(row=2, column=0, padx=10, pady=[20,])
+
+    back_button = tk.Button(container_frame, text="Back", command=go_back,
+                            font=("Helvetica", 15), width=10, height=1)
+    back_button.grid(row=3, column=0, padx=10, pady=10)
 
     CO_frame.mainloop()
 

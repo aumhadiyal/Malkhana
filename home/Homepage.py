@@ -1,4 +1,5 @@
 import tkinter as tk
+from ttkthemes import ThemedStyle
 import login.login as login
 import MalkhanaTable.MalkhanaPage as mk
 import FSLInfo.FSLpage as fp
@@ -7,6 +8,7 @@ import Log.log as l
 import login.login as lu
 import logger
 import print
+
 homepage_frame = None
 
 
@@ -16,34 +18,42 @@ def open_homepage(prev_login_frame):
     homepage_destroyer()
 
     homepage_frame = tk.Frame(prev_login_frame.master)
-    homepage_frame.pack()
+    homepage_frame.pack(fill=tk.BOTH, expand=True)
 
-    FSL_button = tk.Button(homepage_frame, text="FSL Info",
-                           command=fsl, background="#FFFFFF", font=("Helvetica", 12))
-    FSL_button.grid(row=1, column=0, pady=20)
+    # Apply Radiance theme
+    style = ThemedStyle(homepage_frame)
+    style.theme_use('radiance')
 
-    Court_button = tk.Button(homepage_frame, text="Court Info",
-                             command=court, background="#FFFFFF", font=("Helvetica", 12))
-    Court_button.grid(row=6, column=0, pady=20)
+    # Create a container frame to organize the widgets
+    container_frame = tk.Frame(
+        homepage_frame, background=style.lookup('TFrame', 'background'))
+    container_frame.pack(padx=20, pady=20)
 
-    logout = tk.Button(homepage_frame, text="Log Out", command=logoutclicked,
-                       background="#FFFFFF", font=("Helvetica", 12))
-    logout.grid(row=4, pady=20)
+    table_button = tk.Button(container_frame, text="Malkhana",
+                             command=clicked, font=("Helvetica", 15), width=10, height=1)
+    table_button.grid(row=0, column=0, pady=25, padx=75)
 
-    table_button = tk.Button(homepage_frame, text="Malkhana",
-                             command=clicked, background="#FFFFFF", font=("Helvetica", 12))
-    table_button.grid(row=0, column=0, pady=20)
+    FSL_button = tk.Button(container_frame, text="FSL Info",
+                           command=fsl, font=("Helvetica", 15), width=10, height=1)
+    FSL_button.grid(row=1, column=0, pady=25, padx=75)
 
-    print = tk.Button(homepage_frame, text="Print", command=printDetails,
-                      background="#FFFFFF", font=("Helvetica", 12))
-    print.grid(row=3, pady=10)
+    Court_button = tk.Button(container_frame, text="Court Info",
+                             command=court, font=("Helvetica", 15), width=10, height=1)
+    Court_button.grid(row=2, column=0, pady=25, padx=75)
 
-    log_button = tk.Button(homepage_frame, text="Logs",
-                           command=log, background="#FFFFFF", font=("Helvetica", 12))
-    log_button.grid(row=2, column=0, pady=20)
+    log_button = tk.Button(container_frame, text="Logs",
+                           command=log, font=("Helvetica", 15), width=10, height=1)
+    log_button.grid(row=3, pady=25, padx=75)
+
+    print_button = tk.Button(container_frame, text="Print", command=printDetails,
+                             font=("Helvetica", 15), width=10, height=1)
+    print_button.grid(row=4, pady=25, padx=75)
+
+    logout = tk.Button(container_frame, text="Log Out", command=logoutclicked,
+                       font=("Helvetica", 15), width=10, height=1)
+    logout.grid(row=5, pady=25, padx=75)
 
     homepage_frame.master.title("HomePage")
-    homepage_frame.mainloop()
 
 
 def open_homepage_r(return_frame):
@@ -51,43 +61,48 @@ def open_homepage_r(return_frame):
     global homepage_frame
 
     homepage_destroyer()
-#
+
     homepage_frame = tk.Frame(return_frame.master)
-    homepage_frame.pack()
+    homepage_frame.pack(fill=tk.BOTH, expand=True)
 
-    FSL_button = tk.Button(homepage_frame, text="FSL Info",
-                           command=fsl, background="#FFFFFF", font=("Helvetica", 12))
-    FSL_button.grid(row=1, column=0, pady=20)
+    # Apply Radiance theme
+    style = ThemedStyle(homepage_frame)
+    style.theme_use('radiance')
 
-    Court_button = tk.Button(homepage_frame, text="Court Info",
-                             command=court, background="#FFFFFF", font=("Helvetica", 12))
-    Court_button.grid(row=6, column=0, pady=20)
+    # Create a container frame to organize the widgets
+    container_frame = tk.Frame(
+        homepage_frame, background=style.lookup('TFrame', 'background'))
+    container_frame.pack(padx=20, pady=20)
 
-    logout = tk.Button(homepage_frame, text="Log Out", command=logoutclicked,
-                       background="#FFFFFF", font=("Helvetica", 12))
-    logout.grid(row=4, pady=20)
+    table_button = tk.Button(container_frame, text="Malkhana",
+                             command=clicked, font=("Helvetica", 15), width=10, height=1)
+    table_button.grid(row=0, column=0, pady=25, padx=75)
 
-    table_button = tk.Button(homepage_frame, text="Malkhana",
-                             command=clicked, background="#FFFFFF", font=("Helvetica", 12))
-    table_button.grid(row=0, column=0, pady=20)
+    FSL_button = tk.Button(container_frame, text="FSL Info",
+                           command=fsl, font=("Helvetica", 15), width=10, height=1)
+    FSL_button.grid(row=1, column=0, pady=25, padx=75)
 
-    log_button = tk.Button(homepage_frame, text="logs",
-                           command=log, background="#FFFFFF", font=("Helvetica", 12))
-    log_button.grid(row=2, column=0, pady=20)
+    Court_button = tk.Button(container_frame, text="Court Info",
+                             command=court, font=("Helvetica", 15), width=10, height=1)
+    Court_button.grid(row=2, column=0, pady=25, padx=75)
 
-    print = tk.Button(homepage_frame, text="Print", command=printDetails,
-                      background="#FFFFFF", font=("Helvetica", 12))
-    print.grid(row=3, pady=10)
+    log_button = tk.Button(container_frame, text="Logs",
+                           command=log, font=("Helvetica", 15), width=10, height=1)
+    log_button.grid(row=3, pady=25, padx=75)
+
+    print_button = tk.Button(container_frame, text="Print", command=printDetails,
+                             font=("Helvetica", 15), width=10, height=1)
+    print_button.grid(row=4, pady=25, padx=75)
+
+    logout = tk.Button(container_frame, text="Log Out", command=logoutclicked,
+                       font=("Helvetica", 15), width=10, height=1)
+    logout.grid(row=5, pady=25, padx=75)
 
     homepage_frame.master.title("HomePage")
 
 
-def printDetails():
-    homepage_destroyer()
-    print.printPage(homepage_frame)
-
-
 def homepage_destroyer():
+    global homepage_frame
     if homepage_frame is not None:
         homepage_frame.destroy()
 
@@ -116,3 +131,8 @@ def court():
 def log():
     homepage_destroyer()
     l.create_logs_page(homepage_frame)
+
+
+def printDetails():
+    homepage_destroyer()
+    print.printPage(homepage_frame)

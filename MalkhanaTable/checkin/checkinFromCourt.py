@@ -1,4 +1,6 @@
 import tkinter as tk
+
+from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import Log.log as log
@@ -56,15 +58,17 @@ def checkin_page_2(root):
     # Use pack for the checkin_frame
     checkin_frame.pack(fill=tk.BOTH, expand=True)
 
+    style = ThemedStyle(checkin_frame)
+    style.theme_use('radiance')
     # Labels
     label_barcode = ttk.Label(
-        checkin_frame, text="Barcode No:",  background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Barcode No:",   font=("Helvetica", 12))
     label_checkin_time = ttk.Label(
-        checkin_frame, text="Checkin Time:", background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Checkin Time:",  font=("Helvetica", 12))
     label_checkin_date = ttk.Label(
-        checkin_frame, text="Checkin Date:", background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Checkin Date:",  font=("Helvetica", 12))
     label_order_details = ttk.Label(
-        checkin_frame, text="Order Details:", background="#B9E6FF", font=("Helvetica", 12))
+        checkin_frame, text="Order Details:",  font=("Helvetica", 12))
 
     label_barcode.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
     label_checkin_time.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
@@ -101,7 +105,7 @@ def checkin_page_2(root):
     # Check-in button
     checkin_button = tk.Button(checkin_frame, text="Checkin",
                                command=checkin,  background="#FFFFFF", font=("Helvetica", 12))
-    checkin_button.grid(row=4, column=0, columnspan=2, padx=5, pady=10)
+    checkin_button.grid(row=4, column=0, padx=5, pady=10)
 
     Home = tk.Button(checkin_frame, text="Homepage", command=go_home,
                      background="#FFFFFF", font=("Helvetica", 12))

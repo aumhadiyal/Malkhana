@@ -1,4 +1,6 @@
 import tkinter as tk
+
+from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import MalkhanaTable.checkin.checkinpage as cp
@@ -59,20 +61,22 @@ def checkin_page(prev_checkin_page):
 
     # Use pack for the fsl_checkin_frame
     fsl_checkin_frame.pack(fill=tk.BOTH, expand=True)
+    style = ThemedStyle(fsl_checkin_frame)
+    style.theme_use('radiance')
 
     # Labels
     label_barcode_no = ttk.Label(
-        fsl_checkin_frame, text="Barcode No:", background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Barcode No:", font=("Helvetica", 12))
     label_order_no = ttk.Label(
-        fsl_checkin_frame, text="Order No:",  background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Order No:",   font=("Helvetica", 12))
     label_checkin_time = ttk.Label(
-        fsl_checkin_frame, text="Checkin Time:", background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Checkin Time:", font=("Helvetica", 12))
     label_checkin_date = ttk.Label(
-        fsl_checkin_frame, text="Checkin Date:", background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Checkin Date:", font=("Helvetica", 12))
     label_examiner = ttk.Label(
-        fsl_checkin_frame, text="Examiner Name:",  background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Examiner Name:",   font=("Helvetica", 12))
     label_examiner_report = ttk.Label(
-        fsl_checkin_frame, text="Examiner Report:",  background="#B9E6FF", font=("Helvetica", 12))
+        fsl_checkin_frame, text="Examiner Report:",   font=("Helvetica", 12))
 
     label_barcode_no.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
     label_order_no.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
@@ -118,7 +122,7 @@ def checkin_page(prev_checkin_page):
     # Check-in button
     checkin_button = tk.Button(fsl_checkin_frame, text="Checkin",
                                background="#FFFFFF", command=checkin, font=("Helvetica", 12))
-    checkin_button.grid(row=6, column=0, columnspan=2, padx=5, pady=10)
+    checkin_button.grid(row=6, column=0, padx=5, pady=10)
 
     Home = tk.Button(fsl_checkin_frame, text="Homepage",
                      background="#FFFFFF", command=go_home, font=("Helvetica", 12))

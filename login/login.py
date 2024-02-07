@@ -5,7 +5,6 @@ import login.logindb as logindb
 import home.Homepage as Homepage
 import logger as lu
 
-
 entry_password = None
 entry_username = None
 login_frame = None
@@ -23,7 +22,7 @@ def check_login():
         lu.log_activity(username, "LOG-IN")
         Homepage.open_homepage(login_frame)
     else:
-        messagebox.showerror("Errror", "Wrong Username  Or Password.")
+        messagebox.showerror("Error", "Wrong Username  Or Password.")
 
 
 def initloginpage(prev_main_frame):
@@ -35,27 +34,26 @@ def initloginpage(prev_main_frame):
     login_frame = tk.Frame(prev_main_frame.master)
     login_frame.pack(expand=True)
 
-    # Set dark theme style
     style = ttk.Style()
-    style.theme_use('alt')
 
-    label_heading = ttk.Label(login_frame, text="Malkhana Management System",
-                              anchor=tk.W, background="#B9E6FF", font=("Verdana", 30))
+    # Use the 'radiance' theme
+    style.theme_use('radiance')
+
+    label_heading = ttk.Label(
+        login_frame, text="Malkhana Management System", font=("Verdana", 30))
     label_heading.grid(row=0, column=0, columnspan=2, pady=(0, 5), sticky=tk.W)
 
-    login_frame.master.title("Login Page")
+    prev_main_frame.master.title("Login Page")
     logindb.initialize_db()
 
     label_username = ttk.Label(
-        login_frame, text="User ID:", background="#B9E6FF", font=("Helvetica", 12))
+        login_frame, text="User ID:", font=("Helvetica", 12))
     label_password = ttk.Label(
-        login_frame, text="Password", background="#B9E6FF", font=("Helvetica", 12))
-    entry_username = ttk.Entry(
-        login_frame, background="#B9E6FF", font=("Helvetica", 12))
-    entry_password = ttk.Entry(
-        login_frame, show="*", background="#B9E6FF", font=("Helvetica", 12))
-    button_login = tk.Button(login_frame, text="Enter", command=check_login,
-                             background="#FFFFFF", font=("Helvetica", 12))
+        login_frame, text="Password", font=("Helvetica", 12))
+    entry_username = ttk.Entry(login_frame, font=("Helvetica", 12))
+    entry_password = ttk.Entry(login_frame, show="*", font=("Helvetica", 12))
+    button_login = tk.Button(login_frame, text="Enter",
+                             command=check_login, font=("Helvetica", 12))
 
     label_username.grid(row=2, column=0, pady=10, sticky=tk.W)
     entry_username.grid(row=2, column=1, pady=5, sticky=tk.EW)

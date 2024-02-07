@@ -1,5 +1,7 @@
 import datetime
 import tkinter as tk
+
+from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutpage as co
 import MalkhanaTable.MalkhanaPage as m
@@ -77,7 +79,10 @@ def checkouttocourt_page(root):
     checkout_destroyer()
     checkout_frame = tk.Frame(root.master)
     checkout_frame.master.title("Checkout to Court")
-    checkout_frame.pack()
+    checkout_frame.pack(fill=tk.BOTH, expand=True)
+
+    style = ThemedStyle(checkout_frame)
+    style.theme_use('radiance')
 
     # Labels
     label_barcode = ttk.Label(

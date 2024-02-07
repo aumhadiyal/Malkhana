@@ -1,4 +1,5 @@
 import tkinter as tk
+from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import MalkhanaTable.checkout.checkoutpage as co
 import MalkhanaTable.checkin.checkinpage as ci
@@ -16,31 +17,26 @@ def mkpage(prev_homepage_frame):
     malkhana_destroyer()
     malkhanapage_frame = tk.Frame(prev_homepage_frame.master)
     malkhanapage_frame.master.title("Malkhana page")
-    malkhanapage_frame.pack()
+    malkhanapage_frame.pack(fill=tk.BOTH, expand=True)
 
-    add_button = tk.Button(malkhanapage_frame, text="Add Items",
-                           background="#FFFFFF", command=additemsclicked, font=("Helvetica", 12))
-    add_button.pack(pady=20)
+    # Apply Radiance theme
+    style = ThemedStyle(malkhanapage_frame)
+    style.theme_use('radiance')
 
-    view_button = tk.Button(malkhanapage_frame, text="View Items",
-                            background="#FFFFFF", command=viewitemsclicked, font=("Helvetica", 12))
-    view_button.pack(pady=20)
+    # Menu Buttons
+    buttons = [
+        ("Add Items", additemsclicked),
+        ("View Items", viewitemsclicked),
+        ("Checkout Items", checkoutclicked),
+        ("Checkin Items", checkinclicked),
+        ("Back ", logoutclicked),
+        ("Log Out", go_back),
+    ]
 
-    checkout_button = tk.Button(malkhanapage_frame, text="Checkout Items",
-                                background="#FFFFFF", command=checkoutclicked, font=("Helvetica", 12))
-    checkout_button.pack(pady=20)
-
-    checkin_button = tk.Button(malkhanapage_frame, text="Checkin Items",
-                               background="#FFFFFF", command=checkinclicked, font=("Helvetica", 12))
-    checkin_button.pack(pady=20)
-
-    logout = tk.Button(malkhanapage_frame, text="Log Out",
-                       command=logoutclicked, background="#FFFFFF", font=("Helvetica", 12))
-    logout.pack(side='right', anchor=tk.NE, padx=12, pady=20)
-
-    back_button = tk.Button(malkhanapage_frame, text="Back",
-                            command=go_back, background="#FFFFFF", font=("Helvetica", 12))
-    back_button.pack(side='right', anchor=tk.NE, padx=10, pady=20)
+    for text, command in buttons:
+        button = tk.Button(malkhanapage_frame, text=text,
+                           background=style.lookup('TButton', 'background'), command=command, font=("Helvetica", 15), width=15, height=1)
+        button.pack(pady=10)
 
     malkhanapage_frame.mainloop()
 
@@ -53,11 +49,6 @@ def go_back():
 def logoutclicked():
     malkhana_destroyer()
     login.initloginpage(malkhanapage_frame)
-
-
-def go_home():
-    malkhana_destroyer()
-    Homepage.open_homepage_r(malkhanapage_frame)
 
 
 def additemsclicked():
@@ -83,5 +74,3 @@ def viewitemsclicked():
 def malkhana_destroyer():
     if malkhanapage_frame is not None:
         malkhanapage_frame.destroy()
-
-# s

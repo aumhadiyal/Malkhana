@@ -184,8 +184,8 @@ def already_inornot(barcode, checkin_date, checkin_time,
                            order_no, examiner, examiner_report)
 
     else:
-        messagebox.showerror("Item Error",
-                             "Item exists in Malkhana/Court .")
+        messagebox.showerror("Item Exists In Malkhana/Court",
+                             "Item Already Exists In Malkhana/Court.")
         barcode_entry.delete(0, tk.END)
         examiner_entry.delete(0, tk.END)
         checkin_date_entry.set_date(None)

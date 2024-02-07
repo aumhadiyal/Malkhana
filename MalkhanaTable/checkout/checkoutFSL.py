@@ -192,8 +192,8 @@ def already_outornot(barcode, fir_no, seized_items, taken_by_whom, checkout_date
         update_item_status(barcode, fir_no, seized_items,
                            taken_by_whom, checkout_date, checkout_time, order_no)
     else:
-        messagebox.showerror("Item isnt available",
-                             "Item doesnt exist in malkhana.")
+        messagebox.showerror("Item not found",
+                             "Item is not present in Malkhana.")
         barcode_entry.delete(0, tk.END)
         fir_no_entry.delete(0, tk.END)
 

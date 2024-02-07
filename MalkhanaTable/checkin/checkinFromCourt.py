@@ -158,8 +158,8 @@ def already_in_or_not(barcode, checkin_date, checkin_time, order_details):
     if result and result[0] in ("court", "Court"):
         update_item_status(barcode, checkin_date, checkin_time, order_details)
     else:
-        messagebox.showerror("Item Exists In Malkhana",
-                             "Item Exists In Malkhana.")
+        messagebox.showerror("Item Exists In Malkhana/FSL",
+                             "Item Already Exists In Malkhana/FSL.")
         barcode_entry.delete(0, tk.END)
         checkin_date_entry.set_date(None)  # Clear the date entry
         order_details_entry.delete("1.0", tk.END)

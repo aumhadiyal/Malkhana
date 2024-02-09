@@ -90,7 +90,7 @@ def print_details(barcode=None):
 
 def go_home():
     CL_destroyer()
-    Homepage.open_homepage_r(print_frame)
+    Homepage.open_homepage(print_frame)
 
 
 def CL_destroyer():

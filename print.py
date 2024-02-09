@@ -8,6 +8,7 @@ from PIL import Image,ImageTk
 print_frame = None
 
 
+<<<<<<< HEAD
 def set_custom_theme(root):
     # Load and display background image
     bg_image = Image.open("bg.jpeg")
@@ -19,6 +20,8 @@ def set_custom_theme(root):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+=======
+>>>>>>> 71a9f3d921bdba45dad741d1ceaf5980410b9990
 def printPage(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global print_frame
@@ -26,6 +29,7 @@ def printPage(prev_malkhana_frame):
     print_frame.master.title("Print Details")
     print_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
 
+<<<<<<< HEAD
      # Get screen width and height
     screen_width = print_frame.winfo_screenwidth()
     screen_height = print_frame.winfo_screenheight()
@@ -40,19 +44,27 @@ def printPage(prev_malkhana_frame):
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
     
     search_label = tk.Label(print_frame, text="Barcode:",font=("Helvetica", 24))
+=======
+    search_label = tk.Label(
+        print_frame, text="Barcode:", font=("Helvetica", 24))
+>>>>>>> 71a9f3d921bdba45dad741d1ceaf5980410b9990
     search_label.pack(pady=50)
-    
+
     search_entry = tk.Entry(print_frame,  background="#FFFFFF")
     search_entry.pack(pady=5)
-    
-    print_button = tk.Button(print_frame, text="Print",  background="#FFFFFF", font=("Helvetica", 12), command=lambda: print_details(search_entry.get()))
+
+    print_button = tk.Button(print_frame, text="Print",  background="#FFFFFF", font=(
+        "Helvetica", 12), command=lambda: print_details(search_entry.get()))
     print_button.pack(pady=20)
 
-    Home = tk.Button(print_frame, text="Homepage",  background="#FFFFFF",command=go_home, font=("Helvetica", 12))
+    Home = tk.Button(print_frame, text="Homepage",
+                     background="#FFFFFF", command=go_home, font=("Helvetica", 12))
     Home.pack(pady=5)
 
     print_frame.mainloop()
 #
+
+
 def print_details(barcode=None):
     # Connect to the database and retrieve data
     try:
@@ -63,7 +75,7 @@ def print_details(barcode=None):
         if barcode is None:
             query = "SELECT * FROM items"
         else:
-            query = "SELECT barcode,fir_number,	item_name,ipc_section,crime_scene,crime_date,crime_time	,crime_witnesses,crime_inspector,item_status,where_its_kept,timee FROM items WHERE barcode = ?"
+            query = "SELECT barcode,fir_no,	seized_items,ipc_section,crime_location,crime_date,crime_time	,crime_witness,crime_inspector,item_status,where_kept,entry_time FROM items WHERE barcode = ?"
 
         query_string = f"{query}"
 
@@ -106,9 +118,12 @@ def print_details(barcode=None):
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
 
+
 def go_home():
     CL_destroyer()
-    Homepage.open_homepage_r(print_frame)
+    Homepage.open_homepage(print_frame)
+
+
 def CL_destroyer():
     if print_frame is not None:
         print_frame.destroy()

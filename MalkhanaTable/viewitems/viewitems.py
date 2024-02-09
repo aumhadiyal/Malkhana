@@ -12,40 +12,17 @@ import MalkhanaTable.additems.additems as ai
 import io
 import logger as lu
 from PIL import Image, ImageTk
+import print
 
 
 viewitems_frame = None
 
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def viewitems(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global viewitems_frame, tree
     viewitems_frame = tk.Frame(prev_malkhana_frame.master)
     viewitems_frame.master.title("View Items")
-
-
-     # Get screen width and height
-    screen_width = viewitems_frame.winfo_screenwidth()
-    screen_height = viewitems_frame.winfo_screenheight()
-
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(viewitems_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # To occupy the whole screen
     viewitems_frame.pack(fill=tk.BOTH, expand=True)
@@ -134,39 +111,70 @@ def viewitems(prev_malkhana_frame):
     x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
     y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    # Attachments Button
-    view_attachment_button = tk.Button(viewitems_frame, background="#FFFFFF",
-                                       text="View Attachment", command=view_attachment, font=("Helvetica", 12))
-    view_attachment_button.pack(pady=10)
+    # Function to apply the selected filters
+    def apply_filters():
+        selected_columns = []
+        for column, var in checkbox_vars.items():
+            if var.get() == 1:
+                selected_columns.append(column)
+        # Reconfigure treeview columns
+        tree["displaycolumns"] = selected_columns
 
-    # logout = tk.Button(viewitems_frame, text="Log Out", background="#FFFFFF",
-    #                    command=logoutclicked, font=("Helvetica", 12))
-    # logout.pack(padx=12, pady=10)
+    # Function to create filter window
+    def create_filter_window():
+        filter_window = tk.Toplevel(viewitems_frame)
+        filter_window.title("Select Filters")
 
-    # Create a search entry and button
-    search_var = tk.StringVar()
-    search_entry = tk.Entry(
-        viewitems_frame, background="#D3D3D3", textvariable=search_var)
-    search_entry.pack(pady=10)
+        global checkbox_vars
+        checkbox_vars = {}
 
-    # Create a dropdown menu for selecting search field
+        for idx, column in enumerate(tree["columns"]):
+            var = tk.IntVar(value=1)
+            checkbox_vars[column] = var
+            cb = tk.Checkbutton(filter_window, text=column, variable=var)
+            cb.grid(row=idx, column=0, sticky="w")
+
+        apply_button = tk.Button(
+            filter_window, text="Apply Filters", command=apply_filters)
+        apply_button.grid(row=len(tree["columns"]), column=0, pady=5)
+
+    # Search and filter row
+    search_frame = tk.Frame(viewitems_frame)
+    search_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
+
+    search_label = tk.Label(search_frame, text="Search Field:")
+    search_label.pack(side=tk.LEFT)
+
     search_field_var = tk.StringVar(value="Barcode")
     search_field_menu = ttk.Combobox(
-        viewitems_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
-    search_field_menu.pack()
+        search_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
+    search_field_menu.pack(side=tk.LEFT, padx=5, pady=5)
 
-    search_button = tk.Button(viewitems_frame, text="Search", background="#FFFFFF", command=lambda: search_items(
-        tree, search_field_var.get(), search_var.get()), font=("Helvetica", 12))
-    search_button.pack(pady=10)
+    search_entry = tk.Entry(
+        search_frame, background="#D3D3D3", textvariable=tk.StringVar())
+    search_entry.pack(side=tk.LEFT, padx=5, pady=5)
 
-    show_all_btn = tk.Button(viewitems_frame, text="Show All", background="#FFFFFF",
+    select_filter_button = tk.Button(
+        search_frame, text="Select Filter", command=create_filter_window)
+    select_filter_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    search_button = tk.Button(search_frame, text="Search", background="#FFFFFF", command=lambda: search_items(
+        tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 12))
+    search_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    show_all_btn = tk.Button(search_frame, text="Show All", background="#FFFFFF",
                              command=lambda: show_all(tree), font=("Helvetica", 12))
-    show_all_btn.pack()
+    show_all_btn.pack(side=tk.LEFT, padx=5, pady=5)
 
-    # Create a button to go back to the homepage
-    back_button = tk.Button(viewitems_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
-    back_button.pack(pady=10)
+    # Attachments Button
+    view_attachment_button = tk.Button(search_frame, background="#FFFFFF",
+                                       text="View Attachment", command=view_attachment, font=("Helvetica", 12))
+    view_attachment_button.pack(side=tk.RIGHT, padx=5)
+
+    print_details_button = tk.Button(search_frame, background="#FFFFFF",
+                                     text="Print Item Details", command=print_item, font=("Helvetica", 12))
+    print_details_button.pack(side=tk.RIGHT, padx=5)
+# Function definitions for view_attachment, logoutclicked, search_items, show_all, and go_back go here
 
 
 def view_attachment():
@@ -198,6 +206,14 @@ def view_attachment():
         image_label.pack()
     else:
         messagebox.showinfo("Attachment Not Available!")
+
+
+def print_item():
+    selected_item = tree.focus()
+    # Assuming the barcode is the first value in the row
+    barcode = tree.item(selected_item, 'values')[0]
+
+    print.print_details(barcode)
 
 
 def go_back():

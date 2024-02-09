@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import login.logindb as ll
 import login.login as login
 from ttkthemes import ThemedStyle
-import MalkhanaTable.additems.additems as ma
+import MalkhanaTable.viewitems.viewitems as ma
 
 
 def set_custom_theme(root):
@@ -36,7 +36,8 @@ def main():
     main_frame = tk.Frame(root)
     main_frame.pack()
 
-    login.initloginpage(main_frame)
+    # login.initloginpage(main_frame)
+    ma.viewitems(main_frame)
 
     root.mainloop()
 

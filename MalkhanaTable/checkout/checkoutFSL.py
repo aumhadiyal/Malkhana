@@ -28,11 +28,10 @@ def set_custom_theme(root):
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
-def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom,
-                       seized_items, fir_no, order_no):
+def update_item_status(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):
     con = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = con.cursor()
-    
+
     cursor.execute(
         "UPDATE items SET item_status='FSL' where barcode = ?", (barcode,))
     con.commit()
@@ -66,7 +65,6 @@ def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom,
     lu.log_activity(login.current_user, activity)
 
 
-
 def checkout_destroyer():
     if checkout_frame is not None:
         checkout_frame.destroy()
@@ -96,7 +94,6 @@ def checkouttoFSL_page(root):
     style = ThemedStyle(checkout_frame)
     style.theme_use('radiance')
 
-    
     screen_width = checkout_frame.winfo_screenwidth()
     screen_height = checkout_frame.winfo_screenheight()
 
@@ -108,7 +105,6 @@ def checkouttoFSL_page(root):
     bg_label = tk.Label(checkout_frame, image=bg_photo)
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
 
     # Labels
     label_barcode = tk.Label(
@@ -140,6 +136,7 @@ def checkouttoFSL_page(root):
     seized_items_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     taken_by_whom_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     order_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
+
     barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
     fir_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
     seized_items_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)

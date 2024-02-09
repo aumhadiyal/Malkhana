@@ -1,10 +1,16 @@
+import datetime
+import io
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+from tkinter.tix import IMAGETEXT
 import home.Homepage as Homepage
 import pandas as pd
 import os
-from PIL import Image, ImageTk
+from PIL import Image
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image as ExcelImage
+
 print_frame = None
 
 
@@ -14,101 +20,76 @@ def set_custom_theme(root):
     # Resize the image to match the window size
     bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
 
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_photo = IMAGETEXT.PhotoImage(bg_image)
     bg_label = tk.Label(root, image=bg_photo)
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
-def printPage(prev_malkhana_frame):
-    prev_malkhana_frame.destroy()
-    global print_frame
-    print_frame = tk.Frame(prev_malkhana_frame.master)
-    print_frame.master.title("Print Details")
-    print_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
-
-    # Get screen width and height
-    screen_width = print_frame.winfo_screenwidth()
-    screen_height = print_frame.winfo_screenheight()
-
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(print_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-    search_label = tk.Label(
-        print_frame, text="Barcode:", font=("Helvetica", 24))
-    search_label.pack(pady=50)
-
-    search_entry = tk.Entry(print_frame,  background="#FFFFFF")
-    search_entry.pack(pady=5)
-
-    print_button = tk.Button(print_frame, text="Print",  background="#FFFFFF", font=(
-        "Helvetica", 12), command=lambda: print_details(search_entry.get()))
-    print_button.pack(pady=20)
-
-    Home = tk.Button(print_frame, text="Homepage",
-                     background="#FFFFFF", command=go_home, font=("Helvetica", 12))
-    Home.pack(pady=5)
-
-    print_frame.mainloop()
-#
-
-
 def print_details(barcode=None):
-    # Connect to the database and retrieve data
     try:
-        if os.path.exists('exported_data.xlsx'):
-            os.remove('exported_data.xlsx')
-        conn = sqlite3.connect('databases/items_in_malkhana.db')
+        currenttime = str(datetime.datetime.now()).replace(":", "")
+        filename = f"{barcode}_{currenttime}.xlsx"
 
-        if barcode is None:
-            query = "SELECT * FROM items"
-        else:
-            query = "SELECT barcode,fir_no,	seized_items,ipc_section,crime_location,crime_date,crime_time	,crime_witness,crime_inspector,item_status,where_kept,entry_time FROM items WHERE barcode = ?"
+        # Initialize Excel writer with 'w' mode to create the file if not exists
+        with pd.ExcelWriter(filename, mode='w') as writer:
+            # Fetch data from items_in_malkhana.db and write to Items sheet
+            conn_items = sqlite3.connect('databases/items_in_malkhana.db')
+            if barcode is None:
+                query_items = "SELECT * FROM items"
+            else:
+                query_items = "SELECT barcode,fir_no,seized_items,ipc_section,crime_location,crime_date,crime_time,crime_witness,crime_inspector,item_status,where_kept,entry_time FROM items WHERE barcode = ?"
 
-        query_string = f"{query}"
+            df_items = pd.read_sql_query(
+                query_items, conn_items, params=(barcode,))
+            conn_items.close()
 
-        df = pd.read_sql_query(query_string, conn, params=(barcode,))
-        conn.close()
+            df_items.to_excel(writer, sheet_name='Items', index=False)
 
-        with pd.ExcelWriter('exported_data.xlsx', mode='w') as writer:
-            df.to_excel(writer, sheet_name='Malkhana Table', index=False)
+            # Fetch data from fsl_records.db and write to FSL Records sheet
+            conn_fsl = sqlite3.connect('databases/fsl_records.db')
+            if barcode is None:
+                query_fsl = "SELECT * FROM fsl_records"
+            else:
+                query_fsl = "SELECT * FROM fsl_records WHERE barcode = ?"
 
-        conn = sqlite3.connect('databases/fsl_records.db')
+            df_fsl = pd.read_sql_query(query_fsl, conn_fsl, params=(barcode,))
+            conn_fsl.close()
 
-        if barcode is None:
-            query = "SELECT * FROM fsl_records"
-        else:
-            query = "SELECT * FROM fsl_records WHERE barcode = ?"
+            df_fsl.to_excel(writer, sheet_name='FSL Records', index=False)
 
-        query_string = f"{query}"
+            # Fetch data from logs.db and write to Logs sheet
+            conn_logs = sqlite3.connect('databases/logs.db')
+            if barcode is None:
+                query_logs = "SELECT * FROM logs"
+            else:
+                query_logs = "SELECT * FROM logs WHERE barcode = ?"
 
-        df = pd.read_sql_query(query_string, conn, params=(barcode,))
-        conn.close()
+            df_logs = pd.read_sql_query(
+                query_logs, conn_logs, params=(barcode,))
+            conn_logs.close()
 
-        with pd.ExcelWriter('exported_data.xlsx', mode='a') as writer:
-            df.to_excel(writer, sheet_name='FSL Table', index=False)
+            df_logs.to_excel(writer, sheet_name='Logs', index=False)
 
-        conn = sqlite3.connect('databases/logs.db')
+            # Fetch image data from attachments.db and write to Attachments sheet
+            conn_attachments = sqlite3.connect('databases/attachments.db')
+            query_attachments = "SELECT attachment_data FROM attachments WHERE barcode = ?"
 
-        if barcode is None:
-            query = "SELECT * FROM logs"
-        else:
-            query = "SELECT * FROM logs WHERE barcode = ?"
+            df_attachments = pd.read_sql_query(
+                query_attachments, conn_attachments, params=(barcode,))
+            conn_attachments.close()
 
-        query_string = f"{query}"
+            if not df_attachments.empty:
+                # Encode image data as Base64
+                df_attachments['Encoded_Image'] = df_attachments['attachment_data'].apply(
+                    lambda x: base64.b64encode(x).decode('utf-8'))
 
-        df = pd.read_sql_query(query_string, conn, params=(barcode,))
-        conn.close()
+                # Write image data to Attachments sheet
+                df_attachments.to_excel(
+                    writer, sheet_name='Attachments', index=False)
 
-        with pd.ExcelWriter('exported_data.xlsx', mode='a') as writer:
-            df.to_excel(writer, sheet_name='Logs', index=False)
-        messagebox.showinfo("Success", "Data exported to Excel successfully.")
+        messagebox.showinfo(
+            "Success", "Data exported to Excel successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
 

@@ -29,8 +29,8 @@ def mkpage(prev_homepage_frame):
         ("View Items", viewitemsclicked),
         ("Checkout Items", checkoutclicked),
         ("Checkin Items", checkinclicked),
-        ("Back ", logoutclicked),
-        ("Log Out", go_back),
+        ("Back ", go_back),
+        ("Log Out", logoutclicked),
     ]
 
     for text, command in buttons:

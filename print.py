@@ -4,11 +4,10 @@ from tkinter import messagebox
 import home.Homepage as Homepage
 import pandas as pd
 import os
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 print_frame = None
 
 
-<<<<<<< HEAD
 def set_custom_theme(root):
     # Load and display background image
     bg_image = Image.open("bg.jpeg")
@@ -20,8 +19,7 @@ def set_custom_theme(root):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-=======
->>>>>>> 71a9f3d921bdba45dad741d1ceaf5980410b9990
+
 def printPage(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global print_frame
@@ -29,8 +27,7 @@ def printPage(prev_malkhana_frame):
     print_frame.master.title("Print Details")
     print_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
 
-<<<<<<< HEAD
-     # Get screen width and height
+    # Get screen width and height
     screen_width = print_frame.winfo_screenwidth()
     screen_height = print_frame.winfo_screenheight()
 
@@ -42,12 +39,9 @@ def printPage(prev_malkhana_frame):
     bg_label = tk.Label(print_frame, image=bg_photo)
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-    
-    search_label = tk.Label(print_frame, text="Barcode:",font=("Helvetica", 24))
-=======
+
     search_label = tk.Label(
         print_frame, text="Barcode:", font=("Helvetica", 24))
->>>>>>> 71a9f3d921bdba45dad741d1ceaf5980410b9990
     search_label.pack(pady=50)
 
     search_entry = tk.Entry(print_frame,  background="#FFFFFF")

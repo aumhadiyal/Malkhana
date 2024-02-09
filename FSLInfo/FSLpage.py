@@ -7,8 +7,21 @@ import home.Homepage as homepage
 import MalkhanaTable.MalkhanaPage as m
 import login.login as login
 import logger as lu
+from PIL import Image,ImageTk
 viewfsl_frame = None
 
+
+
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def viewfsl(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
@@ -17,6 +30,19 @@ def viewfsl(prev_malkhana_frame):
     viewfsl_frame = tk.Frame(prev_malkhana_frame.master)
     viewfsl_frame.master.title("FSL Info")
     viewfsl_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
+
+         # Get screen width and height
+    screen_width = viewfsl_frame.winfo_screenwidth()
+    screen_height = viewfsl_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(viewfsl_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # Create a Treeview widget to display the data in a tabular format
     tree = ttk.Treeview(viewfsl_frame)

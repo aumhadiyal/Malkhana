@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from PIL import Image,ImageTk
 from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
@@ -55,8 +55,22 @@ def checkin_page_2(root):
     checkin_frame = tk.Frame(root.master)
     checkin_frame.master.title("Checkin From Court")
 
+     # Get screen width and height
+    screen_width = checkin_frame.winfo_screenwidth()
+    screen_height = checkin_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(checkin_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
     # Use pack for the checkin_frame
     checkin_frame.pack(fill=tk.BOTH, expand=True)
+
 
     style = ThemedStyle(checkin_frame)
     style.theme_use('radiance')

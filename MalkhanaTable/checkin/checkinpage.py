@@ -5,9 +5,21 @@ import MalkhanaTable.checkin.checkinFromCourt as c
 import MalkhanaTable.checkin.checkinFromFSL as ci
 import home.Homepage as Homepage
 import MalkhanaTable.MalkhanaPage as m
+from PIL import Image,ImageTk
 
 CI_frame = None
 
+
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def CIpage(prev_homepage_frame):
     prev_homepage_frame.destroy()
@@ -16,6 +28,20 @@ def CIpage(prev_homepage_frame):
     CI_frame = tk.Frame(prev_homepage_frame.master)
     CI_frame.master.title("Checkin")
     CI_frame.pack(fill=tk.BOTH, expand=True)
+
+         # Get screen width and height
+    screen_width = CI_frame.winfo_screenwidth()
+    screen_height = CI_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(CI_frame
+                        , image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     style = ThemedStyle(CI_frame)
     style.theme_use('radiance')

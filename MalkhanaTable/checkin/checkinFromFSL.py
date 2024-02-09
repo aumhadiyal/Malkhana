@@ -65,32 +65,32 @@ def checkin_page(prev_checkin_page):
     style.theme_use('radiance')
 
     # Labels
-    label_barcode_no = ttk.Label(
-        fsl_checkin_frame, text="Barcode No:", font=("Helvetica", 12))
-    label_order_no = ttk.Label(
-        fsl_checkin_frame, text="Order No:",   font=("Helvetica", 12))
-    label_checkin_time = ttk.Label(
-        fsl_checkin_frame, text="Checkin Time:", font=("Helvetica", 12))
-    label_checkin_date = ttk.Label(
-        fsl_checkin_frame, text="Checkin Date:", font=("Helvetica", 12))
-    label_examiner = ttk.Label(
-        fsl_checkin_frame, text="Examiner Name:",   font=("Helvetica", 12))
-    label_examiner_report = ttk.Label(
-        fsl_checkin_frame, text="Examiner Report:",   font=("Helvetica", 12))
+    label_barcode_no = tk.Label(
+        fsl_checkin_frame, text="Barcode No:",  background="#fff1f1", font=("Helvetica", 12))
+    label_order_no = tk.Label(
+        fsl_checkin_frame, text="Order No:",   background="#fff1f1", font=("Helvetica", 12))
+    label_checkin_time = tk.Label(
+        fsl_checkin_frame, text="Checkin Time:",  background="#fff1f1", font=("Helvetica", 12))
+    label_checkin_date = tk.Label(
+        fsl_checkin_frame, text="Checkin Date:", background="#fff1f1", font=("Helvetica", 12))
+    label_examiner = tk.Label(
+        fsl_checkin_frame, text="Examiner Name:",   background="#fff1f1", font=("Helvetica", 12))
+    label_examiner_report = tk.Label(
+        fsl_checkin_frame, text="Examiner Report:",   background="#fff1f1", font=("Helvetica", 12))
 
-    label_barcode_no.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-    label_order_no.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkin_time.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkin_date.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
-    label_examiner.grid(row=4, column=0, padx=5, pady=5, sticky=tk.W)
-    label_examiner_report.grid(row=5, column=0, padx=5, pady=5, sticky=tk.W)
+    label_barcode_no.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+    label_order_no.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkin_time.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkin_date.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
+    label_examiner.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
+    label_examiner_report.grid(row=5, column=0, padx=10, pady=10, sticky=tk.W)
 
     # Entry fields
     barcode_entry = ttk.Entry(fsl_checkin_frame, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
     order_no_entry = ttk.Entry(fsl_checkin_frame, font=("Helvetica", 12))
-    order_no_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+    order_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
 
     hour_var = tk.StringVar(fsl_checkin_frame, value='00')
     minute_var = tk.StringVar(fsl_checkin_frame, value='00')
@@ -99,38 +99,41 @@ def checkin_page(prev_checkin_page):
                              str(i).zfill(2) for i in range(24)], state='readonly', width=5)
     minute_menu = ttk.Combobox(fsl_checkin_frame, textvariable=minute_var, values=[
                                str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky=tk.W)
+    hour_menu.grid(row=2, column=1, columnspan=2,
+                   padx=10, pady=10, sticky=tk.W)
     minute_menu.grid(row=2, column=3, columnspan=2,
-                     padx=5, pady=5, sticky=tk.W)
+                     padx=10, pady=10, sticky=tk.W)
 
     # Date field using tkcalendar
     checkin_date_entry = DateEntry(
         fsl_checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
     # Use sticky=tk.W for left alignment
-    checkin_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+    checkin_date_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
 
     examiner_entry = ttk.Entry(
         fsl_checkin_frame,  background="#FFFFFF", font=("Helvetica", 12))
-    examiner_entry.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
+    examiner_entry.grid(row=4, column=1, padx=10, pady=10, sticky=tk.W)
 
     # Text area for examiner report
     examiner_report_entry = tk.Text(
         fsl_checkin_frame, height=5, background="#FFFFFF", width=30, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    examiner_report_entry.grid(row=5, column=1, padx=5, pady=5, sticky=tk.W)
+    examiner_report_entry.grid(row=5, column=1, padx=10, pady=10, sticky=tk.W)
 
     # Check-in button
     checkin_button = tk.Button(fsl_checkin_frame, text="Checkin",
                                background="#FFFFFF", command=checkin, font=("Helvetica", 12))
-    checkin_button.grid(row=6, column=0, padx=5, pady=10)
+    checkin_button.grid(row=6, column=0, columnspan=4,
+                        padx=10, pady=10, sticky="ew")
 
-    Home = tk.Button(fsl_checkin_frame, text="Homepage",
-                     background="#FFFFFF", command=go_home, font=("Helvetica", 12))
-    Home.grid(row=7, column=0, padx=10, pady=10, sticky=tk.E)
-
+    button_font = ('Helvetica', 12)
     back_button = tk.Button(fsl_checkin_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
-    back_button.grid(row=7, column=1, padx=10, pady=10, sticky=tk.W)
+                            background="#FFFFFF", command=go_back, font=button_font)
+    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+
+    home_button = tk.Button(fsl_checkin_frame, text="Home",
+                            background="#FFFFFF", command=go_home, font=button_font)
+    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
 
 
 def go_home():

@@ -82,20 +82,20 @@ def checkouttoFSL_page(root):
     style.theme_use('radiance')
 
     # Labels
-    label_barcode = ttk.Label(
-        checkout_frame, text="Barcode:",   font=("Helvetica", 12))
-    label_fir_no = ttk.Label(
-        checkout_frame, text="FIR No:",  font=("Helvetica", 12))
-    label_item_name = ttk.Label(
-        checkout_frame, text="Seized Items:",   font=("Helvetica", 12))
-    label_taken_by_whom = ttk.Label(
-        checkout_frame, text="Undertaking Inspector:",  font=("Helvetica", 12))
-    label_checkout_date = ttk.Label(
-        checkout_frame, text="Checkout Date:",  font=("Helvetica", 12))
-    label_checkout_time = ttk.Label(
-        checkout_frame, text="Checkout Time:",   font=("Helvetica", 12))
-    label_order_no = ttk.Label(
-        checkout_frame, text="Order No:",  font=("Helvetica", 12))
+    label_barcode = tk.Label(
+        checkout_frame, text="Barcode:",  background="#fff1f1",  font=("Helvetica", 12))
+    label_fir_no = tk.Label(
+        checkout_frame, text="FIR No:",  background="#fff1f1", font=("Helvetica", 12))
+    label_item_name = tk.Label(
+        checkout_frame, text="Seized Items:",  background="#fff1f1",  font=("Helvetica", 12))
+    label_taken_by_whom = tk.Label(
+        checkout_frame, text="Undertaking Inspector:",  background="#fff1f1", font=("Helvetica", 12))
+    label_checkout_date = tk.Label(
+        checkout_frame, text="Checkout Date:",  background="#fff1f1", font=("Helvetica", 12))
+    label_checkout_time = tk.Label(
+        checkout_frame, text="Checkout Time:",   background="#fff1f1", font=("Helvetica", 12))
+    label_order_no = tk.Label(
+        checkout_frame, text="Order No:",  background="#fff1f1", font=("Helvetica", 12))
 
     label_barcode.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
     label_fir_no.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
@@ -135,16 +135,18 @@ def checkouttoFSL_page(root):
     # Checkout button
     checkout_button = tk.Button(checkout_frame, text="Checkout to FSL ",
                                 background="#FFFFFF", command=checkouttoFSL, font=("Helvetica", 12))
-    checkout_button.grid(row=8, column=0, columnspan=2, padx=5, pady=10)
+    checkout_button.grid(row=8, column=0, columnspan=4,
+                         padx=10, pady=10, sticky="ew")
 
     # Home and Back buttons
-    home_button = tk.Button(checkout_frame, text="Home",
-                            background="#FFFFFF", command=go_home, font=("Helvetica", 12))
-    home_button.grid(row=9, column=0, padx=10, pady=10, sticky=tk.E)
-
+    button_font = ('Helvetica', 12)
     back_button = tk.Button(checkout_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
-    back_button.grid(row=9, column=1, padx=10, pady=10, sticky=tk.W)
+                            background="#FFFFFF", command=go_back, font=button_font)
+    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+
+    home_button = tk.Button(checkout_frame, text="Home",
+                            background="#FFFFFF", command=go_home, font=button_font)
+    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
 
 
 def go_back():

@@ -61,24 +61,24 @@ def checkin_page_2(root):
     style = ThemedStyle(checkin_frame)
     style.theme_use('radiance')
     # Labels
-    label_barcode = ttk.Label(
-        checkin_frame, text="Barcode No:",   font=("Helvetica", 12))
-    label_checkin_time = ttk.Label(
-        checkin_frame, text="Checkin Time:",  font=("Helvetica", 12))
-    label_checkin_date = ttk.Label(
-        checkin_frame, text="Checkin Date:",  font=("Helvetica", 12))
-    label_order_details = ttk.Label(
-        checkin_frame, text="Order Details:",  font=("Helvetica", 12))
+    label_barcode = tk.Label(
+        checkin_frame, text="Barcode No:", background="#fff1f1",   font=("Helvetica", 12))
+    label_checkin_time = tk.Label(
+        checkin_frame, text="Checkin Time:", background="#fff1f1",  font=("Helvetica", 12))
+    label_checkin_date = tk.Label(
+        checkin_frame, text="Checkin Date:", background="#fff1f1",  font=("Helvetica", 12))
+    label_order_details = tk.Label(
+        checkin_frame, text="Order Details:",  background="#fff1f1", font=("Helvetica", 12))
 
-    label_barcode.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkin_time.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkin_date.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-    label_order_details.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
+    label_barcode.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkin_time.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkin_date.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+    label_order_details.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
 
     # Entry fields
     barcode_entry = ttk.Entry(checkin_frame, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
 
     hour_var = tk.StringVar(checkin_frame, value='00')
     minute_var = tk.StringVar(checkin_frame, value='00')
@@ -87,33 +87,35 @@ def checkin_page_2(root):
                              state='readonly', width=5)
     minute_menu = ttk.Combobox(checkin_frame, textvariable=minute_var, values=[str(i).zfill(2) for i in range(60)],
                                state='readonly', width=5)
-    hour_menu.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-    minute_menu.grid(row=1, column=2, padx=1, pady=5, sticky=tk.W)
+    hour_menu.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
+    minute_menu.grid(row=1, column=2, padx=1, pady=10, sticky=tk.W)
 
     # Date field using tkcalendar
     checkin_date_entry = DateEntry(
         checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
     # Use sticky=tk.W for left alignment
-    checkin_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
+    checkin_date_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
 
     # Text area for order details
     order_details_entry = tk.Text(
         checkin_frame, height=5, width=30, background="#FFFFFF", font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
-    order_details_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+    order_details_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
 
     # Check-in button
     checkin_button = tk.Button(checkin_frame, text="Checkin",
                                command=checkin,  background="#FFFFFF", font=("Helvetica", 12))
-    checkin_button.grid(row=4, column=0, padx=5, pady=10)
+    checkin_button.grid(row=4, column=0, columnspan=4,
+                        padx=10, pady=10, sticky="ew")
 
-    Home = tk.Button(checkin_frame, text="Homepage", command=go_home,
-                     background="#FFFFFF", font=("Helvetica", 12))
-    Home.grid(row=5, column=0, padx=10, pady=10, sticky=tk.E)
+    button_font = ('Helvetica', 12)
+    back_button = tk.Button(checkin_frame, text="Back",
+                            background="#FFFFFF", command=go_back, font=button_font)
+    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
 
-    back_button = tk.Button(checkin_frame, text="Back", command=go_back,
-                            background="#FFFFFF", font=("Helvetica", 12))
-    back_button.grid(row=5, column=1, padx=10, pady=10, sticky=tk.W)
+    home_button = tk.Button(checkin_frame, text="Home",
+                            background="#FFFFFF", command=go_home, font=button_font)
+    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
 
 
 def go_home():

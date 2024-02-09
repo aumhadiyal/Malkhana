@@ -103,17 +103,17 @@ def checkouttocourt_page(root):
     }
 
     # Labels
-    tk.Label(checkout_frame, text="Barcode :", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="Barcode :", background="#fff1f1", font=("Helvetica", 12)).grid(
         row=0, column=0, **label_layout)
-    tk.Label(checkout_frame, text="FIR No:", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="FIR No:", background="#fff1f1", font=("Helvetica", 12)).grid(
         row=1, column=0, **label_layout)
-    tk.Label(checkout_frame, text="Seized Items:", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="Seized Items:", background="#fff1f1", font=("Helvetica", 12)).grid(
         row=2, column=0, **label_layout)
-    tk.Label(checkout_frame, text="Undertaking Officer :", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="Undertaking Officer :", background="#fff1f1", font=("Helvetica", 12)).grid(
         row=3, column=0, **label_layout)
-    tk.Label(checkout_frame, text="Checkout Date:", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="Checkout Date:",  background="#fff1f1", font=("Helvetica", 12)).grid(
         row=4, column=0, **label_layout)
-    tk.Label(checkout_frame, text="Checkout Time:", font=("Helvetica", 12)).grid(
+    tk.Label(checkout_frame, text="Checkout Time:", background="#fff1f1", font=("Helvetica", 12)).grid(
         row=5, column=0, **label_layout)
 
     # Entry fields

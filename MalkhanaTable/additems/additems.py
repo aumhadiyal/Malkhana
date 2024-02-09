@@ -31,27 +31,27 @@ def additems(prev_malkhana_frame):
 
     # Labels
     font_style = ('Helvetica', 12)
-    tk.Label(additems_frame, text="Barcode Number:", font=font_style).grid(
+    tk.Label(additems_frame, text="Barcode Number:", background="#fff1f1", font=font_style).grid(
         row=0, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="FIR Number:", font=font_style).grid(
+    tk.Label(additems_frame, text="FIR Number:", background="#fff1f1", font=font_style).grid(
         row=1, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Seized Items:", font=font_style).grid(
+    tk.Label(additems_frame, text="Seized Items:", background="#fff1f1", font=font_style).grid(
         row=2, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="IPC Section:", font=font_style).grid(
+    tk.Label(additems_frame, text="IPC Section:", background="#fff1f1", font=font_style).grid(
         row=3, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Location:", font=font_style).grid(
+    tk.Label(additems_frame, text="Crime Location:", background="#fff1f1", font=font_style).grid(
         row=4, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Date:", font=font_style).grid(
+    tk.Label(additems_frame, text="Crime Date:", background="#fff1f1", font=font_style).grid(
         row=5, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Time:", font=font_style).grid(
+    tk.Label(additems_frame, text="Crime Time:", background="#fff1f1", font=font_style).grid(
         row=6, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Witnesses:", font=font_style).grid(
+    tk.Label(additems_frame, text="Crime Witnesses:", background="#fff1f1", font=font_style).grid(
         row=7, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Inspector:", font=font_style).grid(
+    tk.Label(additems_frame, text="Crime Inspector:", background="#fff1f1", font=font_style).grid(
         row=8, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Where Kept:", font=font_style).grid(
+    tk.Label(additems_frame, text="Where Kept:", background="#fff1f1", font=font_style).grid(
         row=9, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Description of Item:", font=font_style).grid(
+    tk.Label(additems_frame, text="Description of Item:", background="#fff1f1", font=font_style).grid(
         row=10, column=0, padx=10, pady=10, sticky="w")
 
     # Entry Fields

@@ -11,15 +11,41 @@ import os
 import MalkhanaTable.additems.additems as ai
 import io
 import logger as lu
+from PIL import Image, ImageTk
+
 
 viewitems_frame = None
 
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def viewitems(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global viewitems_frame, tree
     viewitems_frame = tk.Frame(prev_malkhana_frame.master)
     viewitems_frame.master.title("View Items")
+
+
+     # Get screen width and height
+    screen_width = viewitems_frame.winfo_screenwidth()
+    screen_height = viewitems_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(viewitems_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # To occupy the whole screen
     viewitems_frame.pack(fill=tk.BOTH, expand=True)
@@ -120,7 +146,7 @@ def viewitems(prev_malkhana_frame):
     # Create a search entry and button
     search_var = tk.StringVar()
     search_entry = tk.Entry(
-        viewitems_frame, background="#FFFFFF", textvariable=search_var)
+        viewitems_frame, background="#D3D3D3", textvariable=search_var)
     search_entry.pack(pady=10)
 
     # Create a dropdown menu for selecting search field

@@ -1,6 +1,6 @@
 import datetime
 import tkinter as tk
-
+from PIL import Image,ImageTk
 from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutpage as cof
@@ -72,6 +72,16 @@ def checkouttocourt():
     taken_by_whom_entry.delete(0, tk.END)
     checkout_date_entry.set_date(None)  # Clear the date entry
 
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def checkouttocourt_page(root):
     root.destroy()
@@ -80,6 +90,18 @@ def checkouttocourt_page(root):
     checkout_frame = tk.Frame(root.master)
     checkout_frame.master.title("Checkout to Court")
     checkout_frame.pack(fill=tk.BOTH, expand=True)
+
+    screen_width = checkout_frame.winfo_screenwidth()
+    screen_height = checkout_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(checkout_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # Apply Radiance theme
     style = ThemedStyle(checkout_frame)

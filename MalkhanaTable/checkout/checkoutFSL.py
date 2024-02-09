@@ -1,5 +1,4 @@
 import tkinter as tk
-
 from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutpage as cof
@@ -12,13 +11,28 @@ from tkcalendar import DateEntry
 import datetime
 import logger as lu
 import login.login as login
+from PIL import Image, ImageTk
+
 checkout_frame = None
+
+
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom,
                        seized_items, fir_no, order_no):
     con = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = con.cursor()
+    
     cursor.execute(
         "UPDATE items SET item_status='FSL' where barcode = ?", (barcode,))
     con.commit()
@@ -52,6 +66,7 @@ def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom,
     lu.log_activity(login.current_user, activity)
 
 
+
 def checkout_destroyer():
     if checkout_frame is not None:
         checkout_frame.destroy()
@@ -80,6 +95,20 @@ def checkouttoFSL_page(root):
 
     style = ThemedStyle(checkout_frame)
     style.theme_use('radiance')
+
+    
+    screen_width = checkout_frame.winfo_screenwidth()
+    screen_height = checkout_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(checkout_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
 
     # Labels
     label_barcode = ttk.Label(

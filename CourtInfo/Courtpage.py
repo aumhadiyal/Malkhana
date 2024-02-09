@@ -5,9 +5,21 @@ from tkinter import ttk
 import home.Homepage as homepage
 import login.login as login
 import logger as lu
+from PIL import Image,ImageTk
 
 court_frame = None
 
+
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def view_court(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
@@ -16,6 +28,19 @@ def view_court(prev_malkhana_frame):
     court_frame = tk.Frame(prev_malkhana_frame.master)
     court_frame.master.title("Court Info")
     court_frame.pack(fill=tk.BOTH, expand=True)
+
+     # Get screen width and height
+    screen_width = court_frame.winfo_screenwidth()
+    screen_height = court_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(court_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     tree = ttk.Treeview(court_frame)
 

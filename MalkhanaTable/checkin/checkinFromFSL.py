@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from PIL import Image,ImageTk
 from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
@@ -40,7 +40,17 @@ def update_item_status(barcode, checkin_date, checkin_time,
     activity = "Item checked in from FSL barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
 
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
 
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
 def checkin():
     barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
@@ -58,6 +68,19 @@ def checkin_page(prev_checkin_page):
     fsL_checkin_destroyer()
     fsl_checkin_frame = tk.Frame(prev_checkin_page.master)
     fsl_checkin_frame.master.title("Checkin From FSL")
+
+     # Get screen width and height
+    screen_width = fsl_checkin_frame.winfo_screenwidth()
+    screen_height = fsl_checkin_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(fsl_checkin_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # Use pack for the fsl_checkin_frame
     fsl_checkin_frame.pack(fill=tk.BOTH, expand=True)

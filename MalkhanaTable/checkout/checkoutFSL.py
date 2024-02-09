@@ -124,8 +124,8 @@ def checkouttoFSL_page(root):
                              str(i).zfill(2) for i in range(24)], state='readonly', width=5)
     minute_menu = ttk.Combobox(checkout_frame, textvariable=minute_var, values=[
                                str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=6, column=1,  padx=10, pady=10, sticky=tk.W)
-    minute_menu.grid(row=6, column=2, padx=10, pady=10, sticky=tk.W)
+    hour_menu.grid(row=6,  column=1, padx=10, pady=10, sticky="w")
+    minute_menu.grid(row=6,  column=1, padx=10, pady=10, sticky="e")
 
     # Date field using tkcalendar
     checkout_date_entry = DateEntry(

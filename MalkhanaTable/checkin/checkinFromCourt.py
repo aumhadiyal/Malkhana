@@ -76,7 +76,7 @@ def checkin_page_2(root):
     label_order_details.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
 
     # Entry fields
-    barcode_entry = ttk.Entry(checkin_frame, font=("Helvetica", 12))
+    barcode_entry = ttk.Entry(checkin_frame, width=30, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
     barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
 
@@ -87,12 +87,12 @@ def checkin_page_2(root):
                              state='readonly', width=5)
     minute_menu = ttk.Combobox(checkin_frame, textvariable=minute_var, values=[str(i).zfill(2) for i in range(60)],
                                state='readonly', width=5)
-    hour_menu.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
-    minute_menu.grid(row=1, column=2, padx=1, pady=10, sticky=tk.W)
+    hour_menu.grid(row=1,  column=1, padx=10, pady=10, sticky="w")
+    minute_menu.grid(row=1,  column=1, padx=(10, 150), pady=10, sticky="e")
 
     # Date field using tkcalendar
     checkin_date_entry = DateEntry(
-        checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        checkin_frame, width=15, background='darkblue', foreground='white', borderwidth=2)
     # Use sticky=tk.W for left alignment
     checkin_date_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
 

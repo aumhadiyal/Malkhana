@@ -86,10 +86,12 @@ def checkin_page(prev_checkin_page):
     label_examiner_report.grid(row=5, column=0, padx=10, pady=10, sticky=tk.W)
 
     # Entry fields
-    barcode_entry = ttk.Entry(fsl_checkin_frame, font=("Helvetica", 12))
+    barcode_entry = ttk.Entry(
+        fsl_checkin_frame, width=30, font=("Helvetica", 12))
     # Use sticky=tk.W for left alignment
     barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
-    order_no_entry = ttk.Entry(fsl_checkin_frame, font=("Helvetica", 12))
+    order_no_entry = ttk.Entry(
+        fsl_checkin_frame, width=30, font=("Helvetica", 12))
     order_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
 
     hour_var = tk.StringVar(fsl_checkin_frame, value='00')
@@ -99,14 +101,12 @@ def checkin_page(prev_checkin_page):
                              str(i).zfill(2) for i in range(24)], state='readonly', width=5)
     minute_menu = ttk.Combobox(fsl_checkin_frame, textvariable=minute_var, values=[
                                str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=2, column=1, columnspan=2,
-                   padx=10, pady=10, sticky=tk.W)
-    minute_menu.grid(row=2, column=3, columnspan=2,
-                     padx=10, pady=10, sticky=tk.W)
+    hour_menu.grid(row=2,  column=1, padx=10, pady=10, sticky="w")
+    minute_menu.grid(row=2,  column=1, padx=(10, 150), pady=10, sticky="e")
 
     # Date field using tkcalendar
     checkin_date_entry = DateEntry(
-        fsl_checkin_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        fsl_checkin_frame, width=15, background='darkblue', foreground='white', borderwidth=2)
     # Use sticky=tk.W for left alignment
     checkin_date_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
 

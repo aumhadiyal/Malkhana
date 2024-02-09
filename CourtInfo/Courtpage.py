@@ -171,12 +171,12 @@ def court_destroyer():
 
 def go_back():
     court_destroyer()
-    homepage.open_homepage_r(court_frame)
+    homepage.open_homepage(court_frame)
 
 
 def go_home():
     court_destroyer()
-    homepage.open_homepage_r(court_frame)
+    homepage.open_homepage(court_frame)
 
 
 def logout_clicked():

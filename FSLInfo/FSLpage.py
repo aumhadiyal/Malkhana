@@ -228,12 +228,12 @@ def fsl_destroyer():
 
 def go_back():
     fsl_destroyer()
-    homepage.open_homepage_r(viewfsl_frame)
+    homepage.open_homepage(viewfsl_frame)
 
 
 def go_home():
     fsl_destroyer()
-    homepage.open_homepage_r(viewfsl_frame)
+    homepage.open_homepage(viewfsl_frame)
 
 
 def logoutclicked():

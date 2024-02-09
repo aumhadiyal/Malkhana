@@ -43,7 +43,7 @@ def mkpage(prev_homepage_frame):
 
 def go_back():
     malkhana_destroyer()
-    Homepage.open_homepage_r(malkhanapage_frame)
+    Homepage.open_homepage(malkhanapage_frame)
 
 
 def logoutclicked():

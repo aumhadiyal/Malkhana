@@ -3,7 +3,7 @@ import tkinter as tk
 
 from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
-import MalkhanaTable.checkout.checkoutpage as co
+import MalkhanaTable.checkout.checkoutpage as cof
 import MalkhanaTable.MalkhanaPage as m
 import Log.log as log
 from tkinter import ttk
@@ -81,78 +81,91 @@ def checkouttocourt_page(root):
     checkout_frame.master.title("Checkout to Court")
     checkout_frame.pack(fill=tk.BOTH, expand=True)
 
+    # Apply Radiance theme
     style = ThemedStyle(checkout_frame)
     style.theme_use('radiance')
 
-    # Labels
-    label_barcode = ttk.Label(
-        checkout_frame, background="#B9E6FF", text="Barcode :", font=("Helvetica", 12))
-    label_fir_no = ttk.Label(
-        checkout_frame, background="#B9E6FF", text="FIR No:", font=("Helvetica", 12))
-    label_item_name = ttk.Label(
-        checkout_frame, background="#B9E6FF", text="Seized Items:", font=("Helvetica", 12))
-    label_taken_by_whom = ttk.Label(
-        checkout_frame,  background="#B9E6FF", text="Undertaking Officer :", font=("Helvetica", 12))
-    label_checkout_date = ttk.Label(
-        checkout_frame, background="#B9E6FF", text="Checkout Date:", font=("Helvetica", 12))
-    label_checkout_time = ttk.Label(
-        checkout_frame, background="#B9E6FF", text="Checkout Time:", font=("Helvetica", 12))
+    # Define layout parameters
+    label_layout = {
+        "padx": 10,
+        "pady": 10,
+        "sticky": tk.W
+    }
+    entry_layout = {
+        "padx": 10,
+        "pady": 10,
+        "sticky": tk.W
+    }
+    button_layout = {
+        "padx": 10,
+        "pady": 10,
+        "sticky": "ew"
+    }
 
-    label_barcode.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-    label_fir_no.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-    label_item_name.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-    label_taken_by_whom.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkout_date.grid(row=4, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkout_time.grid(row=5, column=0, padx=5, pady=5, sticky=tk.W)
+    # Labels
+    tk.Label(checkout_frame, text="Barcode :", font=("Helvetica", 12)).grid(
+        row=0, column=0, **label_layout)
+    tk.Label(checkout_frame, text="FIR No:", font=("Helvetica", 12)).grid(
+        row=1, column=0, **label_layout)
+    tk.Label(checkout_frame, text="Seized Items:", font=("Helvetica", 12)).grid(
+        row=2, column=0, **label_layout)
+    tk.Label(checkout_frame, text="Undertaking Officer :", font=("Helvetica", 12)).grid(
+        row=3, column=0, **label_layout)
+    tk.Label(checkout_frame, text="Checkout Date:", font=("Helvetica", 12)).grid(
+        row=4, column=0, **label_layout)
+    tk.Label(checkout_frame, text="Checkout Time:", font=("Helvetica", 12)).grid(
+        row=5, column=0, **label_layout)
 
     # Entry fields
     barcode_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     fir_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     seized_items_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     taken_by_whom_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-    fir_no_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-    seized_items_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
-    taken_by_whom_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+    barcode_entry.grid(row=0, column=1, **entry_layout)
+    fir_no_entry.grid(row=1, column=1, **entry_layout)
+    seized_items_entry.grid(row=2, column=1, **entry_layout)
+    taken_by_whom_entry.grid(row=3, column=1, **entry_layout)
 
+    # Comboboxes for time
     hour_var = tk.StringVar(checkout_frame, value='00')
     minute_var = tk.StringVar(checkout_frame, value='00')
-
     hour_menu = ttk.Combobox(checkout_frame, textvariable=hour_var, values=[
                              str(i).zfill(2) for i in range(24)], state='readonly', width=5)
     minute_menu = ttk.Combobox(checkout_frame, textvariable=minute_var, values=[
                                str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=5, column=1, padx=5, pady=5, sticky=tk.W)
-    minute_menu.grid(row=5, column=2, padx=5, pady=5, sticky=tk.W)
+    hour_menu.grid(row=5, column=1, **entry_layout)
+    minute_menu.grid(row=5, column=2, **entry_layout)
 
     # Date field using tkcalendar
     checkout_date_entry = DateEntry(
         checkout_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
-    checkout_date_entry.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
+    checkout_date_entry.grid(row=4, column=1, **entry_layout)
 
     # Checkout button
     checkout_button = tk.Button(checkout_frame, text="Checkout to Court",
                                 background="#FFFFFF", command=checkouttocourt, font=("Helvetica", 12))
-    checkout_button.grid(row=6, column=0, columnspan=2, padx=5, pady=10)
+    checkout_button.grid(row=6, column=0, columnspan=4,
+                         **button_layout)
 
-    # Home and Back buttons
-    home_button = tk.Button(checkout_frame, text="Homepage",
-                            background="#FFFFFF", command=go_home, font=("Helvetica", 12))
-    home_button.grid(row=7, column=0, padx=10, pady=10, sticky=tk.E)
-
+    # Buttons for navigation
+    button_font = ('Helvetica', 12)
     back_button = tk.Button(checkout_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
-    back_button.grid(row=7, column=1, padx=10, pady=10, sticky=tk.W)
+                            background="#FFFFFF", command=go_back, font=button_font)
+    back_button.grid(row=0, column=30, **label_layout)
+
+    home_button = tk.Button(checkout_frame, text="Home",
+                            background="#FFFFFF", command=go_home, font=button_font)
+    home_button.grid(row=0, column=31, **label_layout)
 
 
 def go_back():
     checkout_destroyer()
-    m.mkpage(checkout_frame)
+    cof.COpage(checkout_frame)
 
 
 def go_home():
     checkout_destroyer()
-    Homepage.open_homepage_r(checkout_frame)
+    Homepage.open_homepage(checkout_frame)
 
 
 def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no):

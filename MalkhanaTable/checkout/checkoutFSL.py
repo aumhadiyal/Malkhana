@@ -83,27 +83,27 @@ def checkouttoFSL_page(root):
 
     # Labels
     label_barcode = ttk.Label(
-        checkout_frame, text="Barcode:",  background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Barcode:",   font=("Helvetica", 12))
     label_fir_no = ttk.Label(
-        checkout_frame, text="FIR No:", background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="FIR No:",  font=("Helvetica", 12))
     label_item_name = ttk.Label(
-        checkout_frame, text="Seized Items:",  background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Seized Items:",   font=("Helvetica", 12))
     label_taken_by_whom = ttk.Label(
-        checkout_frame, text="Undertaking Inspector:", background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Undertaking Inspector:",  font=("Helvetica", 12))
     label_checkout_date = ttk.Label(
-        checkout_frame, text="Checkout Date:", background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Checkout Date:",  font=("Helvetica", 12))
     label_checkout_time = ttk.Label(
-        checkout_frame, text="Checkout Time:",  background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Checkout Time:",   font=("Helvetica", 12))
     label_order_no = ttk.Label(
-        checkout_frame, text="Order No:", background="#B9E6FF", font=("Helvetica", 12))
+        checkout_frame, text="Order No:",  font=("Helvetica", 12))
 
-    label_barcode.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-    label_fir_no.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-    label_item_name.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-    label_taken_by_whom.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkout_date.grid(row=7, column=0, padx=5, pady=5, sticky=tk.W)
-    label_checkout_time.grid(row=6, column=0, padx=5, pady=5, sticky=tk.W)
-    label_order_no.grid(row=4, column=0, padx=5, pady=5, sticky=tk.W)
+    label_barcode.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+    label_fir_no.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
+    label_item_name.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+    label_taken_by_whom.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkout_date.grid(row=7, column=0, padx=10, pady=10, sticky=tk.W)
+    label_checkout_time.grid(row=6, column=0, padx=10, pady=10, sticky=tk.W)
+    label_order_no.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
 
     # Entry fields
     barcode_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
@@ -111,11 +111,11 @@ def checkouttoFSL_page(root):
     seized_items_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     taken_by_whom_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
     order_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    barcode_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-    fir_no_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-    seized_items_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
-    taken_by_whom_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
-    order_no_entry.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
+    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
+    fir_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
+    seized_items_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
+    taken_by_whom_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
+    order_no_entry.grid(row=4, column=1, padx=10, pady=10, sticky=tk.W)
 
     hour_var = tk.StringVar(checkout_frame, value='00')
     minute_var = tk.StringVar(checkout_frame, value='00')
@@ -124,13 +124,13 @@ def checkouttoFSL_page(root):
                              str(i).zfill(2) for i in range(24)], state='readonly', width=5)
     minute_menu = ttk.Combobox(checkout_frame, textvariable=minute_var, values=[
                                str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=6, column=1, padx=0, pady=5, sticky=tk.W)
-    minute_menu.grid(row=6, column=2, padx=0, pady=5, sticky=tk.W)
+    hour_menu.grid(row=6, column=1,  padx=10, pady=10, sticky=tk.W)
+    minute_menu.grid(row=6, column=2, padx=10, pady=10, sticky=tk.W)
 
     # Date field using tkcalendar
     checkout_date_entry = DateEntry(
         checkout_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
-    checkout_date_entry.grid(row=7, column=1, padx=5, pady=5, sticky=tk.W)
+    checkout_date_entry.grid(row=7, column=1, padx=10, pady=10, sticky=tk.W)
 
     # Checkout button
     checkout_button = tk.Button(checkout_frame, text="Checkout to FSL ",
@@ -149,12 +149,12 @@ def checkouttoFSL_page(root):
 
 def go_back():
     checkout_destroyer()
-    m.mkpage(checkout_frame)
+    cof.COpage(checkout_frame)
 
 
 def go_home():
     checkout_destroyer()
-    Homepage.open_homepage_r(checkout_frame)
+    Homepage.open_homepage(checkout_frame)
 
 
 def barcode_checker(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):

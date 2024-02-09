@@ -135,7 +135,7 @@ def checkin_page(prev_checkin_page):
 
 def go_home():
     fsL_checkin_destroyer()
-    Homepage.open_homepage_r(fsl_checkin_frame)
+    Homepage.open_homepage(fsl_checkin_frame)
 
 
 def go_back():

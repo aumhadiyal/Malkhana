@@ -8,11 +8,11 @@ import MalkhanaTable.MalkhanaPage as m
 CO_frame = None
 
 
-def COpage(prev_homepage_frame):
-    prev_homepage_frame.destroy()
+def COpage(prev_CO_frame):
+    prev_CO_frame.destroy()
     global CO_frame
     checkout_page_destroyer()
-    CO_frame = tk.Frame(prev_homepage_frame.master)
+    CO_frame = tk.Frame(prev_CO_frame.master)
     CO_frame.master.title("Check Out ")
     CO_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -20,28 +20,16 @@ def COpage(prev_homepage_frame):
     style = ThemedStyle(CO_frame)
     style.theme_use('radiance')
 
-    # Create container frame
-    container_frame = tk.Frame(
-        CO_frame, background=style.lookup('TFrame', 'background'))
-    container_frame.pack(padx=20, pady=20)
+    buttons = [
+        ("Checkout to FSL", fsl),
+        ("Checkout to Court", court),
+        ("Home", go_home),
+        ("Back", go_back)]
 
-    # Checkout buttons
-    checkoutFSL = tk.Button(container_frame, text="Checkout to FSL",
-                            command=fsl, font=("Helvetica", 15), width=15, height=1)
-    checkoutFSL.grid(row=0, column=0, pady=20)
-
-    checkoutCourt = tk.Button(container_frame, text="Checkout to Court",
-                              command=court, font=("Helvetica", 15), width=15, height=1)
-    checkoutCourt.grid(row=1, column=0, pady=20)
-
-    # Navigation buttons
-    Home = tk.Button(container_frame, text="Home", command=go_home,
-                     font=("Helvetica", 15), width=10, height=1)
-    Home.grid(row=2, column=0, padx=10, pady=[20,])
-
-    back_button = tk.Button(container_frame, text="Back", command=go_back,
-                            font=("Helvetica", 15), width=10, height=1)
-    back_button.grid(row=3, column=0, padx=10, pady=10)
+    for text, command in buttons:
+        button = tk.Button(CO_frame, text=text,
+                           background=style.lookup('TButton', 'background'), command=command, font=("Helvetica", 15), width=15, height=1)
+        button.pack(pady=10)
 
     CO_frame.mainloop()
 
@@ -53,7 +41,7 @@ def go_back():
 
 def go_home():
     checkout_page_destroyer()
-    Homepage.open_homepage_r(CO_frame)
+    Homepage.open_homepage(CO_frame)
 
 
 def fsl():

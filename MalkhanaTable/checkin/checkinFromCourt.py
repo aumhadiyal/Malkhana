@@ -118,7 +118,7 @@ def checkin_page_2(root):
 
 def go_home():
     checkin_destroyer()
-    Homepage.open_homepage_r(checkin_frame)
+    Homepage.open_homepage(checkin_frame)
 
 
 def go_back():

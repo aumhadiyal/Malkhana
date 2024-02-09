@@ -186,7 +186,7 @@ def viewitems_destroyer():
 
 def go_home():
     viewitems_destroyer()
-    homepage.open_homepage_r(viewitems_frame)
+    homepage.open_homepage(viewitems_frame)
 
 
 # def logoutclicked():

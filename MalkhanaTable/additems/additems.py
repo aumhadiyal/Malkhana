@@ -254,7 +254,7 @@ def go_back():
 
 def go_home():
     additems_destroyer()
-    Homepage.open_homepage_r(additems_frame)
+    Homepage.open_homepage(additems_frame)
 
 
 def logoutclicked():

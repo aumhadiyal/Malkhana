@@ -24,19 +24,19 @@ def CIpage(prev_homepage_frame):
     button_font = ('Helvetica', 15)
 
     checkinFSL = tk.Button(CI_frame, text="Checkin From FSL",
-                           background="#FFFFFF", command=fsl, font=button_font, height=1, width=15)
+                           background="#FFFFFF", command=fsl, font=button_font, height=1, width=18)
     checkinFSL.pack(pady=20)
 
     checkinCourt = tk.Button(CI_frame, text="Checkin From Court",
-                             background="#FFFFFF", command=court, font=button_font, height=1, width=15)
+                             background="#FFFFFF", command=court, font=button_font, height=1, width=18)
     checkinCourt.pack(pady=20)
 
     Home = tk.Button(CI_frame, text="Home", command=go_home,
-                     background="#FFFFFF", font=button_font, height=1, width=10)
+                     background="#FFFFFF", font=button_font, height=1, width=13)
     Home.pack(padx=10, pady=10)
 
     back_button = tk.Button(CI_frame, text="Back", command=go_back,
-                            background="#FFFFFF", font=button_font, height=1, width=10)
+                            background="#FFFFFF", font=button_font, height=1, width=13)
     back_button.pack(padx=10, pady=10)
 
     CI_frame.mainloop()
@@ -49,7 +49,7 @@ def go_back():
 
 def go_home():
     checkin_page_destroyer()
-    Homepage.open_homepage_r(CI_frame)
+    Homepage.open_homepage(CI_frame)
 
 
 def fsl():

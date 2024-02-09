@@ -8,8 +8,21 @@ import Log.log as l
 import login.login as lu
 import logger
 import print
+from PIL import Image, ImageTk
 
 homepage_frame = None
+
+
+def set_custom_theme(root):
+    # Load and display background image
+    bg_image = Image.open("bg.jpeg")
+    # Resize the image to match the window size
+    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
+
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    bg_label = tk.Label(root, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def open_homepage(prev_login_frame):
@@ -20,89 +33,24 @@ def open_homepage(prev_login_frame):
     homepage_frame = tk.Frame(prev_login_frame.master)
     homepage_frame.pack(fill=tk.BOTH, expand=True)
 
+    # Get screen width and height
+    screen_width = homepage_frame.winfo_screenwidth()
+    screen_height = homepage_frame.winfo_screenheight()
+
+    # Load and resize background image
+    bg_image = Image.open("bg.jpeg")
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    bg_label = tk.Label(homepage_frame, image=bg_photo)
+    bg_label.image = bg_photo
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
     # Apply Radiance theme
     style = ThemedStyle(homepage_frame)
     style.theme_use('radiance')
 
-    # table_button = tk.Button(homepage_frame, text="Malkhana",
-    #                          command=clicked, font=("Helvetica", 15), width=10, height=1)
-    # table_button.grid(row=0, column=0, pady=25, padx=75)
-
-    # FSL_button = tk.Button(homepage_frame, text="FSL Info",
-    #                        command=fsl, font=("Helvetica", 15), width=10, height=1)
-    # FSL_button.grid(row=1, column=0, pady=25, padx=75)
-
-    # Court_button = tk.Button(homepage_frame, text="Court Info",
-    #                          command=court, font=("Helvetica", 15), width=10, height=1)
-    # Court_button.grid(row=2, column=0, pady=25, padx=75)
-
-    # log_button = tk.Button(homepage_frame, text="Logs",
-    #                        command=log, font=("Helvetica", 15), width=10, height=1)
-    # log_button.grid(row=3, pady=25, padx=75)
-
-    # print_button = tk.Button(homepage_frame, text="Print", command=printDetails,
-    #                          font=("Helvetica", 15), width=10, height=1)
-    # print_button.grid(row=4, pady=25, padx=75)
-
-    # logout = tk.Button(homepage_frame, text="Log Out", command=logoutclicked,
-    #                    font=("Helvetica", 15), width=10, height=1)
-    # logout.grid(row=5, pady=25, padx=75)
-
     homepage_frame.master.title("HomePage")
-    buttons = [
-        ("Malkhana Info", clicked),
-        ("FSL Info", fsl),
-        ("Court Info", court),
-        ("Logs", log),
-        ("Print", printDetails),
-        ("Log Out", logoutclicked),
-    ]
-
-    for text, command in buttons:
-        button = tk.Button(homepage_frame, text=text,
-                           background=style.lookup('TButton', 'background'), command=command, font=("Helvetica", 15), width=15, height=1)
-        button.pack(pady=10)
-
-    homepage_frame.mainloop()
-
-
-def open_homepage_r(return_frame):
-    return_frame.destroy()
-    global homepage_frame
-
-    homepage_destroyer()
-
-    homepage_frame = tk.Frame(return_frame.master)
-    homepage_frame.pack(fill=tk.BOTH, expand=True)
-    homepage_frame.master.title("HomePage")
-    # Apply Radiance theme
-    style = ThemedStyle(homepage_frame)
-    style.theme_use('radiance')
-
-    # table_button = tk.Button(homepage_frame, text="Malkhana",
-    #                          command=clicked, font=("Helvetica", 15), width=10, height=1)
-    # table_button.grid(row=0, column=5, pady=25, padx=75)
-
-    # FSL_button = tk.Button(homepage_frame, text="FSL Info",
-    #                        command=fsl, font=("Helvetica", 15), width=10, height=1)
-    # FSL_button.grid(row=1, column=5, pady=25, padx=75)
-
-    # Court_button = tk.Button(homepage_frame, text="Court Info",
-    #                          command=court, font=("Helvetica", 15), width=10, height=1)
-    # Court_button.grid(row=2, column=5, pady=25, padx=75)
-
-    # log_button = tk.Button(homepage_frame, text="Logs",
-    #                        command=log, font=("Helvetica", 15), width=10, height=1)
-    # log_button.grid(row=3, pady=25, padx=75)
-
-    # print_button = tk.Button(homepage_frame, text="Print", command=printDetails,
-    #                          font=("Helvetica", 15), width=10, height=1)
-    # print_button.grid(row=4, pady=25, padx=75)
-
-    # logout = tk.Button(homepage_frame, text="Log Out", command=logoutclicked,
-    #                    font=("Helvetica", 15), width=10, height=1)
-    # logout.grid(row=5, pady=25, padx=75)
-
     buttons = [
         ("Malkhana Info", clicked),
         ("FSL Info", fsl),

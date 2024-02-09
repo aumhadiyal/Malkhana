@@ -105,7 +105,7 @@ def search_logs_and_display(search_barcode, logs_tree):
 
 def go_home():
     CL_destroyer()
-    Homepage.open_homepage_r(CL_frame)
+    Homepage.open_homepage(CL_frame)
 
 
 def CL_destroyer():

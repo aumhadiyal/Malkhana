@@ -5,7 +5,7 @@ from tkinter import ttk
 import home.Homepage as homepage
 import login.login as login
 import logger as lu
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 
 court_frame = None
 
@@ -21,6 +21,7 @@ def set_custom_theme(root):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+
 def view_court(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global court_frame
@@ -29,7 +30,7 @@ def view_court(prev_malkhana_frame):
     court_frame.master.title("Court Info")
     court_frame.pack(fill=tk.BOTH, expand=True)
 
-     # Get screen width and height
+    # Get screen width and height
     screen_width = court_frame.winfo_screenwidth()
     screen_height = court_frame.winfo_screenheight()
 
@@ -114,7 +115,8 @@ def view_court(prev_malkhana_frame):
     logout.pack(padx=12, pady=10)
 
     search_var = tk.StringVar()
-    search_entry = tk.Entry(court_frame, textvariable=search_var)
+    search_entry = tk.Entry(
+        court_frame, textvariable=search_var, background="#d3d3d3")
     search_entry.pack(pady=5)
 
     search_field_var = tk.StringVar(value="Barcode")

@@ -77,7 +77,7 @@ def create_logs_page(prev_homepage_frame):
     search_frame.pack(pady=10, anchor=tk.S)  # Align to the bottom of CL_frame
 
     barcode_search_label = ttk.Label(
-        search_frame, background="#B9E6FF", text="Search by Barcode: ", font=("Helvetica", 12))
+        search_frame, text="Search by Barcode: ", font=("Helvetica", 12))
     barcode_search_label.pack(side=tk.LEFT)
 
     barcode_search_entry = ttk.Entry(

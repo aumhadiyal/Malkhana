@@ -7,9 +7,8 @@ import home.Homepage as homepage
 import MalkhanaTable.MalkhanaPage as m
 import login.login as login
 import logger as lu
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 viewfsl_frame = None
-
 
 
 def set_custom_theme(root):
@@ -23,6 +22,7 @@ def set_custom_theme(root):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+
 def viewfsl(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
     global viewfsl_frame
@@ -31,7 +31,7 @@ def viewfsl(prev_malkhana_frame):
     viewfsl_frame.master.title("FSL Info")
     viewfsl_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
 
-         # Get screen width and height
+    # Get screen width and height
     screen_width = viewfsl_frame.winfo_screenwidth()
     screen_height = viewfsl_frame.winfo_screenheight()
 
@@ -138,7 +138,8 @@ def viewfsl(prev_malkhana_frame):
 
     # Create a search entry and button
     search_var = tk.StringVar()
-    search_entry = tk.Entry(viewfsl_frame, textvariable=search_var)
+    search_entry = tk.Entry(
+        viewfsl_frame, textvariable=search_var, background="#d3d3d3", )
     search_entry.pack(pady=5)
 
     # Create a dropdown menu for selecting search field

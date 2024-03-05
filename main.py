@@ -24,7 +24,7 @@ def main():
     root.state('zoomed')
     root.title("Main Window")
 
-    # Apply the custom theme with background image
+    # Apply the custom theme with background imagez
     set_custom_theme(root)
 
     # Create a ThemedStyle instance for the root window

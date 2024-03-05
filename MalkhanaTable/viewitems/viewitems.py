@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
@@ -30,11 +31,9 @@ def viewitems(prev_malkhana_frame):
     # Create a Treeview widget to display the data in a tabular format
     tree = ttk.Treeview(viewitems_frame)
     x_scrollbar = ttk.Scrollbar(tree, orient=tk.HORIZONTAL, command=tree.xview)
-    y_scrollbar = ttk.Scrollbar(tree, orient=tk.VERTICAL, command=tree.yview)
 
     # Configure the treeview to use the scrollbars
-    tree.configure(xscrollcommand=x_scrollbar.set,
-                   yscrollcommand=y_scrollbar.set)
+    tree.configure(xscrollcommand=x_scrollbar.set)
 
     # Define columns
     tree["columns"] = (
@@ -55,18 +54,29 @@ def viewitems(prev_malkhana_frame):
 
     # Format columns
     tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
-    tree.column("Barcode", anchor=tk.W, width=80)
-    tree.column("FIR Number", anchor=tk.W, width=100)
-    tree.column("Seized Items", anchor=tk.W, width=150)
-    tree.column("IPC Section", anchor=tk.W, width=100)
-    tree.column("Crime Location", anchor=tk.W, width=150)
-    tree.column("Crime Date", anchor=tk.W, width=60)
-    tree.column("Crime Time", anchor=tk.W, width=60)
-    tree.column("Crime Witness", anchor=tk.W, width=150)
-    tree.column("Crime Inspector", anchor=tk.W, width=150)
-    tree.column("Item Status", anchor=tk.W, width=100)
-    tree.column("Where Kept", anchor=tk.W, width=150)
-    tree.column("Item Description", anchor=tk.W, width=200)
+    tree.column("Barcode", anchor=tk.W, width=80, stretch=tk.NO, minwidth=80)
+    tree.column("FIR Number", anchor=tk.W,
+                stretch=tk.NO, width=100)
+    tree.column("Seized Items", anchor=tk.W,
+                stretch=tk.NO, width=200)
+    tree.column("IPC Section", anchor=tk.W,
+                stretch=tk.NO, width=150)
+    tree.column("Crime Location", anchor=tk.W,
+                stretch=tk.NO, width=200)
+    tree.column("Crime Date", anchor=tk.W,
+                stretch=tk.NO, width=120)
+    tree.column("Crime Time", anchor=tk.W,
+                stretch=tk.NO, width=120)
+    tree.column("Crime Witness", anchor=tk.W,
+                stretch=tk.NO, width=200)
+    tree.column("Crime Inspector", anchor=tk.W,
+                stretch=tk.NO, width=150)
+    tree.column("Item Status", anchor=tk.W,
+                stretch=tk.NO, width=100)
+    tree.column("Where Kept", anchor=tk.W,
+                stretch=tk.NO, width=150)
+    tree.column("Item Description", anchor=tk.W,
+                stretch=tk.NO, width=700)
 
     # Create headings
     tree.heading("#0", text="", anchor=tk.W)
@@ -107,11 +117,83 @@ def viewitems(prev_malkhana_frame):
         # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
-    tree.pack(fill=tk.BOTH, expand=True)
+    # Get the height of the screen
+    screen_height = prev_malkhana_frame.master.winfo_screenheight()
+
+    # Set the height of the treeview to half of the screen height
+    treeview_height = screen_height // 4.5
+
+    # Pack the treeview with the specified height and other configurations
+    tree.pack(fill=tk.BOTH, expand=True,
+              side=tk.TOP, pady=(0, treeview_height))
+
     x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------
+
+    current_page = 1
+    entries_per_page = 30
+    total_entries = 0
+    data = []
+
+    current_page_label = tk.Label(viewitems_frame, text="Page: 1")
+    current_page_label.pack(side=tk.BOTTOM)
+
+    total_pages_label = tk.Label(viewitems_frame, text="")
+    total_pages_label.pack(side=tk.BOTTOM)
+
+    def update_treeview(page_num):
+        nonlocal current_page
+        current_page = page_num
+
+        total_pages = math.ceil(total_entries / entries_per_page)
+        current_page_label.config(text=f"Page: {current_page}/{total_pages}")
+        tree.delete(*tree.get_children())
+        start_idx = (current_page - 1) * entries_per_page
+        end_idx = start_idx + entries_per_page
+        for row in data[start_idx:end_idx]:
+            tree.insert("", tk.END, values=row)
+
+    def show_all():
+        nonlocal total_entries, data
+        tree.delete(*tree.get_children())
+        try:
+            conn = sqlite3.connect("databases/items_in_malkhana.db")
+            cursor = conn.cursor()
+            cursor.execute('''SELECT * FROM items ORDER BY entry_time DESC''')
+            data = cursor.fetchall()
+            total_entries = len(data)
+            update_treeview(current_page)
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
+
+    show_all()
+
+    def go_to_previous_page():
+        if current_page > 1:
+            update_treeview(current_page - 1)
+
+    def go_to_next_page():
+        total_pages = math.ceil(total_entries / entries_per_page)
+        if current_page < total_pages:
+            update_treeview(current_page + 1)
+
+    # Pagination buttons
+    previous_button = tk.Button(
+        viewitems_frame, text="Previous", command=go_to_previous_page)
+    previous_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    next_button = tk.Button(
+        viewitems_frame, text="Next", command=go_to_next_page)
+    next_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
 
     # Function to apply the selected filters
+
     def apply_filters():
         selected_columns = []
         for column, var in checkbox_vars.items():
@@ -163,9 +245,12 @@ def viewitems(prev_malkhana_frame):
     search_button.pack(side=tk.LEFT, padx=5, pady=5)
 
     show_all_btn = tk.Button(search_frame, text="Show All", background="#FFFFFF",
-                             command=lambda: show_all(tree), font=("Helvetica", 12))
+                             command=show_all, font=("Helvetica", 12))
     show_all_btn.pack(side=tk.LEFT, padx=5, pady=5)
 
+    go_back_button = tk.Button(search_frame, background="#FFFFFF",
+                               text="Go Back", command=go_back, font=("Helvetica", 12))
+    go_back_button.pack(side=tk.RIGHT, padx=[500, 20], pady=5)
     # Attachments Button
     view_attachment_button = tk.Button(search_frame, background="#FFFFFF",
                                        text="View Attachment", command=view_attachment, font=("Helvetica", 12))
@@ -174,7 +259,6 @@ def viewitems(prev_malkhana_frame):
     print_details_button = tk.Button(search_frame, background="#FFFFFF",
                                      text="Print Item Details", command=print_item, font=("Helvetica", 12))
     print_details_button.pack(side=tk.RIGHT, padx=5)
-# Function definitions for view_attachment, logoutclicked, search_items, show_all, and go_back go here
 
 
 def view_attachment():
@@ -231,29 +315,22 @@ def go_home():
     homepage.open_homepage(viewitems_frame)
 
 
-# def logoutclicked():
-#     activity = "LOG-OUT"
-#     lu.log_activity(login.current_user, activity)
-#     viewitems_destroyer()
-#     login.initloginpage(viewitems_frame)
+# def show_all(tree):
+#     for item in tree.get_children():
+#         tree.delete(item)
+#     try:
+#         conn = sqlite3.connect("databases/items_in_malkhana.db")
+#         cursor = conn.cursor()
+#         cursor.execute('''SELECT * FROM items ORDER BY entry_time DESC''')
+#         for row in cursor.fetchall():
+#             tree.insert("", tk.END, values=row)
 
-
-def show_all(tree):
-    for item in tree.get_children():
-        tree.delete(item)
-    try:
-        conn = sqlite3.connect("databases/items_in_malkhana.db")
-        cursor = conn.cursor()
-        cursor.execute('''SELECT * FROM items ORDER BY entry_time DESC''')
-        for row in cursor.fetchall():
-            tree.insert("", tk.END, values=row)
-
-        # Commit the changes
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        # Display error message if there's an issue with the database
-        tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
+#         # Commit the changes
+#         conn.commit()
+#         conn.close()
+#     except Exception as e:
+#         # Display error message if there's an issue with the database
+#         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
 def search_items(tree, search_field, search_text):
@@ -263,7 +340,7 @@ def search_items(tree, search_field, search_text):
 
     # Convert the search_field back to the original column name (in English)
 
-    # search_field = convert_to_english(search_field)
+    search_field = convert_to_column(search_field)
 
     # Add data to the treeview from the database based on the search criteria
     try:
@@ -289,20 +366,22 @@ def search_items(tree, search_field, search_text):
 # Helper function to convert Gujarati column names to English
 
 
-def convert_to_english(column_name_gujarati):
+def convert_to_column(field_name):
     # Replace this with the appropriate mapping from Gujarati to English column names
-    gujarati_to_english = {
-        "બારકોડ": "barcode",
-        "FIR નંબર": "fir_number",
-        "વસ્તુનું નામ": "item_name",
-        "IPC કલમ": "ipc_section",
-        "અપરાધ સ્થળ": "crime_scene",
-        "અપરાધ તારીખ": "crime_date",
-        "અપરાધ સમય": "crime_time",
-        "અપરાધ સાક્ષીઓ": "crime_witnesses",
-        "અપરાધ નિરીક્ષક": "crime_inspector",
-        "વસ્તુનું અવસ્થા": "item_status",
-        "ક્યાં રાખી છે": "where_its_kept"
+    columnname = {
+        "Barcode": "barcode",
+        "FIR Number": "fir_no",
+        "Seized Items": "seized_items",
+        "IPC Section": "ipc_section",
+        "Crime Location": "crime_location",
+        "Crime Date": "crime_date",
+        "Crime Time": "crime_time",
+        "Crime Witness": "crime_witness",
+        "Crime Inspector": "crime_inspector",
+        "Item Status": "item_status",
+        "Where Kept": "where_kept",
+        "Item Description": "description_of_items"
+
     }
 
-    return gujarati_to_english.get(column_name_gujarati, column_name_gujarati)
+    return columnname.get(field_name, field_name)

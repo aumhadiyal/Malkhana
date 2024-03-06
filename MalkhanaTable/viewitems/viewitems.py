@@ -25,6 +25,10 @@ def viewitems(prev_malkhana_frame):
     viewitems_frame = tk.Frame(prev_malkhana_frame.master)
     viewitems_frame.master.title("View Items")
 
+    view_items_label = tk.Label(
+        viewitems_frame, text="View Items", background="#FFFFFF", font=('Helvetica', 28), width=prev_malkhana_frame.master.winfo_screenwidth())
+    view_items_label.pack()
+
     # To occupy the whole screen
     viewitems_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -121,7 +125,7 @@ def viewitems(prev_malkhana_frame):
     screen_height = prev_malkhana_frame.master.winfo_screenheight()
 
     # Set the height of the treeview to half of the screen height
-    treeview_height = screen_height // 4.5
+    treeview_height = screen_height // 90
 
     # Pack the treeview with the specified height and other configurations
     tree.pack(fill=tk.BOTH, expand=True,
@@ -133,7 +137,7 @@ def viewitems(prev_malkhana_frame):
 # --------------------------------------------------------------------------------------------------------------------------------------
 
     current_page = 1
-    entries_per_page = 30
+    entries_per_page = 40
     total_entries = 0
     data = []
 
@@ -180,16 +184,6 @@ def viewitems(prev_malkhana_frame):
         total_pages = math.ceil(total_entries / entries_per_page)
         if current_page < total_pages:
             update_treeview(current_page + 1)
-
-    # Pagination buttons
-    previous_button = tk.Button(
-        viewitems_frame, text="Previous", command=go_to_previous_page)
-    previous_button.pack(side=tk.LEFT, padx=5, pady=5)
-
-    next_button = tk.Button(
-        viewitems_frame, text="Next", command=go_to_next_page)
-    next_button.pack(side=tk.LEFT, padx=5, pady=5)
-
 # --------------------------------------------------------------------------------------------------------------------------------------------
 
     # Function to apply the selected filters
@@ -222,43 +216,58 @@ def viewitems(prev_malkhana_frame):
 
     # Search and filter row
     search_frame = tk.Frame(viewitems_frame)
-    search_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
+    search_frame.pack(side=tk.BOTTOM, fill=tk.X)
+    # Labels
+    search_label = tk.Label(search_frame, text="Search Field:",
+                            background="#FFFFFF", font=("Helvetica", 13))
+    search_label.grid(row=1, column=0, padx=5, pady=5)
 
-    search_label = tk.Label(search_frame, text="Search Field:")
-    search_label.pack(side=tk.LEFT)
-
+    # Combobox for selecting search field
     search_field_var = tk.StringVar(value="Barcode")
-    search_field_menu = ttk.Combobox(
-        search_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
-    search_field_menu.pack(side=tk.LEFT, padx=5, pady=5)
+    search_field_menu = ttk.Combobox(search_frame, textvariable=search_field_var,
+                                     values=tree["columns"], background="#FFFFFF", state='readonly', font=("Helvetica", 13))
+    search_field_menu.grid(row=1, column=1, padx=5, pady=5)
 
-    search_entry = tk.Entry(
-        search_frame, background="#D3D3D3", textvariable=tk.StringVar())
-    search_entry.pack(side=tk.LEFT, padx=5, pady=5)
+    # Entry for search input
+    search_entry = tk.Entry(search_frame, background="#D3D3D3",
+                            textvariable=tk.StringVar(), font=("Helvetica", 13))
+    search_entry.grid(row=1, column=2, padx=5, pady=5)
 
-    select_filter_button = tk.Button(
-        search_frame, text="Select Filter", command=create_filter_window)
-    select_filter_button.pack(side=tk.LEFT, padx=5, pady=5)
-
+    # Buttons for actions
     search_button = tk.Button(search_frame, text="Search", background="#FFFFFF", command=lambda: search_items(
-        tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 12))
-    search_button.pack(side=tk.LEFT, padx=5, pady=5)
+        tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 13))
+    search_button.grid(row=1, column=3, padx=15, pady=5)
 
-    show_all_btn = tk.Button(search_frame, text="Show All", background="#FFFFFF",
-                             command=show_all, font=("Helvetica", 12))
-    show_all_btn.pack(side=tk.LEFT, padx=5, pady=5)
+    select_filter_button = tk.Button(search_frame, text="Select Filter",
+                                     command=create_filter_window, background="#FFFFFF", font=("Helvetica", 13))
+    select_filter_button.grid(row=2, column=2, padx=(0, 100), pady=5)
 
-    go_back_button = tk.Button(search_frame, background="#FFFFFF",
-                               text="Go Back", command=go_back, font=("Helvetica", 12))
-    go_back_button.pack(side=tk.RIGHT, padx=[500, 20], pady=5)
-    # Attachments Button
+    show_all_btn = tk.Button(search_frame, text="Show All",
+                             background="#FFFFFF", command=show_all, font=("Helvetica", 13))
+    show_all_btn.grid(row=2, column=2, padx=(100, 0), pady=5)
+
     view_attachment_button = tk.Button(search_frame, background="#FFFFFF",
-                                       text="View Attachment", command=view_attachment, font=("Helvetica", 12))
-    view_attachment_button.pack(side=tk.RIGHT, padx=5)
+                                       text="View Attachment", command=view_attachment, font=("Helvetica", 13))
+    view_attachment_button.grid(row=1, column=6, padx=15, pady=5)
 
     print_details_button = tk.Button(search_frame, background="#FFFFFF",
-                                     text="Print Item Details", command=print_item, font=("Helvetica", 12))
-    print_details_button.pack(side=tk.RIGHT, padx=5)
+                                     text="Print Item Details", command=print_item, font=("Helvetica", 13))
+    print_details_button.grid(row=1, column=7, padx=15, pady=5)
+
+    # Previous Button
+    previous_button = tk.Button(search_frame, text="Previous", command=go_to_previous_page,
+                                background="#FFFFFF", font=("Helvetica", 13), width=12)
+    previous_button.grid(row=1, column=8, padx=(180, 0), pady=5)
+
+    # Next Button
+    next_button = tk.Button(search_frame, text="Next", command=go_to_next_page,
+                            background="#FFFFFF", font=("Helvetica", 13), width=12)
+    next_button.grid(row=1, column=9, padx=10, pady=5)
+
+    # Go Back Button
+    go_back_button = tk.Button(search_frame, background="#FFFFFF",
+                               text="Go Back", command=go_back, font=("Helvetica", 13), width=12)
+    go_back_button.grid(row=1, column=10, pady=5)
 
 
 def view_attachment():

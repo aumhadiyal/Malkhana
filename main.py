@@ -1,10 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
 from PIL import Image, ImageTk
-import login.logindb as ll
-import login.login as login
 from ttkthemes import ThemedStyle
-import MalkhanaTable.viewitems.viewitems as ma
+import login.login as l
 
 
 def set_custom_theme(root):
@@ -24,7 +21,7 @@ def main():
     root.state('zoomed')
     root.title("Main Window")
 
-    # Apply the custom theme with background imagez
+    # Apply the custom theme with background image to the root window
     set_custom_theme(root)
 
     # Create a ThemedStyle instance for the root window
@@ -35,9 +32,8 @@ def main():
 
     main_frame = tk.Frame(root)
     main_frame.pack()
-
-    # login.initloginpage(main_frame)
-    ma.viewitems(main_frame)
+    # Call the function from the print module
+    l.initloginpage(main_frame)
 
     root.mainloop()
 

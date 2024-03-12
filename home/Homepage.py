@@ -26,7 +26,7 @@ def open_homepage(prev_login_frame):
     screen_height = homepage_frame.winfo_screenheight()
 
     # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
+    bg_image = Image.open("bg2.jpeg")
     bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
     bg_photo = ImageTk.PhotoImage(bg_image)
 

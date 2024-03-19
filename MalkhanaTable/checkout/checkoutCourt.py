@@ -165,18 +165,18 @@ def checkouttocourt_page(root):
 
     # Checkout button
     checkout_button = tk.Button(checkout_frame, text="Checkout to Court",
-                                background="#FFFFFF", command=checkouttocourt, font=("Helvetica", 12))
+                                background="#9a9a9a", command=checkouttocourt, font=("Helvetica", 12))
     checkout_button.grid(row=6, column=0, columnspan=4,
                          **button_layout)
 
     # Buttons for navigation
     button_font = ('Helvetica', 12)
     back_button = tk.Button(checkout_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=button_font)
+                            background="#9a9a9a", command=go_back, font=button_font)
     back_button.grid(row=0, column=30, **label_layout)
 
     home_button = tk.Button(checkout_frame, text="Home",
-                            background="#FFFFFF", command=go_home, font=button_font)
+                            background="#9a9a9a", command=go_home, font=button_font)
     home_button.grid(row=0, column=31, **label_layout)
 
 

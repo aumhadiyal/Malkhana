@@ -30,6 +30,9 @@ def main():
     # Set the theme to 'radiance'
     style.set_theme('radiance')
 
+    style.configure('TButton', background='#9a9a9a')  # Change 'blue' to your desired color
+
+
     main_frame = tk.Frame(root)
     main_frame.pack()
     # Call the function from the print module

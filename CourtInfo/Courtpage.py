@@ -107,10 +107,10 @@ def view_court(prev_malkhana_frame):
     y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     back_button = tk.Button(court_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
+                            background="#9a9a9a", command=go_back, font=("Helvetica", 12))
     back_button.pack(pady=10)
 
-    logout = tk.Button(court_frame, text="Log Out", background="#FFFFFF",
+    logout = tk.Button(court_frame, text="Log Out", background="#9a9a9a",
                        command=logout_clicked, font=("Helvetica", 12))
     logout.pack(padx=12, pady=10)
 
@@ -124,11 +124,11 @@ def view_court(prev_malkhana_frame):
         court_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
     search_field_menu.pack()
 
-    search_button = tk.Button(court_frame, text="Search", background="#FFFFFF", command=lambda: search_court(
+    search_button = tk.Button(court_frame, text="Search", background="#9a9a9a", command=lambda: search_court(
         tree, search_field_var.get(), search_var.get()), font=("Helvetica", 12))
     search_button.pack()
 
-    show_all_btn = tk.Button(court_frame, text="Show All",  background="#FFFFFF",
+    show_all_btn = tk.Button(court_frame, text="Show All",  background="#9a9a9a",
                              command=lambda: show_all_court(tree), font=("Helvetica", 12))
     show_all_btn.pack()
 

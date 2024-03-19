@@ -84,11 +84,11 @@ def create_logs_page(prev_homepage_frame):
         search_frame,  background="#B9E6FF", width=20, font=("Helvetica", 12))
     barcode_search_entry.pack(side=tk.LEFT, padx=5)
 
-    search_button = tk.Button(search_frame, background="#FFFFFF", text="Search", command=lambda: search_logs_and_display(
+    search_button = tk.Button(search_frame, background="#9a9a9a", text="Search", command=lambda: search_logs_and_display(
         barcode_search_entry.get(), logs_tree), font=("Helvetica", 12))
     search_button.pack(side=tk.LEFT)
 
-    Home = tk.Button(CL_frame, text="Home",  background="#FFFFFF",
+    Home = tk.Button(CL_frame, text="Home",  background="#9a9a9a",
                      command=go_home, font=("Helvetica", 12))
     Home.pack(side=tk.LEFT, padx=10, pady=10)
 

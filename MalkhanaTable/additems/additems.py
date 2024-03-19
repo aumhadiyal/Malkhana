@@ -128,26 +128,26 @@ def additems(prev_malkhana_frame):
 
     button_font = ('Helvetica', 12)
     add_attachment_button = tk.Button(
-        additems_frame, text="Add Attachment", background="#FFFFFF", command=browse_file, font=button_font)
+        additems_frame, text="Add Attachment",background=style.lookup('TButton', 'background'), command=browse_file, font=button_font)
 
     add_attachment_button.grid(
         row=11, column=1, padx=10, pady=10, sticky="w")
 
     add_item_button = tk.Button(additems_frame, text="Add Item",
-                                background="#FFFFFF", command=insert_data, font=button_font)
+                                background=style.lookup('TButton', 'background'), command=insert_data, font=button_font)
     add_item_button.grid(row=13, column=0, columnspan=4,
                          padx=10, pady=10, sticky="ew")
 
     back_button = tk.Button(additems_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=button_font)
+                            background=style.lookup('TButton', 'background') ,command=go_back, font=button_font)
     back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
 
     home_button = tk.Button(additems_frame, text="Home",
-                            background="#FFFFFF", command=go_home, font=button_font)
+                            background=style.lookup('TButton', 'background'), command=go_home, font=button_font)
     home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
 
     logout = tk.Button(additems_frame, text="Log Out",
-                       background="#FFFFFF", command=logoutclicked, font=button_font)
+                       background=style.lookup('TButton', 'background'), command=logoutclicked, font=button_font)
     logout.grid(row=0, column=32, padx=10, pady=10, sticky="w")
 
     additems_frame.mainloop()

@@ -53,6 +53,7 @@ def initloginpage(prev_main_frame):
     entry_username = ttk.Entry(login_frame, font=("Helvetica", 12))
     entry_password = ttk.Entry(login_frame, show="*", font=("Helvetica", 12))
     button_login = tk.Button(login_frame, text="Enter",
+                             background=style.lookup('TButton', 'background'),
                              command=check_login, font=("Helvetica", 12))
 
     label_username.grid(row=2, column=0, pady=10, sticky=tk.W)

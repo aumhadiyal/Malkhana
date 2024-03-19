@@ -145,17 +145,17 @@ def checkin_page(prev_checkin_page):
 
     # Check-in button
     checkin_button = tk.Button(fsl_checkin_frame, text="Checkin",
-                               background="#FFFFFF", command=checkin, font=("Helvetica", 12))
+                               background="#9a9a9a", command=checkin, font=("Helvetica", 12))
     checkin_button.grid(row=6, column=0, columnspan=4,
                         padx=10, pady=10, sticky="ew")
 
     button_font = ('Helvetica', 12)
     back_button = tk.Button(fsl_checkin_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=button_font)
+                            background="#9a9a9a", command=go_back, font=button_font)
     back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
 
     home_button = tk.Button(fsl_checkin_frame, text="Home",
-                            background="#FFFFFF", command=go_home, font=button_font)
+                            background="#9a9a9a", command=go_home, font=button_font)
     home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
 
 

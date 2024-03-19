@@ -234,38 +234,38 @@ def viewitems(prev_malkhana_frame):
     search_entry.grid(row=1, column=2, padx=5, pady=5)
 
     # Buttons for actions
-    search_button = tk.Button(search_frame, text="Search", background="#FFFFFF", command=lambda: search_items(
+    search_button = tk.Button(search_frame, text="Search", background="#9a9a9a", command=lambda: search_items(
         tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 13))
     search_button.grid(row=1, column=3, padx=15, pady=5)
 
     select_filter_button = tk.Button(search_frame, text="Select Filter",
-                                     command=create_filter_window, background="#FFFFFF", font=("Helvetica", 13))
+                                     command=create_filter_window, background="#9a9a9a", font=("Helvetica", 13))
     select_filter_button.grid(row=2, column=2, padx=(0, 100), pady=5)
 
     show_all_btn = tk.Button(search_frame, text="Show All",
-                             background="#FFFFFF", command=show_all, font=("Helvetica", 13))
+                             background="#9a9a9a", command=show_all, font=("Helvetica", 13))
     show_all_btn.grid(row=2, column=2, padx=(100, 0), pady=5)
 
-    view_attachment_button = tk.Button(search_frame, background="#FFFFFF",
+    view_attachment_button = tk.Button(search_frame, background="#9a9a9a",
                                        text="View Attachment", command=view_attachment, font=("Helvetica", 13))
     view_attachment_button.grid(row=1, column=6, padx=15, pady=5)
 
-    print_details_button = tk.Button(search_frame, background="#FFFFFF",
+    print_details_button = tk.Button(search_frame, background="#9a9a9a",
                                      text="Print Item Details", command=print_item, font=("Helvetica", 13))
     print_details_button.grid(row=1, column=7, padx=15, pady=5)
 
     # Previous Button
     previous_button = tk.Button(search_frame, text="Previous", command=go_to_previous_page,
-                                background="#FFFFFF", font=("Helvetica", 13), width=12)
+                                background="#9a9a9a", font=("Helvetica", 13), width=12)
     previous_button.grid(row=1, column=8, padx=(180, 0), pady=5)
 
     # Next Button
     next_button = tk.Button(search_frame, text="Next", command=go_to_next_page,
-                            background="#FFFFFF", font=("Helvetica", 13), width=12)
+                            background="#9a9a9a", font=("Helvetica", 13), width=12)
     next_button.grid(row=1, column=9, padx=10, pady=5)
 
     # Go Back Button
-    go_back_button = tk.Button(search_frame, background="#FFFFFF",
+    go_back_button = tk.Button(search_frame, background="#9a9a9a",
                                text="Go Back", command=go_back, font=("Helvetica", 13), width=12)
     go_back_button.grid(row=1, column=10, pady=5)
 

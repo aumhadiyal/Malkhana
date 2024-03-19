@@ -129,10 +129,10 @@ def viewfsl(prev_malkhana_frame):
 
     # Create a button to go back to the homepage
     back_button = tk.Button(viewfsl_frame, text="Back",
-                            background="#FFFFFF", command=go_back, font=("Helvetica", 12))
+                            background="#9a9a9a", command=go_back, font=("Helvetica", 12))
     back_button.pack(pady=10)
 
-    logout = tk.Button(viewfsl_frame, text="Log Out", background="#FFFFFF",
+    logout = tk.Button(viewfsl_frame, text="Log Out", background="#9a9a9a",
                        command=logoutclicked, font=("Helvetica", 12))
     logout.pack(padx=12, pady=10)
 
@@ -148,11 +148,11 @@ def viewfsl(prev_malkhana_frame):
         viewfsl_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
     search_field_menu.pack()
 
-    search_button = tk.Button(viewfsl_frame, text="Search", background="#FFFFFF", command=lambda: search_fsl(
+    search_button = tk.Button(viewfsl_frame, text="Search", background="#9a9a9a", command=lambda: search_fsl(
         tree, search_field_var.get(), search_var.get()), font=("Helvetica", 12))
     search_button.pack()
 
-    show_all_btn = tk.Button(viewfsl_frame, text="Show All",  background="#FFFFFF",
+    show_all_btn = tk.Button(viewfsl_frame, text="Show All",  background="#9a9a9a",
                              command=lambda: show_all_fsl(tree), font=("Helvetica", 12))
     show_all_btn.pack()
 

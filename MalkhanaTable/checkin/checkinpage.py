@@ -5,65 +5,55 @@ import MalkhanaTable.checkin.checkinFromCourt as c
 import MalkhanaTable.checkin.checkinFromFSL as ci
 import home.Homepage as Homepage
 import MalkhanaTable.MalkhanaPage as m
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
+
+from login import login
 
 CI_frame = None
 
 
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-def CIpage(prev_homepage_frame):
-    prev_homepage_frame.destroy()
+def CIpage(prev_CI_frame):
+    prev_CI_frame.destroy()
     global CI_frame
     checkin_page_destroyer()
-    CI_frame = tk.Frame(prev_homepage_frame.master)
-    CI_frame.master.title("Checkin")
+    CI_frame = tk.Frame(prev_CI_frame.master)
+    CI_frame.master.title("Check Out ")
     CI_frame.pack(fill=tk.BOTH, expand=True)
 
-         # Get screen width and height
+    # Get screen width and height
     screen_width = CI_frame.winfo_screenwidth()
     screen_height = CI_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    # Sidebar
+    sidebar = tk.Frame(CI_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    bg_label = tk.Label(CI_frame
-                        , image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Checkout to FSL", fsl),
+        ("Checkout to Court", court),
+        ("Home", go_home),
+        ("Back", go_back),
+    ]
 
-    style = ThemedStyle(CI_frame)
-    style.theme_use('radiance')
+    for text, command in sidebar_buttons:
+        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        tab_button.pack(fill=tk.X, pady=5, padx=10)
 
-    # Define button font size
-    button_font = ('Helvetica', 15)
+    # Content area
+    content_frame = tk.Frame(CI_frame, bg="#bdc3c7")
+    content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-    checkinFSL = tk.Button(CI_frame, text="Checkin From FSL",
-                           background=style.lookup('TButton', 'background'), command=fsl, font=button_font, height=1, width=18)
-    checkinFSL.pack(pady=20)
+    # Add a welcome message in the middle
+    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
+        "Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
 
-    checkinCourt = tk.Button(CI_frame, text="Checkin From Court",
-                             background=style.lookup('TButton', 'background'), command=court, font=button_font, height=1, width=18)
-    checkinCourt.pack(pady=20)
-
-    Home = tk.Button(CI_frame, text="Home", command=go_home,
-                     background=style.lookup('TButton', 'background'), font=button_font, height=1, width=13)
-    Home.pack(padx=10, pady=10)
-
-    back_button = tk.Button(CI_frame, text="Back", command=go_back,
-                            background=style.lookup('TButton', 'background'), font=button_font, height=1, width=13)
-    back_button.pack(padx=10, pady=10)
+    # Add some additional information or widgets
+    info_label = tk.Label(content_frame, text="You are logged in as: " + login.current_user, font=(
+        "Helvetica", 12), bg="#bdc3c7")
+    info_label.pack(pady=10)
 
     CI_frame.mainloop()
 

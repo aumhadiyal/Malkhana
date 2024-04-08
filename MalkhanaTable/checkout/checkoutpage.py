@@ -4,7 +4,7 @@ import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutCourt as c
 import MalkhanaTable.checkout.checkoutFSL as f
 import MalkhanaTable.MalkhanaPage as m
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 
 CO_frame = None
 
@@ -20,6 +20,7 @@ def set_custom_theme(root):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+
 def COpage(prev_CO_frame):
     prev_CO_frame.destroy()
     global CO_frame
@@ -28,7 +29,7 @@ def COpage(prev_CO_frame):
     CO_frame.master.title("Check Out ")
     CO_frame.pack(fill=tk.BOTH, expand=True)
 
-     # Get screen width and height
+    # Get screen width and height
     screen_width = CO_frame.winfo_screenwidth()
     screen_height = CO_frame.winfo_screenheight()
 

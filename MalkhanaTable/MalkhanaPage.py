@@ -1,37 +1,25 @@
 import tkinter as tk
-from ttkthemes import ThemedStyle
+from PIL import Image, ImageTk
+import home.Homepage as Homepage  # Importing homepage module
 import MalkhanaTable.additems.additems as a
 import MalkhanaTable.checkout.checkoutpage as co
 import MalkhanaTable.checkin.checkinpage as ci
-import home.Homepage as Homepage
 import MalkhanaTable.viewitems.viewitems as v
 import login.login as login
-from PIL import Image, ImageTk
 
 malkhanapage_frame = None
+sidebar_buttons = []
 
-
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def mkpage(prev_homepage_frame):
     prev_homepage_frame.destroy()
 
     global malkhanapage_frame
-    malkhana_destroyer()
     malkhanapage_frame = tk.Frame(prev_homepage_frame.master)
     malkhanapage_frame.master.title("Malkhana page")
     malkhanapage_frame.pack(fill=tk.BOTH, expand=True)
 
-     # Get screen width and height
+    # Get screen width and height
     screen_width = malkhanapage_frame.winfo_screenwidth()
     screen_height = malkhanapage_frame.winfo_screenheight()
 
@@ -44,26 +32,48 @@ def mkpage(prev_homepage_frame):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    # Apply Radiance theme
-    style = ThemedStyle(malkhanapage_frame)
-    style.theme_use('radiance')
+    # Sidebar with buttons
+    sidebar = tk.Frame(malkhanapage_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    # Menu Buttons
-    buttons = [
+    tabs = [
         ("Add Items", additemsclicked),
         ("View Items", viewitemsclicked),
         ("Checkout Items", checkoutclicked),
         ("Checkin Items", checkinclicked),
-        ("Back ", go_back),
+        ("Back", go_back),
         ("Log Out", logoutclicked),
     ]
 
-    for text, command in buttons:
-        button = tk.Button(malkhanapage_frame, text=text,
-                           background=style.lookup('TButton', 'background'), command=command, font=("Helvetica", 15), width=15, height=1)
-        button.pack(pady=10)
+    for text, command in tabs:
+        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        tab_button.pack(fill=tk.X, pady=5, padx=10)
+        sidebar_buttons.append(tab_button)
 
+    # Content area
+    content_frame = tk.Frame(malkhanapage_frame, bg="#bdc3c7")
+    content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+    # Add a welcome message in the middle
+    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
+        "Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
+
+    # Add some additional information or widgets
+    info_label = tk.Label(content_frame, text="You are logged in as: " + login.current_user, font=(
+        "Helvetica", 12), bg="#bdc3c7")
+    info_label.pack(pady=10)
     malkhanapage_frame.mainloop()
+
+
+def switch_tab(command, tab):
+    for button in sidebar_buttons:
+        if button.cget("text") == tab:
+            button.config(bg="#2c3e50", fg="#ecf0f1")
+        else:
+            button.config(bg="#34495e", fg="#ecf0f1")
+    command()
 
 
 def go_back():

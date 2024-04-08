@@ -4,6 +4,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkcalendar import DateEntry
 from ttkthemes import ThemedStyle
+import MalkhanaTable.viewitems.viewitems as vi
 import home.Homepage as Homepage
 import MalkhanaTable.MalkhanaPage as m
 import login.login as login
@@ -11,22 +12,13 @@ from tkinter import filedialog
 import datetime
 import logger as lu
 from PIL import Image, ImageTk
+import MalkhanaTable.checkout.checkoutpage as co
+import MalkhanaTable.checkin.checkinpage as ci
+
 
 additems_frame = None
 
 file_path = None
-
-
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def additems(prev_malkhana_frame):
@@ -43,112 +35,143 @@ def additems(prev_malkhana_frame):
     screen_width = additems_frame.winfo_screenwidth()
     screen_height = additems_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    # Sidebar
+    sidebar = tk.Frame(additems_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    bg_label = tk.Label(additems_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Add Items", None),  # None as a placeholder for the command
+        ("View Items", viewitemsclicked),
+        ("Checkout Items", checkoutclicked),
+        ("Checkin Items", checkinclicked),
+        ("Back", go_back),
+        ("Log Out", logoutclicked)
+    ]
 
-    # Apply Radiance theme
-    style = ThemedStyle(additems_frame)
-    style.theme_use('radiance')
+    for text, command in sidebar_buttons:
+        if text == "Add Items":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
-    # Labels
-    font_style = ('Helvetica', 12)
-    tk.Label(additems_frame, text="Barcode Number:", background="#fff1f1", font=font_style).grid(
-        row=0, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="FIR Number:", background="#fff1f1", font=font_style).grid(
-        row=1, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Seized Items:", background="#fff1f1", font=font_style).grid(
-        row=2, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="IPC Section:", background="#fff1f1", font=font_style).grid(
-        row=3, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Location:", background="#fff1f1", font=font_style).grid(
-        row=4, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Date:", background="#fff1f1", font=font_style).grid(
-        row=5, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Time:", background="#fff1f1", font=font_style).grid(
-        row=6, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Witnesses:", background="#fff1f1", font=font_style).grid(
-        row=7, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Crime Inspector:", background="#fff1f1", font=font_style).grid(
-        row=8, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Where Kept:", background="#fff1f1", font=font_style).grid(
-        row=9, column=0, padx=10, pady=10, sticky="w")
-    tk.Label(additems_frame, text="Description of Item:", background="#fff1f1", font=font_style).grid(
-        row=10, column=0, padx=10, pady=10, sticky="w")
-
-    # Entry Fields
+    # Define fonts
     textbox_font = ('Helvetica', 12)
+    font_style = ('Helvetica', 12)
+
+    # Labels and Entry Fields
+    font_style = ('Helvetica', 12)
+
+    tk.Label(additems_frame, text="Barcode Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     barcode_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    barcode_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="FIR Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     fir_no_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    fir_no_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Seized Items:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     seized_items_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    seized_items_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="IPC Section:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     ipc_section_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    ipc_section_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Crime Location:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     crime_location_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    crime_location_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     crime_date_entry = DateEntry(additems_frame, font=textbox_font,
                                  width=12, background='darkblue', foreground='white', borderwidth=2)
-    hour_var = tk.StringVar(additems_frame, value='00')
-    minute_var = tk.StringVar(additems_frame, value='00')
+    crime_date_entry.pack(padx=10, pady=5, anchor="w")
 
-    hour_menu = ttk.Combobox(additems_frame, font=textbox_font, textvariable=hour_var, values=[
-                             str(i).zfill(2) for i in range(24)], state='readonly', width=5)
-    minute_menu = ttk.Combobox(additems_frame, font=textbox_font, textvariable=minute_var, values=[
-                               str(i).zfill(2) for i in range(60)], state='readonly', width=5)
+    tk.Label(additems_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+
+    time_frame = tk.Frame(additems_frame, bg="#f6f4f2")
+    time_frame.pack(padx=10, pady=5, anchor="w")
+
+    hour_var = tk.StringVar(time_frame, value='00')
+    hour_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=hour_var, values=[
+        str(i).zfill(2) for i in range(24)], state='readonly', width=5)
+
+    minute_var = tk.StringVar(time_frame, value='00')
+    minute_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=minute_var, values=[
+        str(i).zfill(2) for i in range(60)], state='readonly', width=5)
+
+    hour_menu.pack(side=tk.LEFT, pady=5)
+    minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
+
+    tk.Label(additems_frame, text="Crime Witnesses:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     crime_witness_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    crime_witness_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Crime Inspector:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     crime_inspector_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    crime_inspector_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Where Kept:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     where_kept_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
+    where_kept_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(additems_frame, text="Description of Item:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     description_of_items_entry = tk.Entry(
         additems_frame, background="#FFFFFF", font=textbox_font)
-
-    # Place Entry Fields
-    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky="w")
-    fir_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky="w")
-    seized_items_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
-    ipc_section_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
-    crime_location_entry.grid(row=4, column=1, padx=10, pady=10, sticky="w")
-    crime_date_entry.grid(row=5, column=1, padx=10, pady=10, sticky="w")
-    crime_witness_entry.grid(row=7, column=1, padx=10, pady=10, sticky="w")
-    crime_inspector_entry.grid(row=8, column=1, padx=10, pady=10, sticky="w")
-    description_of_items_entry.grid(
-        row=10, column=1, padx=10, pady=10, sticky="w")
-    where_kept_entry.grid(row=9, column=1, padx=10, pady=10, sticky="w")
-    hour_menu.grid(row=6, column=1, padx=10, pady=10, sticky="w")
-    minute_menu.grid(row=6, column=1, padx=10, pady=10, sticky="e")
+    description_of_items_entry.pack(padx=10, pady=5, anchor="w")
 
     button_font = ('Helvetica', 12)
+    # Adjusted button sizes
+    button_width = 20
+    button_height = 2
+
+    # Add Attachment Button
     add_attachment_button = tk.Button(
-        additems_frame, text="Add Attachment",background=style.lookup('TButton', 'background'), command=browse_file, font=button_font)
+        additems_frame, text="Add Attachment", background="#f6f4f2", command=browse_file, font=button_font, width=button_width, height=button_height)
+    add_attachment_button.pack(
+        padx=10, pady=5, anchor="w")
 
-    add_attachment_button.grid(
-        row=11, column=1, padx=10, pady=10, sticky="w")
-
+    # Add Item Button
     add_item_button = tk.Button(additems_frame, text="Add Item",
-                                background=style.lookup('TButton', 'background'), command=insert_data, font=button_font)
-    add_item_button.grid(row=13, column=0, columnspan=4,
-                         padx=10, pady=10, sticky="ew")
+                                background="#f6f4f2", command=insert_data, font=button_font, width=button_width, height=button_height)
+    add_item_button.pack(padx=10, pady=5, side=tk.LEFT)
 
+    # Back Button
     back_button = tk.Button(additems_frame, text="Back",
-                            background=style.lookup('TButton', 'background') ,command=go_back, font=button_font)
-    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+                            background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
+    back_button.pack(padx=10, pady=5, side=tk.LEFT)
 
+    # Home Button
     home_button = tk.Button(additems_frame, text="Home",
-                            background=style.lookup('TButton', 'background'), command=go_home, font=button_font)
-    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
+                            background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
+    home_button.pack(padx=10, pady=5, side=tk.LEFT)
 
+    # Logout Button
     logout = tk.Button(additems_frame, text="Log Out",
-                       background=style.lookup('TButton', 'background'), command=logoutclicked, font=button_font)
-    logout.grid(row=0, column=32, padx=10, pady=10, sticky="w")
+                       background="#f6f4f2", command=logoutclicked, font=button_font, width=button_width, height=button_height)
+    logout.pack(padx=10, pady=5, side=tk.LEFT)
 
     additems_frame.mainloop()
 
@@ -282,6 +305,21 @@ def go_back():
 def go_home():
     additems_destroyer()
     Homepage.open_homepage(additems_frame)
+
+
+def viewitemsclicked():
+    additems_destroyer()
+    vi.viewitems(additems_frame)
+
+
+def checkoutclicked():
+    additems_destroyer()
+    co.COpage(additems_frame)
+
+
+def checkinclicked():
+    additems_destroyer()
+    ci.CIpage(additems_frame)
 
 
 def logoutclicked():

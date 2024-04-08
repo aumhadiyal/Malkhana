@@ -6,19 +6,9 @@ import MalkhanaTable.checkout.checkoutFSL as f
 import MalkhanaTable.MalkhanaPage as m
 from PIL import Image, ImageTk
 
+from login import login
+
 CO_frame = None
-
-
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def COpage(prev_CO_frame):
@@ -33,29 +23,36 @@ def COpage(prev_CO_frame):
     screen_width = CO_frame.winfo_screenwidth()
     screen_height = CO_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    # Sidebar
+    sidebar = tk.Frame(CO_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    bg_label = tk.Label(CO_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-    # Apply Radiance theme
-    style = ThemedStyle(CO_frame)
-    style.theme_use('radiance')
-
-    buttons = [
+    # Sidebar buttons
+    sidebar_buttons = [
         ("Checkout to FSL", fsl),
         ("Checkout to Court", court),
         ("Home", go_home),
-        ("Back", go_back)]
+        ("Back", go_back),
+    ]
 
-    for text, command in buttons:
-        button = tk.Button(CO_frame, text=text,
-                           background=style.lookup('TButton', 'background'), command=command, font=("Helvetica", 15), width=15, height=1)
-        button.pack(pady=10)
+    for text, command in sidebar_buttons:
+        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        tab_button.pack(fill=tk.X, pady=5, padx=10)
+
+    # Content area
+    content_frame = tk.Frame(CO_frame, bg="#bdc3c7")
+    content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+    # Add a welcome message in the middle
+    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
+        "Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
+
+    # Add some additional information or widgets
+    info_label = tk.Label(content_frame, text="You are logged in as: " + login.current_user, font=(
+        "Helvetica", 12), bg="#bdc3c7")
+    info_label.pack(pady=10)
 
     CO_frame.mainloop()
 

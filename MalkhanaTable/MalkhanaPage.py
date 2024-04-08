@@ -64,6 +64,7 @@ def mkpage(prev_homepage_frame):
     info_label = tk.Label(content_frame, text="You are logged in as: " + login.current_user, font=(
         "Helvetica", 12), bg="#bdc3c7")
     info_label.pack(pady=10)
+
     malkhanapage_frame.mainloop()
 
 

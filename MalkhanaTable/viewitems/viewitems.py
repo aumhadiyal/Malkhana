@@ -10,6 +10,8 @@ import login.login as login
 from PIL import Image, ImageTk
 import os
 import MalkhanaTable.additems.additems as ai
+import MalkhanaTable.checkout.checkoutpage as co
+import MalkhanaTable.checkin.checkinpage as ci
 import io
 import logger as lu
 from PIL import Image, ImageTk
@@ -24,13 +26,29 @@ def viewitems(prev_malkhana_frame):
     global viewitems_frame, tree
     viewitems_frame = tk.Frame(prev_malkhana_frame.master)
     viewitems_frame.master.title("View Items")
-
-    view_items_label = tk.Label(
-        viewitems_frame, text="View Items", background="#FFFFFF", font=('Helvetica', 28), width=prev_malkhana_frame.master.winfo_screenwidth())
-    view_items_label.pack()
-
-    # To occupy the whole screen
     viewitems_frame.pack(fill=tk.BOTH, expand=True)
+
+    sidebar = tk.Frame(viewitems_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
+
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Add Items", additemsclicked),
+        ("View Items", None),
+        ("Checkout Items", checkoutclicked),
+        ("Checkin Items", checkinclicked),
+        ("Back", go_back),
+        ("Log Out", logoutclicked)
+    ]
+
+    for text, command in sidebar_buttons:
+        if text == "View Items":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
     # Create a Treeview widget to display the data in a tabular format
     tree = ttk.Treeview(viewitems_frame)
@@ -324,24 +342,6 @@ def go_home():
     homepage.open_homepage(viewitems_frame)
 
 
-# def show_all(tree):
-#     for item in tree.get_children():
-#         tree.delete(item)
-#     try:
-#         conn = sqlite3.connect("databases/items_in_malkhana.db")
-#         cursor = conn.cursor()
-#         cursor.execute('''SELECT * FROM items ORDER BY entry_time DESC''')
-#         for row in cursor.fetchall():
-#             tree.insert("", tk.END, values=row)
-
-#         # Commit the changes
-#         conn.commit()
-#         conn.close()
-#     except Exception as e:
-#         # Display error message if there's an issue with the database
-#         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
-
-
 def search_items(tree, search_field, search_text):
     # Clear previous search results
     for item in tree.get_children():
@@ -394,3 +394,25 @@ def convert_to_column(field_name):
     }
 
     return columnname.get(field_name, field_name)
+
+
+def additemsclicked():
+    viewitems_destroyer()
+    ai.additems(viewitems_frame)
+
+
+def checkoutclicked():
+    viewitems_destroyer()
+    co.COpage(viewitems_frame)
+
+
+def checkinclicked():
+    viewitems_destroyer()
+    ci.CIpage(viewitems_frame)
+
+
+def logoutclicked():
+    activity = "LOG-OUT"
+    lu.log_activity(login.current_user, activity)
+    viewitems_destroyer()
+    login.initloginpage(viewitems_frame)

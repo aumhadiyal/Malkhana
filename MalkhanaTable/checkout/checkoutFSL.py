@@ -1,5 +1,6 @@
 import tkinter as tk
 from ttkthemes import ThemedStyle
+import MalkhanaTable.checkout.checkoutCourt as coc
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutpage as cof
 import MalkhanaTable.MalkhanaPage as m
@@ -14,18 +15,6 @@ import login.login as login
 from PIL import Image, ImageTk
 
 checkout_frame = None
-
-
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def update_item_status(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):
@@ -83,6 +72,12 @@ def checkouttoFSL():
                     checkout_date, checkout_time, order_no)
 
 
+def checkouttocourt_page():
+    global checkout_frame
+    checkout_destroyer()
+    coc.checkouttocourt_page(checkout_frame)
+
+
 def checkouttoFSL_page(root):
     root.destroy()
     global checkout_frame, barcode_entry, fir_no_entry, seized_items_entry, taken_by_whom_entry, checkout_date_entry, hour_var, minute_var, order_no_entry
@@ -91,88 +86,109 @@ def checkouttoFSL_page(root):
     checkout_frame.master.title("Check Out to FSL")
     checkout_frame.pack(fill=tk.BOTH, expand=True)
 
-    style = ThemedStyle(checkout_frame)
-    style.theme_use('radiance')
-
     screen_width = checkout_frame.winfo_screenwidth()
     screen_height = checkout_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    # Sidebar
+    sidebar = tk.Frame(checkout_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    bg_label = tk.Label(checkout_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Checkout to FSL", checkouttoFSL_page),
+        ("Checkout to Court", checkouttocourt_page),
+        ("Home", go_home),
+        ("Back", go_back),
+    ]
+
+    for text, command in sidebar_buttons:
+        if text == "Checkout to FSL":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
+
+    # Define fonts
+    textbox_font = ('Helvetica', 12)
+    font_style = ('Helvetica', 12)
+
+    # Labels and Entry Fields
+    font_style = ('Helvetica', 12)
 
     # Labels
-    label_barcode = tk.Label(
-        checkout_frame, text="Barcode:",  background="#fff1f1",  font=("Helvetica", 12))
-    label_fir_no = tk.Label(
-        checkout_frame, text="FIR No:",  background="#fff1f1", font=("Helvetica", 12))
-    label_item_name = tk.Label(
-        checkout_frame, text="Seized Items:",  background="#fff1f1",  font=("Helvetica", 12))
-    label_taken_by_whom = tk.Label(
-        checkout_frame, text="Undertaking Inspector:",  background="#fff1f1", font=("Helvetica", 12))
-    label_checkout_date = tk.Label(
-        checkout_frame, text="Checkout Date:",  background="#fff1f1", font=("Helvetica", 12))
-    label_checkout_time = tk.Label(
-        checkout_frame, text="Checkout Time:",   background="#fff1f1", font=("Helvetica", 12))
-    label_order_no = tk.Label(
-        checkout_frame, text="Order No:",  background="#fff1f1", font=("Helvetica", 12))
+    tk.Label(checkout_frame, text="Barcode Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    barcode_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    barcode_entry.pack(padx=10, pady=5, anchor="w")
 
-    label_barcode.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-    label_fir_no.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
-    label_item_name.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
-    label_taken_by_whom.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkout_date.grid(row=7, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkout_time.grid(row=6, column=0, padx=10, pady=10, sticky=tk.W)
-    label_order_no.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
+    tk.Label(checkout_frame, text="FIR Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    fir_no_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    fir_no_entry.pack(padx=10, pady=5, anchor="w")
 
-    # Entry fields
-    barcode_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    fir_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    seized_items_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    taken_by_whom_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
-    order_no_entry = ttk.Entry(checkout_frame, font=("Helvetica", 12))
+    tk.Label(checkout_frame, text="Seized Items:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    seized_items_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    seized_items_entry.pack(padx=10, pady=5, anchor="w")
 
-    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
-    fir_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
-    seized_items_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
-    taken_by_whom_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
-    order_no_entry.grid(row=4, column=1, padx=10, pady=10, sticky=tk.W)
+    tk.Label(checkout_frame, text="Undertaking Inspector:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    taken_by_whom_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    taken_by_whom_entry.pack(padx=10, pady=5, anchor="w")
 
-    hour_var = tk.StringVar(checkout_frame, value='00')
-    minute_var = tk.StringVar(checkout_frame, value='00')
+    tk.Label(checkout_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    crime_date_entry = DateEntry(checkout_frame, font=textbox_font,
+                                 width=12, background='darkblue', foreground='white', borderwidth=2)
+    crime_date_entry.pack(padx=10, pady=5, anchor="w")
 
-    hour_menu = ttk.Combobox(checkout_frame, textvariable=hour_var, values=[
-                             str(i).zfill(2) for i in range(24)], state='readonly', width=5)
-    minute_menu = ttk.Combobox(checkout_frame, textvariable=minute_var, values=[
-                               str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=6,  column=1, padx=10, pady=10, sticky="w")
-    minute_menu.grid(row=6,  column=1, padx=10, pady=10, sticky="e")
+    tk.Label(checkout_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
 
-    # Date field using tkcalendar
-    checkout_date_entry = DateEntry(
-        checkout_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
-    checkout_date_entry.grid(row=7, column=1, padx=10, pady=10, sticky=tk.W)
+    time_frame = tk.Frame(checkout_frame, bg="#f6f4f2")
+    time_frame.pack(padx=10, pady=5, anchor="w")
 
-    # Checkout button
-    checkout_button = tk.Button(checkout_frame, text="Checkout to FSL ",
-                                background="#9a9a9a", command=checkouttoFSL, font=("Helvetica", 12))
-    checkout_button.grid(row=8, column=0, columnspan=4,
-                         padx=10, pady=10, sticky="ew")
+    hour_var = tk.StringVar(time_frame, value='00')
+    hour_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=hour_var, values=[
+        str(i).zfill(2) for i in range(24)], state='readonly', width=5)
 
-    # Home and Back buttons
+    minute_var = tk.StringVar(time_frame, value='00')
+    minute_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=minute_var, values=[
+        str(i).zfill(2) for i in range(60)], state='readonly', width=5)
+
+    hour_menu.pack(side=tk.LEFT, pady=5)
+    minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
+
+    tk.Label(checkout_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    order_no_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    order_no_entry.pack(padx=10, pady=5, anchor="w")
+
     button_font = ('Helvetica', 12)
-    back_button = tk.Button(checkout_frame, text="Back",
-                            background="#9a9a9a", command=go_back, font=button_font)
-    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+    # Adjusted button sizes
+    button_width = 20
+    button_height = 2
 
+    checkout_button = tk.Button(checkout_frame, text="Checkout Item",
+                                background="#f6f4f2", command=checkouttoFSL, font=button_font, width=button_width, height=button_height)
+    checkout_button.pack(padx=10, side=tk.LEFT)
+
+    # Back Button
+    back_button = tk.Button(checkout_frame, text="Back",
+                            background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
+    back_button.pack(padx=10, pady=5, side=tk.LEFT)
+
+    # Home Button
     home_button = tk.Button(checkout_frame, text="Home",
-                            background="#9a9a9a", command=go_home, font=button_font)
-    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
+                            background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
+    home_button.pack(padx=10, pady=5, side=tk.LEFT)
 
 
 def go_back():

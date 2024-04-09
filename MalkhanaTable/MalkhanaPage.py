@@ -56,14 +56,10 @@ def mkpage(prev_homepage_frame):
     content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Add a welcome message in the middle
-    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
-        "Helvetica", 20), bg="#bdc3c7")
+    welcome_label = tk.Label(content_frame, text="Homepage", font=("Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
 
-    # Add some additional information or widgets
-    info_label = tk.Label(content_frame, text="You are logged in as: " + login.current_user, font=(
-        "Helvetica", 12), bg="#bdc3c7")
-    info_label.pack(pady=10)
+    
 
     malkhanapage_frame.mainloop()
 

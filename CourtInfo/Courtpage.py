@@ -1,30 +1,23 @@
+import math
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+import main
 from tkinter import ttk
 import home.Homepage as homepage
+import MalkhanaTable.MalkhanaPage as mk
 import login.login as login
 import logger as lu
+import CourtInfo.Courtpage as cp
+import Log.log as l
+import printt.print as p
 from PIL import Image, ImageTk
-
 court_frame = None
-
-
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 def view_court(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
-    global court_frame
+    global court_frame, tree
     court_destroyer()
     court_frame = tk.Frame(prev_malkhana_frame.master)
     court_frame.master.title("Court Info")
@@ -34,23 +27,37 @@ def view_court(prev_malkhana_frame):
     screen_width = court_frame.winfo_screenwidth()
     screen_height = court_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
+    # Create a sidebar
+    sidebar = tk.Frame(court_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    bg_label = tk.Label(court_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Malkhana Info", mkpage),
+        ("FSL Info", fsl),
+        ("Court Info", None),
+        ("Logs", log),
+        ("Print", printDetails),
+        ("Log Out", logoutclicked),
+    ]
 
+    for text, command in sidebar_buttons:
+        if text == "Court Info":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
+
+    # Create a Treeview widget to display the data in a tabular format
     tree = ttk.Treeview(court_frame)
-
     x_scrollbar = ttk.Scrollbar(tree, orient=tk.HORIZONTAL, command=tree.xview)
-    y_scrollbar = ttk.Scrollbar(tree, orient=tk.VERTICAL, command=tree.yview)
 
-    tree.configure(xscrollcommand=x_scrollbar.set,
-                   yscrollcommand=y_scrollbar.set)
+    # Configure the treeview to use the scrollbars
+    tree.configure(xscrollcommand=x_scrollbar.set)
 
+    # Define columns
     tree["columns"] = (
         "Barcode",
         "FIR Number",
@@ -63,120 +70,233 @@ def view_court(prev_malkhana_frame):
         "Order Details"
     )
 
-    tree.column("#0", width=0, stretch=tk.NO)
-    tree.column("Barcode", anchor=tk.W, width=100)
-    tree.column("FIR Number", anchor=tk.W, width=100)
-    tree.column("Seized Items", anchor=tk.W, width=150)
-    tree.column("Checkout Date", anchor=tk.W, width=100)
-    tree.column("Checkout Time", anchor=tk.W, width=100)
-    tree.column("Undertaking Officer", anchor=tk.W, width=150)
-    tree.column("Checkin Date", anchor=tk.W, width=100)
-    tree.column("Checkin Time", anchor=tk.W, width=100)
-    tree.column("Order Details", anchor=tk.W, width=100)
+    # Format columns
+    tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
+    tree.column("Barcode", anchor=tk.W, width=100, stretch=tk.NO, minwidth=100)
+    tree.column("FIR Number", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Seized Items", anchor=tk.W, width=150, stretch=tk.NO)
+    tree.column("Checkout Date", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Checkout Time", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Undertaking Officer", anchor=tk.W, width=150, stretch=tk.NO)
+    tree.column("Checkin Date", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Checkin Time", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Order Details", anchor=tk.W, width=100, stretch=tk.NO)
 
+    # Create headings
     tree.heading("#0", text="", anchor=tk.W)
     tree.heading("Barcode", text="Barcode", anchor=tk.W)
     tree.heading("FIR Number", text="FIR Number", anchor=tk.W)
     tree.heading("Seized Items", text="Seized Items", anchor=tk.W)
     tree.heading("Checkout Date", text="Checkout Date", anchor=tk.W)
     tree.heading("Checkout Time", text="Checkout Time", anchor=tk.W)
-    tree.heading("Undertaking Officer",
-                 text="Undertaking Officer", anchor=tk.W)
+    tree.heading("Undertaking Officer",text="Undertaking Officer", anchor=tk.W)
     tree.heading("Checkin Date", text="Checkin Date", anchor=tk.W)
     tree.heading("Checkin Time", text="Checkin Time", anchor=tk.W)
     tree.heading("Order Details", text="Order Details", anchor=tk.W)
-
+    
+    # Add data to the treeview from the database
     try:
+        # Connect to the database (or create if it doesn't exist)
         conn = sqlite3.connect('databases/court_records.db')
+
+        # Create a cursor to execute SQL commands
         cursor = conn.cursor()
 
-        cursor.execute(
-            '''SELECT * FROM court_records ORDER by entry_time DESC''')
+        # Execute the SQL command to select all rows from the table
+        cursor.execute('''SELECT * FROM court_records ORDER BY entry_time DESC''')
 
+        # Fetch all the rows and insert them into the treeview
         for row in cursor.fetchall():
             tree.insert("", tk.END, values=row)
 
+        # Commit the changes
         conn.commit()
         conn.close()
 
     except Exception as e:
+        # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
-    tree.pack(fill=tk.BOTH, expand=True)
+    # Get the height of the screen
+    screen_height = prev_malkhana_frame.master.winfo_screenheight()
+
+    # Set the height of the treeview to half of the screen height
+    treeview_height = screen_height // 90
+
+    # Pack the treeview with the specified height and other configurations
+    tree.pack(fill=tk.BOTH, expand=True, side=tk.TOP, pady=(0, treeview_height))
+
     x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    back_button = tk.Button(court_frame, text="Back",
-                            background="#9a9a9a", command=go_back, font=("Helvetica", 12))
-    back_button.pack(pady=10)
+    current_page = 1
+    entries_per_page = 40
+    total_entries = 0
+    data = []
 
-    logout = tk.Button(court_frame, text="Log Out", background="#9a9a9a",
-                       command=logout_clicked, font=("Helvetica", 12))
-    logout.pack(padx=12, pady=10)
+    current_page_label = tk.Label(court_frame, text="Page: 1")
+    current_page_label.pack(side=tk.BOTTOM)
 
-    search_var = tk.StringVar()
-    search_entry = tk.Entry(
-        court_frame, textvariable=search_var, background="#d3d3d3")
-    search_entry.pack(pady=5)
+    total_pages_label = tk.Label(court_frame, text="")
+    total_pages_label.pack(side=tk.BOTTOM)
 
+    def update_treeview(page_num):
+        nonlocal current_page
+        current_page = page_num
+
+        total_pages = math.ceil(total_entries / entries_per_page)
+        current_page_label.config(text=f"Page: {current_page}/{total_pages}")
+        tree.delete(*tree.get_children())
+        start_idx = (current_page - 1) * entries_per_page
+        end_idx = start_idx + entries_per_page
+        for row in data[start_idx:end_idx]:
+            tree.insert("", tk.END, values=row)
+
+    def show_all():
+        nonlocal total_entries, data
+        tree.delete(*tree.get_children())
+        try:
+            conn = sqlite3.connect("databases/fsl_records.db")
+            cursor = conn.cursor()
+            cursor.execute(
+                '''SELECT * FROM fsl_records ORDER BY entry_time DESC''')
+            data = cursor.fetchall()
+            total_entries = len(data)
+            update_treeview(current_page)
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
+
+    show_all()
+
+    def go_to_previous_page():
+        if current_page > 1:
+            update_treeview(current_page - 1)
+
+    def go_to_next_page():
+        total_pages = math.ceil(total_entries / entries_per_page)
+        if current_page < total_pages:
+            update_treeview(current_page + 1)
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+    # Function to apply the selected filters
+
+    def apply_filters():
+        selected_columns = []
+        for column, var in checkbox_vars.items():
+            if var.get() == 1:
+                selected_columns.append(column)
+        # Reconfigure treeview columns
+        tree["displaycolumns"] = selected_columns
+
+    # Function to create filter window
+    def create_filter_window():
+        filter_window = tk.Toplevel(court_frame)
+        filter_window.title("Select Filters")
+
+        global checkbox_vars
+        checkbox_vars = {}
+
+        for idx, column in enumerate(tree["columns"]):
+            var = tk.IntVar(value=1)
+            checkbox_vars[column] = var
+            cb = tk.Checkbutton(filter_window, text=column, variable=var)
+            cb.grid(row=idx, column=0, sticky="w")
+
+        apply_button = tk.Button(filter_window, text="Apply Filters", command=apply_filters)
+        apply_button.grid(row=len(tree["columns"]), column=0, pady=5)
+
+
+    # Search and filter row
+    search_frame = tk.Frame(court_frame)
+    search_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+    # Labels
+    search_label = tk.Label(search_frame, text="Search Field:",
+                            background="#FFFFFF", font=("Helvetica", 13))
+    search_label.grid(row=1, column=0, padx=5, pady=5)
+
+    # Combobox for selecting search field
     search_field_var = tk.StringVar(value="Barcode")
-    search_field_menu = ttk.Combobox(
-        court_frame, textvariable=search_field_var, values=tree["columns"], state='readonly')
-    search_field_menu.pack()
+    search_field_menu = ttk.Combobox(search_frame, textvariable=search_field_var,
+                                     values=tree["columns"], background="#FFFFFF", state='readonly', font=("Helvetica", 13))
+    search_field_menu.grid(row=1, column=1, padx=5, pady=5)
 
-    search_button = tk.Button(court_frame, text="Search", background="#9a9a9a", command=lambda: search_court(
-        tree, search_field_var.get(), search_var.get()), font=("Helvetica", 12))
-    search_button.pack()
+    # Entry for search input
+    search_entry = tk.Entry(search_frame, background="#D3D3D3",
+                            textvariable=tk.StringVar(), font=("Helvetica", 13))
+    search_entry.grid(row=1, column=2, padx=5, pady=5)
 
-    show_all_btn = tk.Button(court_frame, text="Show All",  background="#9a9a9a",
-                             command=lambda: show_all_court(tree), font=("Helvetica", 12))
-    show_all_btn.pack()
+    # Button for searching items
+    search_button = tk.Button(search_frame, text="Search", background="#9a9a9a", command=lambda: search_items(
+        tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 13))
+    search_button.grid(row=1, column=3, padx=15, pady=5)
+
+    select_filter_button = tk.Button(search_frame, text="Select Filter",
+                                     command=create_filter_window, background="#9a9a9a", font=("Helvetica", 13))
+    select_filter_button.grid(row=2, column=2, padx=(0, 100), pady=5)
+
+    # Button for showing all items
+    show_all_btn = tk.Button(search_frame, text="Show All",
+                             background="#9a9a9a", command=show_all, font=("Helvetica", 13))
+    show_all_btn.grid(row=1, column=4, padx=15, pady=5)
+
+    print_details_button = tk.Button(search_frame, background="#9a9a9a",
+                                     text="Print Item Details", command=print_item, font=("Helvetica", 13))
+    print_details_button.grid(row=1, column=7, padx=15, pady=5)
+
+    # Previous Button
+    previous_button = tk.Button(search_frame, text="Previous", command=go_to_previous_page,
+                                background="#9a9a9a", font=("Helvetica", 13), width=12)
+    previous_button.grid(row=1, column=8, padx=(180, 0), pady=5)
+
+    # Next Button
+    next_button = tk.Button(search_frame, text="Next", command=go_to_next_page,
+                            background="#9a9a9a", font=("Helvetica", 13), width=12)
+    next_button.grid(row=1, column=9, padx=10, pady=5)
+
+    # Go Back Button
+    go_back_button = tk.Button(search_frame, background="#9a9a9a",
+                               text="Go Back", command=go_back, font=("Helvetica", 13), width=12)
+    go_back_button.grid(row=1, column=10, pady=5)
 
 
-def search_court(tree, search_field, search_text):
+def search_items(tree, search_field, search_text):
+    # Clear previous search results
     for item in tree.get_children():
         tree.delete(item)
 
-    column_mapping = {
-        "Barcode": "barcode",
-        "FIR Number": "fir_no",
-        "Seized Items": "seized_items",
-        "Checkout Date": "checkout_date",
-        "Checkout Time": "checkout_time",
-        "Undertaking Officer": "taken_by_whom",
-        "Checkin Date": "checkin_date",
-        "Checkin Time": "checkin_time",
-        "Order Details": "order_details"
-    }
+    # Convert the search_field back to the original column name (in English)
+    search_field = convert_to_column(search_field)
 
-    actual_column_name = column_mapping.get(search_field)
-
-    if actual_column_name is None:
-        tk.messagebox.showerror(
-            "Error", f"Invalid search field: {search_field}")
-        return
-
+    # Add data to the treeview from the database based on the search criteria
     try:
         conn = sqlite3.connect('databases/court_records.db')
         cursor = conn.cursor()
 
         cursor.execute(f'''
             SELECT * FROM court_records
-            WHERE {actual_column_name} LIKE ?
+            WHERE {search_field} LIKE ?
         ''', ('%' + search_text + '%',))
 
+        # Fetch the rows and insert them into the treeview
         for row in cursor.fetchall():
             tree.insert("", tk.END, values=row)
 
+        # Commit the changes
         conn.commit()
         conn.close()
+
     except Exception as e:
+        # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
-def show_all_court(tree):
+def show_all():
+    # Function to display all items in the treeview
     for item in tree.get_children():
         tree.delete(item)
+
     try:
         conn = sqlite3.connect("databases/court_records.db")
         cursor = conn.cursor()
@@ -191,23 +311,75 @@ def show_all_court(tree):
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
+def printDetails():
+    global court_frame
+    # Function to print details
+    court_destroyer()
+    p.print_details(court_frame)
+
+
+def convert_to_column(field_name):
+    # Function to convert field name to column name
+    columnname = {
+        "Barcode": "barcode",
+        "FIR Number": "fir_no",
+        "Seized Items": "seized_items",
+        "Checkout Date": "checkout_date",
+        "Checkout Time": "checkout_time",
+        "Undertaking Officer": "taken_by_whom",
+        "Checkin Date": "checkin_date",
+        "Checkin Time": "checkin_time",
+        "Order Details": "order_details"
+    }
+
+    return columnname.get(field_name, field_name)
+
+
 def court_destroyer():
+    # Function to destroy the court frame
     if court_frame is not None:
         court_frame.destroy()
 
 
 def go_back():
+    # Function to go back to the homepage
     court_destroyer()
     homepage.open_homepage(court_frame)
 
 
-def go_home():
+def logoutclicked():
+    # Function to handle logout
+    lu.log_activity(login.current_user, "LOG-OUT")
     court_destroyer()
-    homepage.open_homepage(court_frame)
+    login.initloginpage(court_frame)
 
 
-def logout_clicked():
-    activity = "LOG-OUT"
-    lu.log_activity(login.current_user, activity)
+def mkpage():
+    # Function to go to the Malkhana page
     court_destroyer()
-    login.init_login_page(court_frame)
+    mk.mkpage(court_frame)
+
+
+def fsl():
+    # Function to go to the FSL page
+    court_destroyer()
+    cp.viewfsl(court_frame)
+
+
+def log():
+    # Function to go to the logs page
+    court_destroyer()
+    l.create_logs_page(court_frame)
+
+def print_item():
+    selected_item = tree.focus()
+    # Assuming the barcode is the first value in the row
+    barcode = tree.item(selected_item, 'values')[0]
+
+    p.print_details(barcode)
+
+
+def printDetails():
+    global court_frame
+    court_destroyer()
+    p.print_details(court_frame)

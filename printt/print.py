@@ -33,10 +33,6 @@ def printPage(prev_homepage_frame):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    # Apply Radiance theme
-    style = ThemedStyle(print_frame)
-    style.theme_use('radiance')
-
     # Barcode Input
     barcode_label = tk.Label(
         print_frame, text="Enter Barcode:", font=("Helvetica", 15))
@@ -47,12 +43,12 @@ def printPage(prev_homepage_frame):
 
     # Print Button
     print_button = tk.Button(print_frame, text="Print Details", command=lambda: print_details(barcode_entry.get()),
-                             background=style.lookup('TButton', 'background'), font=("Helvetica", 15), width=15, height=1)
+                             background="#f6f4f2", font=("Helvetica", 15), width=15, height=1)
     print_button.pack(pady=10)
 
     # Back Button
     back_button = tk.Button(print_frame, text="Back", command=go_back,
-                            background=style.lookup('TButton', 'background'), font=("Helvetica", 15), width=15, height=1)
+                            background="#f6f4f2", font=("Helvetica", 15), width=15, height=1)
     back_button.pack(pady=10)
 
     print_frame.mainloop()

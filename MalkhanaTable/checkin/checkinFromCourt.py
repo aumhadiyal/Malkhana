@@ -1,17 +1,18 @@
 import tkinter as tk
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import Log.log as log
 import MalkhanaTable.checkin.checkinpage as cp
+import MalkhanaTable.checkin.checkinFromFSL as cif
 from tkinter import ttk
 import sqlite3
 from tkcalendar import DateEntry
 from tkinter import messagebox
 import login.login as login
 import logger as lu
-checkin_frame = None
+court_checkin_frame = None
 
 
 def update_item_status(barcode, checkin_date, checkin_time, order_details):
@@ -50,101 +51,121 @@ def checkin():
     order_details_entry.delete("1.0", tk.END)
 
 
-def checkin_page_2(root):
-    global checkin_frame, barcode_entry, checkin_date_entry, hour_var, minute_var, order_details_entry
-    checkin_frame = tk.Frame(root.master)
-    checkin_frame.master.title("Checkin From Court")
-
-     # Get screen width and height
-    screen_width = checkin_frame.winfo_screenwidth()
-    screen_height = checkin_frame.winfo_screenheight()
-
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(checkin_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-    # Use pack for the checkin_frame
-    checkin_frame.pack(fill=tk.BOTH, expand=True)
+def checkinfromfsl():
+    global court_checkin_frame
+    court_checkin_destroyer()
+    cif.checkinfromfsl(court_checkin_frame)
 
 
-    style = ThemedStyle(checkin_frame)
-    style.theme_use('radiance')
-    # Labels
-    label_barcode = tk.Label(
-        checkin_frame, text="Barcode No:", background="#fff1f1",   font=("Helvetica", 12))
-    label_checkin_time = tk.Label(
-        checkin_frame, text="Checkin Time:", background="#fff1f1",  font=("Helvetica", 12))
-    label_checkin_date = tk.Label(
-        checkin_frame, text="Checkin Date:", background="#fff1f1",  font=("Helvetica", 12))
-    label_order_details = tk.Label(
-        checkin_frame, text="Order Details:",  background="#fff1f1", font=("Helvetica", 12))
+def checkinfromcourt(root):
+    root.destroy()
+    global court_checkin_frame, barcode_entry, checkin_date_entry, hour_var, minute_var, order_details_entry
 
-    label_barcode.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkin_time.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkin_date.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
-    label_order_details.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
+    court_checkin_destroyer()
+    court_checkin_frame = tk.Frame(root.master)
+    court_checkin_frame.master.title("Checkin From Court")
 
-    # Entry fields
-    barcode_entry = ttk.Entry(checkin_frame, width=30, font=("Helvetica", 12))
-    # Use sticky=tk.W for left alignment
-    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
+    # Get screen width and height
+    screen_width = court_checkin_frame.winfo_screenwidth()
+    screen_height = court_checkin_frame.winfo_screenheight()
+    court_checkin_frame.pack(fill=tk.BOTH, expand=True)
+    # Sidebar
+    sidebar = tk.Frame(court_checkin_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    hour_var = tk.StringVar(checkin_frame, value='00')
-    minute_var = tk.StringVar(checkin_frame, value='00')
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Checkin From FSL", checkinfromfsl),
+        ("Checkin From Court", None),
+        ("Home", go_home),
+        ("Back", go_back),
+    ]
 
-    hour_menu = ttk.Combobox(checkin_frame, textvariable=hour_var, values=[str(i).zfill(2) for i in range(24)],
-                             state='readonly', width=5)
-    minute_menu = ttk.Combobox(checkin_frame, textvariable=minute_var, values=[str(i).zfill(2) for i in range(60)],
-                               state='readonly', width=5)
-    hour_menu.grid(row=1,  column=1, padx=10, pady=10, sticky="w")
-    minute_menu.grid(row=1,  column=1, padx=(10, 150), pady=10, sticky="e")
+    for text, command in sidebar_buttons:
+        if text == "Checkin From Court":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
-    # Date field using tkcalendar
-    checkin_date_entry = DateEntry(
-        checkin_frame, width=15, background='darkblue', foreground='white', borderwidth=2)
-    # Use sticky=tk.W for left alignment
-    checkin_date_entry.grid(row=2, column=1, padx=10, pady=10, sticky=tk.W)
+    # Define fonts
+    textbox_font = ('Helvetica', 12)
+    font_style = ('Helvetica', 12)
 
-    # Text area for order details
+    # Labels and Entry Fields
+    font_style = ('Helvetica', 12)
+
+    tk.Label(court_checkin_frame, text="Barcode Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    barcode_entry = tk.Entry(
+        court_checkin_frame, background="#FFFFFF", font=textbox_font)
+    barcode_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(court_checkin_frame, text="Check In Date:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    checkin_date_entry = DateEntry(court_checkin_frame, font=textbox_font,
+                                   width=12, background='darkblue', foreground='white', borderwidth=2)
+    checkin_date_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(court_checkin_frame, text="Check In Time:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+
+    time_frame = tk.Frame(court_checkin_frame, bg="#f6f4f2")
+    time_frame.pack(padx=10, pady=5, anchor="w")
+
+    hour_var = tk.StringVar(time_frame, value='00')
+    hour_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=hour_var, values=[
+        str(i).zfill(2) for i in range(24)], state='readonly', width=5)
+
+    minute_var = tk.StringVar(time_frame, value='00')
+    minute_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=minute_var, values=[
+        str(i).zfill(2) for i in range(60)], state='readonly', width=5)
+
+    hour_menu.pack(side=tk.LEFT, pady=5)
+    minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
+
+    tk.Label(court_checkin_frame, text="Order Details:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     order_details_entry = tk.Text(
-        checkin_frame, height=5, width=30, background="#FFFFFF", font=("Helvetica", 12))
-    # Use sticky=tk.W for left alignment
-    order_details_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
-
-    # Check-in button
-    checkin_button = tk.Button(checkin_frame, text="Checkin",
-                               command=checkin,  background="#9a9a9a", font=("Helvetica", 12))
-    checkin_button.grid(row=4, column=0, columnspan=4,
-                        padx=10, pady=10, sticky="ew")
+        court_checkin_frame, height=5, background="#FFFFFF", font=textbox_font)
+    order_details_entry.pack(padx=10, pady=5, anchor="w")
 
     button_font = ('Helvetica', 12)
-    back_button = tk.Button(checkin_frame, text="Back",
-                            background="#9a9a9a", command=go_back, font=button_font)
-    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+    # Adjusted button sizes
+    button_width = 20
+    button_height = 2
 
-    home_button = tk.Button(checkin_frame, text="Home",
-                            background="#9a9a9a", command=go_home, font=button_font)
-    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
+    checkin_button = tk.Button(
+        court_checkin_frame, text="Check In", background="#f6f4f2", command=checkin, font=button_font, width=button_width, height=button_height)
+    checkin_button.pack(
+        padx=10, pady=5, anchor="w")
+
+    back_button = tk.Button(
+        court_checkin_frame, text="Back", background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
+    back_button.pack(
+        padx=10, pady=5, anchor="w")
+
+    home_button = tk.Button(
+        court_checkin_frame, text="Home", background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
+    home_button.pack(
+        padx=10, pady=5, anchor="w")
 
 
 def go_home():
-    checkin_destroyer()
-    Homepage.open_homepage(checkin_frame)
+    court_checkin_destroyer()
+    Homepage.open_homepage(court_checkin_frame)
 
 
 def go_back():
-    checkin_destroyer()
-    cp.CIpage(checkin_frame)
+    court_checkin_destroyer()
+    cp.CIpage(court_checkin_frame)
 
 
-def checkin_destroyer():
-    if checkin_frame is not None:
-        checkin_frame.destroy()
+def court_checkin_destroyer():
+    if court_checkin_frame is not None:
+        court_checkin_frame.destroy()
 
 
 def barcode_checker(barcode, checkin_date, checkin_time, order_details):

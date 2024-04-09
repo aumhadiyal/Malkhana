@@ -1,9 +1,10 @@
 import tkinter as tk
-from PIL import Image,ImageTk
+from PIL import Image, ImageTk
 from ttkthemes import ThemedStyle
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import MalkhanaTable.checkin.checkinpage as cp
+import MalkhanaTable.checkin.checkinFromCourt as cic
 import Log.log as log
 from tkinter import messagebox
 from tkinter import ttk
@@ -40,6 +41,7 @@ def update_item_status(barcode, checkin_date, checkin_time,
     activity = "Item checked in from FSL barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
 
+
 def set_custom_theme(root):
     # Load and display background image
     bg_image = Image.open("bg.jpeg")
@@ -50,7 +52,8 @@ def set_custom_theme(root):
     bg_label = tk.Label(root, image=bg_photo)
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-    
+
+
 def checkin():
     barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
@@ -63,100 +66,121 @@ def checkin():
                     order_no, examiner, examiner_report)
 
 
-def checkin_page(prev_checkin_page):
+def checkinfromcourt():
+    global fsl_checkin_frame
+    fsL_checkin_destroyer()
+    cic.checkinfromcourt(fsl_checkin_frame)
+
+
+def checkinfromfsl(prev_checkin_page):
+    prev_checkin_page.destroy()
     global fsl_checkin_frame, barcode_entry, order_no_entry, checkin_date_entry, hour_var, minute_var, examiner_report_entry, examiner_entry
     fsL_checkin_destroyer()
     fsl_checkin_frame = tk.Frame(prev_checkin_page.master)
     fsl_checkin_frame.master.title("Checkin From FSL")
+    fsl_checkin_frame.pack(fill=tk.BOTH, expand=True)
 
-     # Get screen width and height
+    # Get screen width and height
     screen_width = fsl_checkin_frame.winfo_screenwidth()
     screen_height = fsl_checkin_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(fsl_checkin_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
     # Use pack for the fsl_checkin_frame
     fsl_checkin_frame.pack(fill=tk.BOTH, expand=True)
-    style = ThemedStyle(fsl_checkin_frame)
-    style.theme_use('radiance')
 
-    # Labels
-    label_barcode_no = tk.Label(
-        fsl_checkin_frame, text="Barcode No:",  background="#fff1f1", font=("Helvetica", 12))
-    label_order_no = tk.Label(
-        fsl_checkin_frame, text="Order No:",   background="#fff1f1", font=("Helvetica", 12))
-    label_checkin_time = tk.Label(
-        fsl_checkin_frame, text="Checkin Time:",  background="#fff1f1", font=("Helvetica", 12))
-    label_checkin_date = tk.Label(
-        fsl_checkin_frame, text="Checkin Date:", background="#fff1f1", font=("Helvetica", 12))
-    label_examiner = tk.Label(
-        fsl_checkin_frame, text="Examiner Name:",   background="#fff1f1", font=("Helvetica", 12))
-    label_examiner_report = tk.Label(
-        fsl_checkin_frame, text="Examiner Report:",   background="#fff1f1", font=("Helvetica", 12))
+    # Sidebar
+    sidebar = tk.Frame(fsl_checkin_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    label_barcode_no.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-    label_order_no.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkin_time.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
-    label_checkin_date.grid(row=3, column=0, padx=10, pady=10, sticky=tk.W)
-    label_examiner.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
-    label_examiner_report.grid(row=5, column=0, padx=10, pady=10, sticky=tk.W)
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Checkin From FSL", None),
+        ("Checkin From Court", checkinfromcourt),
+        ("Home", go_home),
+        ("Back", go_back),
+    ]
 
-    # Entry fields
-    barcode_entry = ttk.Entry(
-        fsl_checkin_frame, width=30, font=("Helvetica", 12))
-    # Use sticky=tk.W for left alignment
-    barcode_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
-    order_no_entry = ttk.Entry(
-        fsl_checkin_frame, width=30, font=("Helvetica", 12))
-    order_no_entry.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
+    for text, command in sidebar_buttons:
+        if text == "Checkin From FSL":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
-    hour_var = tk.StringVar(fsl_checkin_frame, value='00')
-    minute_var = tk.StringVar(fsl_checkin_frame, value='00')
+    # Define fonts
+    textbox_font = ('Helvetica', 12)
+    font_style = ('Helvetica', 12)
 
-    hour_menu = ttk.Combobox(fsl_checkin_frame, textvariable=hour_var, values=[
-                             str(i).zfill(2) for i in range(24)], state='readonly', width=5)
-    minute_menu = ttk.Combobox(fsl_checkin_frame, textvariable=minute_var, values=[
-                               str(i).zfill(2) for i in range(60)], state='readonly', width=5)
-    hour_menu.grid(row=2,  column=1, padx=10, pady=10, sticky="w")
-    minute_menu.grid(row=2,  column=1, padx=(10, 150), pady=10, sticky="e")
+    # Labels and Entry Fields
+    font_style = ('Helvetica', 12)
 
-    # Date field using tkcalendar
-    checkin_date_entry = DateEntry(
-        fsl_checkin_frame, width=15, background='darkblue', foreground='white', borderwidth=2)
-    # Use sticky=tk.W for left alignment
-    checkin_date_entry.grid(row=3, column=1, padx=10, pady=10, sticky=tk.W)
+    tk.Label(fsl_checkin_frame, text="Barcode Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    barcode_entry = tk.Entry(
+        fsl_checkin_frame, background="#FFFFFF", font=textbox_font)
+    barcode_entry.pack(padx=10, pady=5, anchor="w")
 
-    examiner_entry = ttk.Entry(
-        fsl_checkin_frame,  background="#FFFFFF", font=("Helvetica", 12))
-    examiner_entry.grid(row=4, column=1, padx=10, pady=10, sticky=tk.W)
+    tk.Label(fsl_checkin_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    order_no_entry = tk.Entry(
+        fsl_checkin_frame, background="#FFFFFF", font=textbox_font)
+    order_no_entry.pack(padx=10, pady=5, anchor="w")
 
-    # Text area for examiner report
+    tk.Label(fsl_checkin_frame, text="Check In Date:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    checkin_date_entry = DateEntry(fsl_checkin_frame, font=textbox_font,
+                                   width=12, background='darkblue', foreground='white', borderwidth=2)
+    checkin_date_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(fsl_checkin_frame, text="Check In Time:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+
+    time_frame = tk.Frame(fsl_checkin_frame, bg="#f6f4f2")
+    time_frame.pack(padx=10, pady=5, anchor="w")
+
+    hour_var = tk.StringVar(time_frame, value='00')
+    hour_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=hour_var, values=[
+        str(i).zfill(2) for i in range(24)], state='readonly', width=5)
+
+    minute_var = tk.StringVar(time_frame, value='00')
+    minute_menu = ttk.Combobox(time_frame, font=textbox_font, textvariable=minute_var, values=[
+        str(i).zfill(2) for i in range(60)], state='readonly', width=5)
+
+    hour_menu.pack(side=tk.LEFT, pady=5)
+    minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
+
+    tk.Label(fsl_checkin_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    examiner_entry = tk.Entry(
+        fsl_checkin_frame, background="#FFFFFF", font=textbox_font)
+    examiner_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(fsl_checkin_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
     examiner_report_entry = tk.Text(
-        fsl_checkin_frame, height=5, background="#FFFFFF", width=30, font=("Helvetica", 12))
-    # Use sticky=tk.W for left alignment
-    examiner_report_entry.grid(row=5, column=1, padx=10, pady=10, sticky=tk.W)
-
-    # Check-in button
-    checkin_button = tk.Button(fsl_checkin_frame, text="Checkin",
-                               background="#9a9a9a", command=checkin, font=("Helvetica", 12))
-    checkin_button.grid(row=6, column=0, columnspan=4,
-                        padx=10, pady=10, sticky="ew")
+        fsl_checkin_frame, height=5, background="#FFFFFF", font=textbox_font)
+    examiner_report_entry.pack(padx=10, pady=5, anchor="w")
 
     button_font = ('Helvetica', 12)
-    back_button = tk.Button(fsl_checkin_frame, text="Back",
-                            background="#9a9a9a", command=go_back, font=button_font)
-    back_button.grid(row=0, column=30, padx=10, pady=10, sticky="w")
+    # Adjusted button sizes
+    button_width = 20
+    button_height = 2
 
-    home_button = tk.Button(fsl_checkin_frame, text="Home",
-                            background="#9a9a9a", command=go_home, font=button_font)
-    home_button.grid(row=0, column=31, padx=10, pady=10, sticky="w")
+    checkin_button = tk.Button(
+        fsl_checkin_frame, text="Check In", background="#f6f4f2", command=checkin, font=button_font, width=button_width, height=button_height)
+    checkin_button.pack(
+        padx=10, pady=5, anchor="w")
+
+    back_button = tk.Button(
+        fsl_checkin_frame, text="Back", background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
+    back_button.pack(
+        padx=10, pady=5, anchor="w")
+
+    home_button = tk.Button(
+        fsl_checkin_frame, text="Home", background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
+    home_button.pack(
+        padx=10, pady=5, anchor="w")
 
 
 def go_home():

@@ -7,7 +7,7 @@ import FSLInfo.FSLpage as fp
 import CourtInfo.Courtpage as cp
 import Log.log as l
 import logger
-import print
+import printt.print as p
 
 homepage_frame = None
 sidebar_buttons = []
@@ -106,4 +106,4 @@ def log():
 
 def printDetails():
     homepage_destroyer()
-    print.printPage(homepage_frame)
+    p.printPage(homepage_frame)

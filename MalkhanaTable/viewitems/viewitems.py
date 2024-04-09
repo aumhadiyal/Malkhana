@@ -15,7 +15,7 @@ import MalkhanaTable.checkin.checkinpage as ci
 import io
 import logger as lu
 from PIL import Image, ImageTk
-import print
+import printt.print as p
 
 
 viewitems_frame = None
@@ -288,60 +288,6 @@ def viewitems(prev_malkhana_frame):
     go_back_button.grid(row=1, column=10, pady=5)
 
 
-def view_attachment():
-    selected_item = tree.focus()
-    # Assuming the barcode is the first value in the row
-    barcode = tree.item(selected_item, 'values')[0]
-
-    conn = sqlite3.connect('databases/attachments.db')
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT attachment_data FROM attachments WHERE barcode = ?", (barcode,))
-    attachment_data = cursor.fetchone()
-
-    conn.close()
-
-    if attachment_data:
-        # Access the attachment data from the tuple with index 0
-        image_data = attachment_data[0]
-
-        image = Image.open(io.BytesIO(image_data))
-        photo = ImageTk.PhotoImage(image)
-
-        # Create a new window to display the image
-        image_window = tk.Toplevel(viewitems_frame)
-        image_window.title("View Attachment")
-        image_label = tk.Label(image_window, image=photo)
-        image_label.photo = photo  # Keep a reference to the PhotoImage object
-        image_label.pack()
-    else:
-        messagebox.showinfo("Attachment Not Available!")
-
-
-def print_item():
-    selected_item = tree.focus()
-    # Assuming the barcode is the first value in the row
-    barcode = tree.item(selected_item, 'values')[0]
-
-    print.print_details(barcode)
-
-
-def go_back():
-    viewitems_destroyer()
-    m.mkpage(viewitems_frame)
-
-
-def viewitems_destroyer():
-    if viewitems_frame is not None:
-        viewitems_frame.destroy()
-
-
-def go_home():
-    viewitems_destroyer()
-    homepage.open_homepage(viewitems_frame)
-
-
 def search_items(tree, search_field, search_text):
     # Clear previous search results
     for item in tree.get_children():
@@ -371,8 +317,6 @@ def search_items(tree, search_field, search_text):
     except Exception as e:
         # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
-
-# Helper function to convert Gujarati column names to English
 
 
 def convert_to_column(field_name):
@@ -416,3 +360,57 @@ def logoutclicked():
     lu.log_activity(login.current_user, activity)
     viewitems_destroyer()
     login.initloginpage(viewitems_frame)
+
+
+def go_home():
+    viewitems_destroyer()
+    homepage.open_homepage(viewitems_frame)
+
+
+def go_back():
+    viewitems_destroyer()
+    m.mkpage(viewitems_frame)
+
+
+def viewitems_destroyer():
+    if viewitems_frame is not None:
+        viewitems_frame.destroy()
+
+
+def view_attachment():
+    selected_item = tree.focus()
+    # Assuming the barcode is the first value in the row
+    barcode = tree.item(selected_item, 'values')[0]
+
+    conn = sqlite3.connect('databases/attachments.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT attachment_data FROM attachments WHERE barcode = ?", (barcode,))
+    attachment_data = cursor.fetchone()
+
+    conn.close()
+
+    if attachment_data:
+        # Access the attachment data from the tuple with index 0
+        image_data = attachment_data[0]
+
+        image = Image.open(io.BytesIO(image_data))
+        photo = ImageTk.PhotoImage(image)
+
+        # Create a new window to display the image
+        image_window = tk.Toplevel(viewitems_frame)
+        image_window.title("View Attachment")
+        image_label = tk.Label(image_window, image=photo)
+        image_label.photo = photo  # Keep a reference to the PhotoImage object
+        image_label.pack()
+    else:
+        messagebox.showinfo("Attachment Not Available!")
+
+
+def print_item():
+    selected_item = tree.focus()
+    # Assuming the barcode is the first value in the row
+    barcode = tree.item(selected_item, 'values')[0]
+
+    p.print_details(barcode)

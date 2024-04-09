@@ -30,8 +30,8 @@ def CIpage(prev_CI_frame):
 
     # Sidebar buttons
     sidebar_buttons = [
-        ("Checkout to FSL", fsl),
-        ("Checkout to Court", court),
+        ("Check In From FSL", fsl),
+        ("Check In From Court", court),
         ("Home", go_home),
         ("Back", go_back),
     ]
@@ -70,12 +70,12 @@ def go_home():
 
 def fsl():
     checkin_page_destroyer()
-    f.checkin_page(CI_frame)
+    f.checkinfromfsl(CI_frame)
 
 
 def court():
     checkin_page_destroyer()
-    c.checkin_page_2(CI_frame)
+    c.checkinfromcourt(CI_frame)
 
 
 def checkin_page_destroyer():

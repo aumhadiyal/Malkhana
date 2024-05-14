@@ -42,7 +42,7 @@ def initloginpage(prev_main_frame):
                     font=("Helvetica", 28, "bold"))
 
     label_heading = ttk.Label(
-        login_frame, text="Crime Investigation Tracking Software", style='White.TLabel', background="#1b4e39")  # Set white text on dark green background
+        login_frame, text="Malkhana Management Software", style='White.TLabel', background="#1b4e39")  # Set white text on dark green background
     label_heading.pack(pady=(50, 20))  # Add more top padding for spacing
 
     prev_main_frame.master.title("Login Page")

@@ -24,16 +24,6 @@ def open_homepage(prev_login_frame):
     # Get screen width and height
     screen_width = homepage_frame.winfo_screenwidth()
     screen_height = homepage_frame.winfo_screenheight()
-
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(homepage_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
     homepage_frame.master.title("HomePage")
 
     # Create a sidebar with vertical tabs

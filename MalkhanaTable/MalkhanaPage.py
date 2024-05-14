@@ -23,15 +23,6 @@ def mkpage(prev_homepage_frame):
     screen_width = malkhanapage_frame.winfo_screenwidth()
     screen_height = malkhanapage_frame.winfo_screenheight()
 
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(malkhanapage_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
     # Sidebar with buttons
     sidebar = tk.Frame(malkhanapage_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
@@ -56,10 +47,9 @@ def mkpage(prev_homepage_frame):
     content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Add a welcome message in the middle
-    welcome_label = tk.Label(content_frame, text="Homepage", font=("Helvetica", 20), bg="#bdc3c7")
+    welcome_label = tk.Label(
+        content_frame, text="Homepage", font=("Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
-
-    
 
     malkhanapage_frame.mainloop()
 

@@ -6,10 +6,17 @@ import pandas as pd
 import base64
 from PIL import Image, ImageTk
 from ttkthemes import ThemedStyle
-from home import Homepage
-
+import home.Homepage as homepage
+import MalkhanaTable.MalkhanaPage as mk
+import login.login as login
+import logger as lu
+import FSLInfo.FSLpage as f
+import CourtInfo.Courtpage as cp
+import Log.log as l
+import printt.print as p
 print_frame = None
 sidebar_buttons = []
+
 
 def printPage(prev_homepage_frame):
     prev_homepage_frame.destroy()
@@ -23,16 +30,6 @@ def printPage(prev_homepage_frame):
     # Get screen width and height
     screen_width = print_frame.winfo_screenwidth()
     screen_height = print_frame.winfo_screenheight()
-
-    # Load and resize background image
-    bg_image = Image.open("bg.jpeg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
-    bg_photo = ImageTk.PhotoImage(bg_image)
-
-    bg_label = tk.Label(print_frame, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
     # Create a sidebar with vertical tabs
     sidebar = tk.Frame(print_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
@@ -47,10 +44,13 @@ def printPage(prev_homepage_frame):
     ]
 
     for text, command in tabs:
-        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
-            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
-        tab_button.pack(fill=tk.X, pady=5, padx=10)
-        sidebar_buttons.append(tab_button)
+        if text == "Print":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
     # Barcode Input
     barcode_label = tk.Label(
@@ -71,11 +71,6 @@ def printPage(prev_homepage_frame):
     back_button.pack(pady=10)
 
     print_frame.mainloop()
-
-
-def go_back():
-    print_destroyer()
-    Homepage.open_homepage(print_frame)
 
 
 def print_details(barcode):
@@ -136,3 +131,39 @@ def print_destroyer():
     global print_frame
     if print_frame is not None:
         print_frame.destroy()
+
+
+def go_back():
+    print_destroyer()
+    homepage.open_homepage(print_frame)
+
+
+def go_home():
+    print_destroyer()
+    homepage.open_homepage(print_frame)
+
+
+def logoutclicked():
+    lu.log_activity(login.current_user, "LOG-OUT")
+    print_destroyer()
+    login.initloginpage(print_frame)
+
+
+def mkpage():
+    print_destroyer()
+    mk.mkpage(print_frame)
+
+
+def court():
+    print_destroyer()
+    cp.view_court(print_frame)
+
+
+def fsl():
+    print_destroyer()
+    f.viewfsl(print_frame)
+
+
+def log():
+    print_destroyer()
+    l.create_logs_page(print_frame)

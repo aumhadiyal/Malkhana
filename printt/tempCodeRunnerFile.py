@@ -11,6 +11,7 @@ from home import Homepage
 print_frame = None
 sidebar_buttons = []
 
+
 def printPage(prev_homepage_frame):
     prev_homepage_frame.destroy()
 
@@ -33,7 +34,7 @@ def printPage(prev_homepage_frame):
     bg_label.image = bg_photo
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    # Create a sidebar with vertical tabs
+# Sidebar with buttons
     sidebar = tk.Frame(print_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
@@ -45,13 +46,6 @@ def printPage(prev_homepage_frame):
         ("Print", None),
         ("Log Out", logoutclicked),
     ]
-
-    for text, command in tabs:
-        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
-            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
-        tab_button.pack(fill=tk.X, pady=5, padx=10)
-        sidebar_buttons.append(tab_button)
-
     # Barcode Input
     barcode_label = tk.Label(
         print_frame, text="Enter Barcode:", font=("Helvetica", 15))

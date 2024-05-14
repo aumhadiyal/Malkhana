@@ -12,6 +12,10 @@ import CourtInfo.Courtpage as cp
 import Log.log as l
 import printt.print as p
 from PIL import Image, ImageTk
+from FSLInfo import FSLpage as f
+import Log.log as l
+import printt.print as p
+
 court_frame = None
 
 
@@ -89,11 +93,12 @@ def view_court(prev_malkhana_frame):
     tree.heading("Seized Items", text="Seized Items", anchor=tk.W)
     tree.heading("Checkout Date", text="Checkout Date", anchor=tk.W)
     tree.heading("Checkout Time", text="Checkout Time", anchor=tk.W)
-    tree.heading("Undertaking Officer",text="Undertaking Officer", anchor=tk.W)
+    tree.heading("Undertaking Officer",
+                 text="Undertaking Officer", anchor=tk.W)
     tree.heading("Checkin Date", text="Checkin Date", anchor=tk.W)
     tree.heading("Checkin Time", text="Checkin Time", anchor=tk.W)
     tree.heading("Order Details", text="Order Details", anchor=tk.W)
-    
+
     # Add data to the treeview from the database
     try:
         # Connect to the database (or create if it doesn't exist)
@@ -103,7 +108,8 @@ def view_court(prev_malkhana_frame):
         cursor = conn.cursor()
 
         # Execute the SQL command to select all rows from the table
-        cursor.execute('''SELECT * FROM court_records ORDER BY entry_time DESC''')
+        cursor.execute(
+            '''SELECT * FROM court_records ORDER BY entry_time DESC''')
 
         # Fetch all the rows and insert them into the treeview
         for row in cursor.fetchall():
@@ -117,16 +123,20 @@ def view_court(prev_malkhana_frame):
         # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
-    # Get the height of the screen
+# Get the height of the screen
     screen_height = prev_malkhana_frame.master.winfo_screenheight()
 
     # Set the height of the treeview to half of the screen height
     treeview_height = screen_height // 90
 
     # Pack the treeview with the specified height and other configurations
-    tree.pack(fill=tk.BOTH, expand=True, side=tk.TOP, pady=(0, treeview_height))
+    tree.pack(fill=tk.BOTH, expand=True,
+              side=tk.TOP, pady=(0, treeview_height))
 
     x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------
 
     current_page = 1
     entries_per_page = 40
@@ -155,10 +165,10 @@ def view_court(prev_malkhana_frame):
         nonlocal total_entries, data
         tree.delete(*tree.get_children())
         try:
-            conn = sqlite3.connect("databases/fsl_records.db")
+            conn = sqlite3.connect("databases/court_records.db")
             cursor = conn.cursor()
             cursor.execute(
-                '''SELECT * FROM fsl_records ORDER BY entry_time DESC''')
+                '''SELECT * FROM court_records ORDER BY entry_time DESC''')
             data = cursor.fetchall()
             total_entries = len(data)
             update_treeview(current_page)
@@ -203,14 +213,13 @@ def view_court(prev_malkhana_frame):
             cb = tk.Checkbutton(filter_window, text=column, variable=var)
             cb.grid(row=idx, column=0, sticky="w")
 
-        apply_button = tk.Button(filter_window, text="Apply Filters", command=apply_filters)
+        apply_button = tk.Button(
+            filter_window, text="Apply Filters", command=apply_filters)
         apply_button.grid(row=len(tree["columns"]), column=0, pady=5)
-
 
     # Search and filter row
     search_frame = tk.Frame(court_frame)
     search_frame.pack(side=tk.BOTTOM, fill=tk.X)
-
     # Labels
     search_label = tk.Label(search_frame, text="Search Field:",
                             background="#FFFFFF", font=("Helvetica", 13))
@@ -227,7 +236,7 @@ def view_court(prev_malkhana_frame):
                             textvariable=tk.StringVar(), font=("Helvetica", 13))
     search_entry.grid(row=1, column=2, padx=5, pady=5)
 
-    # Button for searching items
+    # Buttons for actions
     search_button = tk.Button(search_frame, text="Search", background="#9a9a9a", command=lambda: search_items(
         tree, search_field_var.get(), search_entry.get()), font=("Helvetica", 13))
     search_button.grid(row=1, column=3, padx=15, pady=5)
@@ -236,10 +245,9 @@ def view_court(prev_malkhana_frame):
                                      command=create_filter_window, background="#9a9a9a", font=("Helvetica", 13))
     select_filter_button.grid(row=2, column=2, padx=(0, 100), pady=5)
 
-    # Button for showing all items
     show_all_btn = tk.Button(search_frame, text="Show All",
                              background="#9a9a9a", command=show_all, font=("Helvetica", 13))
-    show_all_btn.grid(row=1, column=4, padx=15, pady=5)
+    show_all_btn.grid(row=2, column=2, padx=(100, 0), pady=5)
 
     print_details_button = tk.Button(search_frame, background="#9a9a9a",
                                      text="Print Item Details", command=print_item, font=("Helvetica", 13))
@@ -286,29 +294,25 @@ def search_items(tree, search_field, search_text):
         # Commit the changes
         conn.commit()
         conn.close()
-
     except Exception as e:
         # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
-def show_all():
-    # Function to display all items in the treeview
-    for item in tree.get_children():
-        tree.delete(item)
+def convert_to_column(field_name):
+    columnname = {
+        "Barcode": "barcode",
+        "FIR Number": "fir_no",
+        "Seized Items": "seized_items",
+        "Checkout Date": "checkout_date",
+        "Checkout Time": "checkout_time",
+        "Undertaking Officer": "taken_by_whom",
+        "Checkin Date": "checkin_date",
+        "Checkin Time": "checkin_time",
+        "Order Details": "order_details",
+    }
 
-    try:
-        conn = sqlite3.connect("databases/court_records.db")
-        cursor = conn.cursor()
-        cursor.execute(
-            '''SELECT * FROM court_records ORDER BY entry_time DESC''')
-        for row in cursor.fetchall():
-            tree.insert("", tk.END, values=row)
-
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
+    return columnname.get(field_name, field_name)
 
 
 def printDetails():
@@ -354,22 +358,26 @@ def logoutclicked():
     login.initloginpage(court_frame)
 
 
+def logoutclicked():
+    lu.log_activity(login.current_user, "LOG-OUT")
+    court_destroyer()
+    login.initloginpage(court_frame)
+
+
 def mkpage():
-    # Function to go to the Malkhana page
     court_destroyer()
     mk.mkpage(court_frame)
 
 
 def fsl():
-    # Function to go to the FSL page
     court_destroyer()
-    cp.viewfsl(court_frame)
+    f.viewfsl(court_frame)
 
 
 def log():
-    # Function to go to the logs page
     court_destroyer()
     l.create_logs_page(court_frame)
+
 
 def print_item():
     selected_item = tree.focus()

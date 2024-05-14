@@ -5,6 +5,7 @@ import MalkhanaTable.checkin.checkinpage as cp
 import sqlite3
 from datetime import datetime, date
 
+
 CL_frame = None
 
 
@@ -46,7 +47,28 @@ def create_logs_page(prev_homepage_frame):
     CL_frame.master.title("Logs")
     CL_frame.pack()
 
-    logs_tree_frame = ttk.Frame(CL_frame)
+    # Sidebar
+    sidebar = tk.Frame(CL_frame, bg="#2c3e50", width=200)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
+
+    # Sidebar buttons
+    sidebar_buttons = [
+        ("Home", go_home),
+        ("Check In", cp.checkinpage),  # Change this to the appropriate function
+        ("Check Out", None),  # Change this to the appropriate function
+        ("Logs", create_logs_page),
+    ]
+
+    for text, command in sidebar_buttons:
+        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        tab_button.pack(fill=tk.X, pady=5, padx=10)
+
+    # Main content area
+    main_frame = tk.Frame(CL_frame, bg="#dcdcdc")
+    main_frame.pack(fill=tk.BOTH, expand=True)
+
+    logs_tree_frame = ttk.Frame(main_frame, bg="#dcdcdc")
     logs_tree_frame.pack(fill=tk.BOTH, expand=True)
 
     logs_tree_scroll = ttk.Scrollbar(logs_tree_frame)
@@ -73,7 +95,7 @@ def create_logs_page(prev_homepage_frame):
     logs_tree.column("Date", width=200, anchor=tk.CENTER)
     logs_tree.column("Time", width=200, anchor=tk.CENTER)
 
-    search_frame = ttk.Frame(CL_frame)
+    search_frame = ttk.Frame(main_frame, bg="#dcdcdc")
     search_frame.pack(pady=10, anchor=tk.S)  # Align to the bottom of CL_frame
 
     barcode_search_label = ttk.Label(

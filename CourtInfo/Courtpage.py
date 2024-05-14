@@ -2,11 +2,15 @@ import math
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+import main
 from tkinter import ttk
 import home.Homepage as homepage
 import MalkhanaTable.MalkhanaPage as mk
 import login.login as login
 import logger as lu
+import CourtInfo.Courtpage as cp
+import Log.log as l
+import printt.print as p
 from PIL import Image, ImageTk
 from FSLInfo import FSLpage as f
 import Log.log as l
@@ -57,6 +61,7 @@ def view_court(prev_malkhana_frame):
     # Configure the treeview to use the scrollbars
     tree.configure(xscrollcommand=x_scrollbar.set)
 
+    # Define columns
     tree["columns"] = (
         "Barcode",
         "FIR Number",
@@ -69,17 +74,19 @@ def view_court(prev_malkhana_frame):
         "Order Details"
     )
 
-    tree.column("#0", width=0, stretch=tk.NO)
-    tree.column("Barcode", anchor=tk.W, width=100)
-    tree.column("FIR Number", anchor=tk.W, width=100)
-    tree.column("Seized Items", anchor=tk.W, width=150)
-    tree.column("Checkout Date", anchor=tk.W, width=100)
-    tree.column("Checkout Time", anchor=tk.W, width=100)
-    tree.column("Undertaking Officer", anchor=tk.W, width=150)
-    tree.column("Checkin Date", anchor=tk.W, width=100)
-    tree.column("Checkin Time", anchor=tk.W, width=100)
-    tree.column("Order Details", anchor=tk.W, width=100)
+    # Format columns
+    tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
+    tree.column("Barcode", anchor=tk.W, width=100, stretch=tk.NO, minwidth=100)
+    tree.column("FIR Number", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Seized Items", anchor=tk.W, width=150, stretch=tk.NO)
+    tree.column("Checkout Date", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Checkout Time", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Undertaking Officer", anchor=tk.W, width=150, stretch=tk.NO)
+    tree.column("Checkin Date", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Checkin Time", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("Order Details", anchor=tk.W, width=100, stretch=tk.NO)
 
+    # Create headings
     tree.heading("#0", text="", anchor=tk.W)
     tree.heading("Barcode", text="Barcode", anchor=tk.W)
     tree.heading("FIR Number", text="FIR Number", anchor=tk.W)
@@ -92,20 +99,28 @@ def view_court(prev_malkhana_frame):
     tree.heading("Checkin Time", text="Checkin Time", anchor=tk.W)
     tree.heading("Order Details", text="Order Details", anchor=tk.W)
 
+    # Add data to the treeview from the database
     try:
+        # Connect to the database (or create if it doesn't exist)
         conn = sqlite3.connect('databases/court_records.db')
+
+        # Create a cursor to execute SQL commands
         cursor = conn.cursor()
 
+        # Execute the SQL command to select all rows from the table
         cursor.execute(
-            '''SELECT * FROM court_records ORDER by entry_time DESC''')
+            '''SELECT * FROM court_records ORDER BY entry_time DESC''')
 
+        # Fetch all the rows and insert them into the treeview
         for row in cursor.fetchall():
             tree.insert("", tk.END, values=row)
 
+        # Commit the changes
         conn.commit()
         conn.close()
 
     except Exception as e:
+        # Display error message if there's an issue with the database
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 # Get the height of the screen
@@ -260,7 +275,6 @@ def search_items(tree, search_field, search_text):
         tree.delete(item)
 
     # Convert the search_field back to the original column name (in English)
-
     search_field = convert_to_column(search_field)
 
     # Add data to the treeview from the database based on the search criteria
@@ -301,19 +315,47 @@ def convert_to_column(field_name):
     return columnname.get(field_name, field_name)
 
 
+def printDetails():
+    global court_frame
+    # Function to print details
+    court_destroyer()
+    p.print_details(court_frame)
+
+
+def convert_to_column(field_name):
+    # Function to convert field name to column name
+    columnname = {
+        "Barcode": "barcode",
+        "FIR Number": "fir_no",
+        "Seized Items": "seized_items",
+        "Checkout Date": "checkout_date",
+        "Checkout Time": "checkout_time",
+        "Undertaking Officer": "taken_by_whom",
+        "Checkin Date": "checkin_date",
+        "Checkin Time": "checkin_time",
+        "Order Details": "order_details"
+    }
+
+    return columnname.get(field_name, field_name)
+
+
 def court_destroyer():
+    # Function to destroy the court frame
     if court_frame is not None:
         court_frame.destroy()
 
 
 def go_back():
+    # Function to go back to the homepage
     court_destroyer()
     homepage.open_homepage(court_frame)
 
 
-def go_home():
+def logoutclicked():
+    # Function to handle logout
+    lu.log_activity(login.current_user, "LOG-OUT")
     court_destroyer()
-    homepage.open_homepage(court_frame)
+    login.initloginpage(court_frame)
 
 
 def logoutclicked():

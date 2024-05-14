@@ -310,14 +310,6 @@ def search_items(tree, search_field, search_text):
         tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
-def print_item():
-    selected_item = tree.focus()
-    # Assuming the barcode is the first value in the row
-    barcode = tree.item(selected_item, 'values')[0]
-
-    print.print_details(barcode)
-
-
 def convert_to_column(field_name):
     columnname = {
         "Barcode": "barcode",

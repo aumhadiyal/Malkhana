@@ -8,6 +8,7 @@ import MalkhanaTable.MalkhanaPage as m
 import Log.log as log
 from tkinter import ttk
 import sqlite3
+import MalkhanaTable.checkout.checkoutpage as co
 from tkcalendar import DateEntry
 from tkinter import messagebox
 import login.login as login
@@ -188,7 +189,7 @@ def checkouttocourt_page(root):
 
 def go_back():
     checkout_destroyer()
-    cof.COpage(checkout_frame)
+    co.COpage(checkout_frame)
 
 
 def go_home():

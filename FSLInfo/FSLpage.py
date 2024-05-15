@@ -24,7 +24,6 @@ def viewfsl(prev_malkhana_frame):
     viewfsl_frame.pack(fill=tk.BOTH, expand=True)  # To occupy the whole screen
 
     # Get screen width and height
-    screen_width = viewfsl_frame.winfo_screenwidth()
     screen_height = viewfsl_frame.winfo_screenheight()
 
     # Create a sidebar
@@ -74,16 +73,16 @@ def viewfsl(prev_malkhana_frame):
     # Format columns
     tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
     tree.column("Barcode", anchor=tk.W, width=80, stretch=tk.NO, minwidth=80)
-    tree.column("FIR Number", anchor=tk.W,stretch=tk.NO, width=100)
-    tree.column("Seized Items", anchor=tk.W,stretch=tk.NO, width=200)
-    tree.column("FSL Order Number", anchor=tk.W,stretch=tk.NO, width=150)
-    tree.column("Checkout Date", anchor=tk.W,stretch=tk.NO, width=120)
-    tree.column("Checkout Time", anchor=tk.W,stretch=tk.NO, width=120)
-    tree.column("Undertaking Officer", anchor=tk.W,stretch=tk.NO, width=200)
-    tree.column("Checkin Date", anchor=tk.W,stretch=tk.NO, width=120)
-    tree.column("Checkin Time", anchor=tk.W,stretch=tk.NO, width=120)
-    tree.column("Examiner", anchor=tk.W,stretch=tk.NO, width=100)
-    tree.column("FSL Report", anchor=tk.W,stretch=tk.NO, width=650)
+    tree.column("FIR Number", anchor=tk.W, stretch=tk.NO, width=100)
+    tree.column("Seized Items", anchor=tk.W, stretch=tk.NO, width=200)
+    tree.column("FSL Order Number", anchor=tk.W, stretch=tk.NO, width=150)
+    tree.column("Checkout Date", anchor=tk.W, stretch=tk.NO, width=120)
+    tree.column("Checkout Time", anchor=tk.W, stretch=tk.NO, width=120)
+    tree.column("Undertaking Officer", anchor=tk.W, stretch=tk.NO, width=200)
+    tree.column("Checkin Date", anchor=tk.W, stretch=tk.NO, width=120)
+    tree.column("Checkin Time", anchor=tk.W, stretch=tk.NO, width=120)
+    tree.column("Examiner", anchor=tk.W, stretch=tk.NO, width=100)
+    tree.column("FSL Report", anchor=tk.W, stretch=tk.NO, width=650)
 
     # Create headings
     tree.heading("#0", text="", anchor=tk.W)
@@ -365,4 +364,4 @@ def print_item():
 def printDetails():
     global viewfsl_frame
     fsl_destroyer()
-    p.print_details(viewfsl_frame)
+    p.printPage(viewfsl_frame)

@@ -75,16 +75,17 @@ def view_court(prev_malkhana_frame):
     )
 
     # Format columns
-    tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
-    tree.column("Barcode", anchor=tk.W, width=100, stretch=tk.NO, minwidth=100)
-    tree.column("FIR Number", anchor=tk.W, width=100, stretch=tk.NO)
-    tree.column("Seized Items", anchor=tk.W, width=150, stretch=tk.NO)
-    tree.column("Checkout Date", anchor=tk.W, width=100, stretch=tk.NO)
-    tree.column("Checkout Time", anchor=tk.W, width=100, stretch=tk.NO)
-    tree.column("Undertaking Officer", anchor=tk.W, width=150, stretch=tk.NO)
-    tree.column("Checkin Date", anchor=tk.W, width=100, stretch=tk.NO)
-    tree.column("Checkin Time", anchor=tk.W, width=100, stretch=tk.NO)
-    tree.column("Order Details", anchor=tk.W, width=100, stretch=tk.NO)
+    tree.column("#0", width=0, stretch=tk.YES)  # Hidden first column
+    tree.column("Barcode", anchor=tk.W, width=100,
+                stretch=tk.YES, minwidth=100)
+    tree.column("FIR Number", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("Seized Items", anchor=tk.W, width=150, stretch=tk.YES)
+    tree.column("Checkout Date", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("Checkout Time", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("Undertaking Officer", anchor=tk.W, width=150, stretch=tk.YES)
+    tree.column("Checkin Date", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("Checkin Time", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("Order Details", anchor=tk.W, width=100, stretch=tk.YES)
 
     # Create headings
     tree.heading("#0", text="", anchor=tk.W)
@@ -390,4 +391,4 @@ def print_item():
 def printDetails():
     global court_frame
     court_destroyer()
-    p.print_details(court_frame)
+    p.printPage(court_frame)

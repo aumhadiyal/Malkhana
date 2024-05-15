@@ -4,7 +4,14 @@ import home.Homepage as Homepage
 import MalkhanaTable.checkin.checkinpage as cp
 import sqlite3
 from datetime import datetime, date
-
+import home.Homepage as homepage
+import MalkhanaTable.MalkhanaPage as mk
+import login.login as login
+import logger as lu
+import FSLInfo.FSLpage as f
+import CourtInfo.Courtpage as cp
+import Log.log as l
+import printt.print as p
 
 CL_frame = None
 
@@ -45,33 +52,38 @@ def create_logs_page(prev_homepage_frame):
     CL_destroyer()
     CL_frame = tk.Frame(prev_homepage_frame.master)
     CL_frame.master.title("Logs")
-    CL_frame.pack()
+    CL_frame.pack(fill=tk.BOTH, expand=True)
 
     # Sidebar
     sidebar = tk.Frame(CL_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    # Sidebar buttons
-    sidebar_buttons = [
-        ("Home", go_home),
-        ("Check In", cp.checkinpage),  # Change this to the appropriate function
-        ("Check Out", None),  # Change this to the appropriate function
-        ("Logs", create_logs_page),
+    tabs = [
+        ("Malkhana Info", mkpage),
+        ("FSL Info", fsl),
+        ("Court Info", court),
+        ("Logs", None),
+        ("Print", printDetails),
+        ("Log Out", logoutclicked),
     ]
 
-    for text, command in sidebar_buttons:
-        tab_button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
-            "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
-        tab_button.pack(fill=tk.X, pady=5, padx=10)
+    for text, command in tabs:
+        if text == "Logs":
+            button = tk.Button(sidebar, text=text, background="#16a085", foreground="#ecf0f1", font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        else:
+            button = tk.Button(sidebar, text=text, background="#34495e", foreground="#ecf0f1", command=command, font=(
+                "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
+        button.pack(fill=tk.X, pady=5, padx=10)
 
     # Main content area
     main_frame = tk.Frame(CL_frame, bg="#dcdcdc")
     main_frame.pack(fill=tk.BOTH, expand=True)
 
-    logs_tree_frame = ttk.Frame(main_frame, bg="#dcdcdc")
+    logs_tree_frame = tk.Frame(main_frame, bg="#dcdcdc")
     logs_tree_frame.pack(fill=tk.BOTH, expand=True)
 
-    logs_tree_scroll = ttk.Scrollbar(logs_tree_frame)
+    logs_tree_scroll = tk.Scrollbar(logs_tree_frame)
     logs_tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
     logs_tree = ttk.Treeview(
@@ -95,14 +107,14 @@ def create_logs_page(prev_homepage_frame):
     logs_tree.column("Date", width=200, anchor=tk.CENTER)
     logs_tree.column("Time", width=200, anchor=tk.CENTER)
 
-    search_frame = ttk.Frame(main_frame, bg="#dcdcdc")
+    search_frame = tk.Frame(main_frame, bg="#dcdcdc")
     search_frame.pack(pady=10, anchor=tk.S)  # Align to the bottom of CL_frame
 
-    barcode_search_label = ttk.Label(
+    barcode_search_label = tk.Label(
         search_frame, text="Search by Barcode: ", font=("Helvetica", 12))
     barcode_search_label.pack(side=tk.LEFT)
 
-    barcode_search_entry = ttk.Entry(
+    barcode_search_entry = tk.Entry(
         search_frame,  background="#B9E6FF", width=20, font=("Helvetica", 12))
     barcode_search_entry.pack(side=tk.LEFT, padx=5)
 
@@ -125,11 +137,43 @@ def search_logs_and_display(search_barcode, logs_tree):
         logs_tree.insert("", tk.END, values=log_entry)
 
 
-def go_home():
-    CL_destroyer()
-    Homepage.open_homepage(CL_frame)
-
-
 def CL_destroyer():
     if CL_frame is not None:
         CL_frame.destroy()
+
+
+def go_back():
+    CL_destroyer()
+    homepage.open_homepage(CL_frame)
+
+
+def go_home():
+    CL_destroyer()
+    homepage.open_homepage(CL_frame)
+
+
+def logoutclicked():
+    lu.log_activity(login.current_user, "LOG-OUT")
+    CL_destroyer()
+    login.initloginpage(CL_frame)
+
+
+def mkpage():
+    CL_destroyer()
+    mk.mkpage(CL_frame)
+
+
+def court():
+    CL_destroyer()
+    cp.view_court(CL_frame)
+
+
+def fsl():
+    CL_destroyer()
+    f.viewfsl(CL_frame)
+
+
+def printDetails():
+    global CL_frame
+    CL_destroyer()
+    p.printPage(CL_frame)

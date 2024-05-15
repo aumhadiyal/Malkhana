@@ -19,10 +19,6 @@ def mkpage(prev_homepage_frame):
     malkhanapage_frame.master.title("Malkhana page")
     malkhanapage_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Get screen width and height
-    screen_width = malkhanapage_frame.winfo_screenwidth()
-    screen_height = malkhanapage_frame.winfo_screenheight()
-
     # Sidebar with buttons
     sidebar = tk.Frame(malkhanapage_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
@@ -48,7 +44,10 @@ def mkpage(prev_homepage_frame):
 
     # Add a welcome message in the middle
     welcome_label = tk.Label(
-        content_frame, text="Homepage", font=("Helvetica", 20), bg="#bdc3c7")
+        content_frame, text="Malkhana Page ", font=("Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
+    welcome_label = tk.Label(
+        content_frame, text="You can Add,View,Checkin,Checkout items ", font=("Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
 
     malkhanapage_frame.mainloop()

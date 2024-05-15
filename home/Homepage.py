@@ -50,7 +50,7 @@ def open_homepage(prev_login_frame):
     content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Add a welcome message in the middle
-    welcome_label = tk.Label(content_frame, text="Welcome to the Crime Investigation Tracking Software!", font=(
+    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
         "Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
 

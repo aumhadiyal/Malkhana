@@ -45,8 +45,12 @@ def COpage(prev_CO_frame):
     content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Add a welcome message in the middle
-    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
+    welcome_label = tk.Label(content_frame, text="Welcome to the Check Out!", font=(
         "Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
+
+    welcome_label = tk.Label(
+        content_frame, text="You can Check Out items to FSL or Court ", font=("Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
 
     # Add some additional information or widgets

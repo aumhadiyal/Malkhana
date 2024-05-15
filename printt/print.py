@@ -27,9 +27,6 @@ def printPage(prev_homepage_frame):
     print_frame.master.title("Print Page")
     print_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Get screen width and height
-    screen_width = print_frame.winfo_screenwidth()
-    screen_height = print_frame.winfo_screenheight()
     # Create a sidebar with vertical tabs
     sidebar = tk.Frame(print_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)

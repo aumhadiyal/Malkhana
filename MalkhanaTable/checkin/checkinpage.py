@@ -19,11 +19,6 @@ def CIpage(prev_CI_frame):
     CI_frame = tk.Frame(prev_CI_frame.master)
     CI_frame.master.title("Check Out ")
     CI_frame.pack(fill=tk.BOTH, expand=True)
-
-    # Get screen width and height
-    screen_width = CI_frame.winfo_screenwidth()
-    screen_height = CI_frame.winfo_screenheight()
-
     # Sidebar
     sidebar = tk.Frame(CI_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
@@ -46,8 +41,12 @@ def CIpage(prev_CI_frame):
     content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Add a welcome message in the middle
-    welcome_label = tk.Label(content_frame, text="Welcome to the Malkhana Management Software!", font=(
+    welcome_label = tk.Label(content_frame, text="Check In Page!", font=(
         "Helvetica", 20), bg="#bdc3c7")
+    welcome_label.pack(pady=20)
+
+    welcome_label = tk.Label(
+        content_frame, text="You can Check In items from Court and FSL ", font=("Helvetica", 20), bg="#bdc3c7")
     welcome_label.pack(pady=20)
 
     # Add some additional information or widgets

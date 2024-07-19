@@ -1,5 +1,4 @@
 import tkinter as tk
-from PIL import Image, ImageTk
 import home.Homepage as Homepage  # Importing homepage module
 import MalkhanaTable.additems.additems as a
 import MalkhanaTable.checkout.checkoutpage as co

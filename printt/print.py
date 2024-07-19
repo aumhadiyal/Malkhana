@@ -3,9 +3,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 import sqlite3
 import pandas as pd
-import base64
-from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle
+import base64 
 import home.Homepage as homepage
 import MalkhanaTable.MalkhanaPage as mk
 import login.login as login

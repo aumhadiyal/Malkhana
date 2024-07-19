@@ -11,7 +11,6 @@ import logger as lu
 import CourtInfo.Courtpage as cp
 import Log.log as l
 import printt.print as p
-from PIL import Image, ImageTk
 from FSLInfo import FSLpage as f
 import Log.log as l
 import printt.print as p

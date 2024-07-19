@@ -11,7 +11,6 @@ import logger as lu
 import CourtInfo.Courtpage as cp
 import Log.log as l
 import printt.print as p
-from PIL import Image, ImageTk
 viewfsl_frame = None
 
 

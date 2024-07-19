@@ -1,10 +1,8 @@
 import tkinter as tk
-from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutCourt as c
 import MalkhanaTable.checkout.checkoutFSL as f
 import MalkhanaTable.MalkhanaPage as m
-from PIL import Image, ImageTk
 
 from login import login
 

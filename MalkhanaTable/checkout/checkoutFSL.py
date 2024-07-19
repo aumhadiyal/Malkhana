@@ -1,5 +1,4 @@
 import tkinter as tk
-from ttkthemes import ThemedStyle
 import MalkhanaTable.checkout.checkoutCourt as coc
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutpage as cof
@@ -12,7 +11,6 @@ from tkcalendar import DateEntry
 import datetime
 import logger as lu
 import login.login as login
-from PIL import Image, ImageTk
 
 checkout_frame = None
 

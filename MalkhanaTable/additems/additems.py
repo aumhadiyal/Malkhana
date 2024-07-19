@@ -1,45 +1,87 @@
 import tkinter as tk
-import sqlite3
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from tkinter import ttk
 from tkcalendar import DateEntry
-from ttkthemes import ThemedStyle
+import sqlite3
+import datetime
+import barcode
+from barcode.writer import ImageWriter
+from PIL import Image, ImageTk
+import io
+import logger as lu
 import MalkhanaTable.viewitems.viewitems as vi
 import home.Homepage as Homepage
 import MalkhanaTable.MalkhanaPage as m
+import random
+import string
 import login.login as login
-from tkinter import filedialog
-import datetime
-import logger as lu
-from PIL import Image, ImageTk
 import MalkhanaTable.checkout.checkoutpage as co
 import MalkhanaTable.checkin.checkinpage as ci
 
 
 additems_frame = None
-
 file_path = None
+barcode_image_label = None  # For displaying the barcode image
 
+
+def generate_unique_barcode(fir_no):
+    global barcodee
+    if not fir_no:
+        return None
+    random_suffix = random.randint(100000, 999999)
+    barcodee = random_suffix
+    return f"{fir_no}-{random_suffix}"
+
+
+def generate_barcode_image(barcode_number):
+    code128 = barcode.get_barcode_class('code128')
+    barcode_instance = code128(barcode_number, writer=ImageWriter())
+    barcode_image = barcode_instance.render()
+    
+    with io.BytesIO() as buf:
+        barcode_image.save(buf, format='PNG')
+        img_data = buf.getvalue()
+    
+    img = Image.open(io.BytesIO(img_data))
+    img = ImageTk.PhotoImage(img)
+    
+    return img
+
+def generate_barcode():
+    fir_no = fir_no_entry.get()
+    if not fir_no:
+        messagebox.showerror("Error", "FIR Number must be entered to generate a barcode.")
+        return
+    
+    barcode_number = generate_unique_barcode(fir_no)
+    barcode_entry.config(state=tk.NORMAL)
+    barcode_entry.delete(0, tk.END)
+    barcode_entry.insert(0, barcode_number)
+    barcode_entry.config(state=tk.DISABLED)
+    
+    barcode_img = generate_barcode_image(barcode_number)
+    if barcode_image_label:
+        barcode_image_label.config(image=barcode_img)
+        barcode_image_label.image = barcode_img
+
+import tkinter as tk
+from tkinter import ttk
+from tkcalendar import DateEntry
 
 def additems(prev_malkhana_frame):
     prev_malkhana_frame.destroy()
 
-    global additems_frame
-    global barcode_entry, fir_no_entry, seized_items_entry, ipc_section_entry, crime_location_entry, crime_date_entry, hour_var, minute_var, crime_witness_entry, crime_inspector_entry, where_kept_entry, description_of_items_entry
+    global additems_frame, barcode_entry, fir_no_entry, seized_items_entry, ipc_section_entry, crime_location_entry, crime_date_entry, hour_var, minute_var, crime_witness_entry, crime_inspector_entry, where_kept_entry, description_of_items_entry, barcode_image_label
     additems_destroyer()
     additems_frame = tk.Frame(prev_malkhana_frame.master)
     additems_frame.master.title("Add Items")
     additems_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Get screen width and height
-    screen_width = additems_frame.winfo_screenwidth()
-    screen_height = additems_frame.winfo_screenheight()
-
     # Sidebar
     sidebar = tk.Frame(additems_frame, bg="#2c3e50", width=200)
     sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-    # Sidebar buttons
+    # Sidebar buttons 
     sidebar_buttons = [
         ("Add Items", None),  # None as a placeholder for the command
         ("View Items", viewitemsclicked),
@@ -58,53 +100,83 @@ def additems(prev_malkhana_frame):
                 "Helvetica", 12), width=20, height=2, relief=tk.FLAT)
         button.pack(fill=tk.X, pady=5, padx=10)
 
+    # Create a Canvas widget for scrolling
+    canvas = tk.Canvas(additems_frame)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+    # Add a vertical scrollbar
+    y_scrollbar = ttk.Scrollbar(additems_frame, orient=tk.VERTICAL, command=canvas.yview)
+    y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    # Create a frame inside the canvas for content
+    content_frame = tk.Frame(canvas)
+    canvas.create_window((0, 0), window=content_frame, anchor="nw")
+
+    # Configure the canvas to use the scrollbar
+    canvas.configure(yscrollcommand=y_scrollbar.set)
+
+    def update_scrollregion(event):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    content_frame.bind("<Configure>", update_scrollregion)
+
     # Define fonts
     textbox_font = ('Helvetica', 12)
     font_style = ('Helvetica', 12)
 
-    # Labels and Entry Fields
-    font_style = ('Helvetica', 12)
+    # Container for barcode number and image
+    barcode_frame = tk.Frame(content_frame)
+    barcode_frame.pack(padx=10, pady=5, anchor="w", fill=tk.X)
 
-    tk.Label(additems_frame, text="Barcode Number:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(barcode_frame, text="Barcode Number:", font=font_style).pack(
         padx=10, pady=5, anchor="w")
+
+    # Container for barcode entry and button
+    barcode_container = tk.Frame(barcode_frame, bg="#f6f4f2")
+    barcode_container.pack(padx=10, pady=5, anchor="w")
+
     barcode_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    barcode_entry.pack(padx=10, pady=5, anchor="w")
+        barcode_container, background="#FFFFFF", font=textbox_font, state=tk.DISABLED, width=20)
+    barcode_entry.pack(side=tk.LEFT, padx=5)
 
-    tk.Label(additems_frame, text="FIR Number:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    fir_no_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    fir_no_entry.pack(padx=10, pady=5, anchor="w")
+    generate_barcode_button = tk.Button(
+        barcode_container, text="Generate Barcode", background="#f6f4f2", command=generate_barcode, font=font_style, width=20)
+    generate_barcode_button.pack(side=tk.LEFT, padx=5)
 
-    tk.Label(additems_frame, text="Seized Items:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    seized_items_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    seized_items_entry.pack(padx=10, pady=5, anchor="w")
+    barcode_image_label = tk.Label(barcode_frame, bg="#f6f4f2")
+    barcode_image_label.pack(side=tk.LEFT, padx=10)
 
-    tk.Label(additems_frame, text="IPC Section:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    ipc_section_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    ipc_section_entry.pack(padx=10, pady=5, anchor="w")
+    # Labels and Entry Fields
+    labels_and_entries = [
+        ("FIR Number:", "fir_no_entry"),
+        ("Seized Items:", "seized_items_entry"),
+        ("IPC Section:", "ipc_section_entry"),
+        ("Crime Location:", "crime_location_entry"),
+        ("Crime Witnesses:", "crime_witness_entry"),
+        ("Crime Inspector:", "crime_inspector_entry"),
+        ("Where Kept:", "where_kept_entry"),
+        ("Description of Item:", "description_of_items_entry")
+    ]
 
-    tk.Label(additems_frame, text="Crime Location:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    crime_location_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    crime_location_entry.pack(padx=10, pady=5, anchor="w")
+    for label_text, entry_var in labels_and_entries:
+        tk.Label(content_frame, text=label_text, background="#f6f4f2", font=font_style).pack(
+            padx=10, pady=5, anchor="w")
+        entry = tk.Entry(
+            content_frame, background="#FFFFFF", font=textbox_font)
+        entry.pack(padx=10, pady=5, anchor="w")
+        globals()[entry_var] = entry
 
-    tk.Label(additems_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
+    # Crime Date and Time
+    tk.Label(content_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
-    crime_date_entry = DateEntry(additems_frame, font=textbox_font,
+    crime_date_entry = DateEntry(content_frame, font=textbox_font,
                                  width=12, background='darkblue', foreground='white', borderwidth=2)
     crime_date_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(additems_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(content_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
 
-    time_frame = tk.Frame(additems_frame, bg="#f6f4f2")
+    time_frame = tk.Frame(content_frame, bg="#f6f4f2")
     time_frame.pack(padx=10, pady=5, anchor="w")
 
     hour_var = tk.StringVar(time_frame, value='00')
@@ -118,58 +190,33 @@ def additems(prev_malkhana_frame):
     hour_menu.pack(side=tk.LEFT, pady=5)
     minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
 
-    tk.Label(additems_frame, text="Crime Witnesses:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    crime_witness_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    crime_witness_entry.pack(padx=10, pady=5, anchor="w")
-
-    tk.Label(additems_frame, text="Crime Inspector:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    crime_inspector_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    crime_inspector_entry.pack(padx=10, pady=5, anchor="w")
-
-    tk.Label(additems_frame, text="Where Kept:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    where_kept_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    where_kept_entry.pack(padx=10, pady=5, anchor="w")
-
-    tk.Label(additems_frame, text="Description of Item:", background="#f6f4f2", font=font_style).pack(
-        padx=10, pady=5, anchor="w")
-    description_of_items_entry = tk.Entry(
-        additems_frame, background="#FFFFFF", font=textbox_font)
-    description_of_items_entry.pack(padx=10, pady=5, anchor="w")
-
     button_font = ('Helvetica', 12)
-    # Adjusted button sizes
     button_width = 20
     button_height = 2
 
     # Add Attachment Button
     add_attachment_button = tk.Button(
-        additems_frame, text="Add Attachment", background="#f6f4f2", command=browse_file, font=button_font, width=button_width, height=button_height)
+        content_frame, text="Add Attachment", background="#f6f4f2", command=browse_file, font=button_font, width=button_width, height=button_height)
     add_attachment_button.pack(
         padx=10, pady=5, anchor="w")
 
     # Add Item Button
-    add_item_button = tk.Button(additems_frame, text="Add Item",
+    add_item_button = tk.Button(content_frame, text="Add Item",
                                 background="#f6f4f2", command=insert_data, font=button_font, width=button_width, height=button_height)
     add_item_button.pack(padx=10, pady=5, side=tk.LEFT)
 
     # Back Button
-    back_button = tk.Button(additems_frame, text="Back",
+    back_button = tk.Button(content_frame, text="Back",
                             background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
     back_button.pack(padx=10, pady=5, side=tk.LEFT)
 
     # Home Button
-    home_button = tk.Button(additems_frame, text="Home",
+    home_button = tk.Button(content_frame, text="Home",
                             background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
     home_button.pack(padx=10, pady=5, side=tk.LEFT)
 
     # Logout Button
-    logout = tk.Button(additems_frame, text="Log Out",
+    logout = tk.Button(content_frame, text="Log Out",
                        background="#f6f4f2", command=logoutclicked, font=button_font, width=button_width, height=button_height)
     logout.pack(padx=10, pady=5, side=tk.LEFT)
 
@@ -178,8 +225,7 @@ def additems(prev_malkhana_frame):
 
 def insert_data():
 
-    global barcode_entry, fir_no_entry, seized_items_entry, ipc_section_entry, crime_location_entry, crime_date_entry, hour_var, minute_var, crime_witness_entry, crime_inspector_entry, where_kept_entry, description_of_items_entry
-    barcode = barcode_entry.get()
+    global barcodee, fir_no_entry, seized_items_entry, ipc_section_entry, crime_location_entry, crime_date_entry, hour_var, minute_var, crime_witness_entry, crime_inspector_entry, where_kept_entry, description_of_items_entry
     fir_no = fir_no_entry.get()
     seized_items = seized_items_entry.get()
     ipc_section = ipc_section_entry.get()
@@ -239,16 +285,16 @@ def insert_data():
         cursor.execute('''INSERT INTO items (barcode,fir_no, seized_items, ipc_section, 
                           crime_location, crime_date, crime_time, crime_witness, 
                           crime_inspector,item_status,where_kept,description_of_items,entry_time,attachments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (barcode, fir_no, seized_items, ipc_section, crime_location, crime_date,
+                       (barcodee, fir_no, seized_items, ipc_section, crime_location, crime_date,
                         crime_time, crime_witness, crime_inspector, item_status, where_kept, description_of_items, entry_time, image_data))
 
         if file_path:
-            save_attachment(barcode, file_path)
+            save_attachment(barcodee, file_path)
 
         # Commit the changes
         conn.commit()
         conn.close()
-        activity = "\nAdded item barcode no: "+barcode
+        activity = "\nAdded item barcode no: "+ str(barcodee)
         lu.log_activity(login.current_user, activity)
 
         # Clear the entry fields

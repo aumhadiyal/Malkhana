@@ -1,12 +1,9 @@
-import tkinter as tk
-from ttkthemes import ThemedStyle
+import tkinter as tk 
 import MalkhanaTable.checkin.checkinFromFSL as f
 import MalkhanaTable.checkin.checkinFromCourt as c
 import MalkhanaTable.checkin.checkinFromFSL as ci
 import home.Homepage as Homepage
-import MalkhanaTable.MalkhanaPage as m
-from PIL import Image, ImageTk
-
+import MalkhanaTable.MalkhanaPage as m 
 from login import login
 
 CI_frame = None

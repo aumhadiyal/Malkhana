@@ -1,7 +1,5 @@
 import datetime
 import tkinter as tk
-from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle
 import home.Homepage as Homepage
 import MalkhanaTable.checkout.checkoutFSL as cof
 import MalkhanaTable.MalkhanaPage as m

@@ -6,15 +6,14 @@ import main
 from tkinter import ttk
 import home.Homepage as homepage
 import MalkhanaTable.MalkhanaPage as m
-import login.login as login
 from PIL import Image, ImageTk
+import login.login as login
 import os
 import MalkhanaTable.additems.additems as ai
 import MalkhanaTable.checkout.checkoutpage as co
 import MalkhanaTable.checkin.checkinpage as ci
 import io
 import logger as lu
-from PIL import Image, ImageTk
 import printt.print as p
 
 

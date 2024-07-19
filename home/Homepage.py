@@ -1,6 +1,5 @@
 import tkinter as tk
-from ttkthemes import ThemedStyle
-from PIL import Image, ImageTk
+ 
 import login.login as login
 import MalkhanaTable.MalkhanaPage as mk
 import FSLInfo.FSLpage as fp

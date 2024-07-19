@@ -1,6 +1,4 @@
 import tkinter as tk
-from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle
 import login.login as l
 
 

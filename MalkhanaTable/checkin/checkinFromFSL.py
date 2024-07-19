@@ -1,6 +1,4 @@
-import tkinter as tk
-from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle
+import tkinter as tk 
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import MalkhanaTable.checkin.checkinpage as cp

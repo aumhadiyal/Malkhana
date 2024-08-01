@@ -10,8 +10,9 @@ from tkcalendar import DateEntry
 from tkinter import messagebox
 import login.login as login
 import logger as lu
-court_checkin_frame = None
+from datetime import datetime
 
+court_checkin_frame = None
 
 def update_item_status(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect('databases/items_in_malkhana.db')
@@ -34,7 +35,6 @@ def update_item_status(barcode, checkin_date, checkin_time, order_details):
     activity = "Item checked in from Court barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
 
-
 def checkin():
     barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
@@ -48,12 +48,10 @@ def checkin():
     checkin_date_entry.set_date(None)  # Clear the date entry
     order_details_entry.delete("1.0", tk.END)
 
-
 def checkinfromfsl():
     global court_checkin_frame
     court_checkin_destroyer()
     cif.checkinfromfsl(court_checkin_frame)
-
 
 def checkinfromcourt(root):
     root.destroy()
@@ -103,9 +101,13 @@ def checkinfromcourt(root):
 
     tk.Label(court_checkin_frame, text="Check In Date:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
-    checkin_date_entry = DateEntry(court_checkin_frame, font=textbox_font,
+    
+    date_frame = tk.Frame(court_checkin_frame, bg="#f6f4f2")
+    date_frame.pack(padx=10, pady=5, anchor="w")
+    
+    checkin_date_entry = DateEntry(date_frame, font=textbox_font,
                                    width=12, background='darkblue', foreground='white', borderwidth=2)
-    checkin_date_entry.pack(padx=10, pady=5, anchor="w")
+    checkin_date_entry.pack(side=tk.LEFT, padx=5, pady=5)
 
     tk.Label(court_checkin_frame, text="Check In Time:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
@@ -123,6 +125,7 @@ def checkinfromcourt(root):
 
     hour_menu.pack(side=tk.LEFT, pady=5)
     minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
+
 
     tk.Label(court_checkin_frame, text="Order Details:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
@@ -150,21 +153,17 @@ def checkinfromcourt(root):
     home_button.pack(
         padx=10, pady=5, anchor="w")
 
-
 def go_home():
     court_checkin_destroyer()
     Homepage.open_homepage(court_checkin_frame)
-
 
 def go_back():
     court_checkin_destroyer()
     cp.CIpage(court_checkin_frame)
 
-
 def court_checkin_destroyer():
     if court_checkin_frame is not None:
         court_checkin_frame.destroy()
-
 
 def barcode_checker(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
@@ -185,7 +184,6 @@ def barcode_checker(barcode, checkin_date, checkin_time, order_details):
     barcode_entry.delete(0, tk.END)
     checkin_date_entry.set_date(None)  # Clear the date entry
     order_details_entry.delete("1.0", tk.END)
-
 
 def already_in_or_not(barcode, checkin_date, checkin_time, order_details):
     conn = sqlite3.connect("databases/items_in_malkhana.db")

@@ -40,18 +40,6 @@ def update_item_status(barcode, checkin_date, checkin_time,
     lu.log_activity(login.current_user, activity)
 
 
-def set_custom_theme(root):
-    # Load and display background image
-    bg_image = Image.open("bg.jpeg")
-    # Resize the image to match the window size
-    bg_image = bg_image.resize((root.winfo_screenwidth(), 1000), Image.LANCZOS)
-
-    bg_photo = ImageTk.PhotoImage(bg_image)
-    bg_label = tk.Label(root, image=bg_photo)
-    bg_label.image = bg_photo
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-
 def checkin():
     barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
@@ -148,13 +136,13 @@ def checkinfromfsl(prev_checkin_page):
     hour_menu.pack(side=tk.LEFT, pady=5)
     minute_menu.pack(side=tk.LEFT, padx=10, pady=5)
 
-    tk.Label(fsl_checkin_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(fsl_checkin_frame, text="Examiner Name:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
     examiner_entry = tk.Entry(
         fsl_checkin_frame, background="#FFFFFF", font=textbox_font)
     examiner_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(fsl_checkin_frame, text="Order Number:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(fsl_checkin_frame, text="FSL Report:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
     examiner_report_entry = tk.Text(
         fsl_checkin_frame, height=5, background="#FFFFFF", font=textbox_font)

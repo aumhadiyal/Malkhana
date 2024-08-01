@@ -15,6 +15,27 @@ import login.login as login
 checkout_frame = None
 
 
+def autofill_details():
+    barcode = barcode_entry.get()
+    if not barcode:
+        messagebox.showwarning("Warning", "Barcode cannot be empty.")
+        return
+
+    conn = sqlite3.connect("databases/items_in_malkhana.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        fir_no_entry.delete(0, tk.END)
+        seized_items_entry.delete(0, tk.END)
+        order_no_entry.delete(0, tk.END)
+        fir_no_entry.insert(0, result[1])
+        seized_items_entry.insert(0, result[2])
+    else:
+        messagebox.showerror("Error", "Barcode not found in the database.")
+
 def update_item_status(barcode, fir_no, seized_items, taken_by_whom, checkout_date, checkout_time, order_no):
     con = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = con.cursor()
@@ -46,7 +67,7 @@ def update_item_status(barcode, fir_no, seized_items, taken_by_whom, checkout_da
     conn.close()
 
     messagebox.showinfo("Successful", "Succesfully checked out from Malkhana")
-    log.update_logs(barcode, "CheckOut Into FSL",
+    log.update_logs(barcode, "Checked Out to FSL",
                     checkout_date, checkout_time)
     activity = "Item checked out to FSL barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
@@ -58,11 +79,12 @@ def checkout_destroyer():
 
 
 def checkouttoFSL():
+    
     barcode = barcode_entry.get()
     fir_no = fir_no_entry.get()
     seized_items = seized_items_entry.get()
     taken_by_whom = taken_by_whom_entry.get()
-    checkout_date = checkout_date_entry.get_date()
+    checkout_date = checkout_date_entry.get()
     checkout_time = f"{hour_var.get()}:{minute_var.get()}"
     order_no = order_no_entry.get()
 
@@ -140,13 +162,13 @@ def checkouttoFSL_page(root):
         checkout_frame, background="#FFFFFF", font=textbox_font)
     taken_by_whom_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(checkout_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(checkout_frame, text="Check Out Date:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
-    crime_date_entry = DateEntry(checkout_frame, font=textbox_font,
+    checkout_date_entry = DateEntry(checkout_frame, font=textbox_font,
                                  width=12, background='darkblue', foreground='white', borderwidth=2)
-    crime_date_entry.pack(padx=10, pady=5, anchor="w")
+    checkout_date_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(checkout_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(checkout_frame, text="Check Out Time:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
 
     time_frame = tk.Frame(checkout_frame, bg="#f6f4f2")
@@ -177,6 +199,11 @@ def checkouttoFSL_page(root):
     checkout_button = tk.Button(checkout_frame, text="Checkout Item",
                                 background="#f6f4f2", command=checkouttoFSL, font=button_font, width=button_width, height=button_height)
     checkout_button.pack(padx=10, side=tk.LEFT)
+
+    autofill_button = tk.Button(checkout_frame, text="Autofill Details",
+                                background="#f6f4f2", command=autofill_details, font=button_font, width=button_width, height=button_height)
+    autofill_button.pack(padx=10, pady=5, side=tk.LEFT)
+
 
     # Back Button
     back_button = tk.Button(checkout_frame, text="Back",

@@ -376,35 +376,86 @@ def viewitems_destroyer():
         viewitems_frame.destroy()
 
 
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk
+import sqlite3
+
 def view_attachment():
     selected_item = tree.focus()
-    # Assuming the barcode is the first value in the row
     barcode = tree.item(selected_item, 'values')[0]
 
-    conn = sqlite3.connect('databases/attachments.db')
+    conn = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT attachment_data FROM attachments WHERE barcode = ?", (barcode,))
+        "SELECT attachments FROM items WHERE barcode = ?", (barcode,))
     attachment_data = cursor.fetchone()
 
     conn.close()
 
     if attachment_data:
-        # Access the attachment data from the tuple with index 0
-        image_data = attachment_data[0]
+        attachments = attachment_data[0]
+        file_paths = attachments.split(';')
 
-        image = Image.open(io.BytesIO(image_data))
-        photo = ImageTk.PhotoImage(image)
-
-        # Create a new window to display the image
+        # Create a new window to display the images
         image_window = tk.Toplevel(viewitems_frame)
-        image_window.title("View Attachment")
-        image_label = tk.Label(image_window, image=photo)
-        image_label.photo = photo  # Keep a reference to the PhotoImage object
+        image_window.title("View Attachments")
+
+        current_index = [0]  # Use a list to allow updates inside nested functions
+
+        def update_image(index):
+            try:
+                image = Image.open(file_paths[index])
+                photo = ImageTk.PhotoImage(image)
+
+                image_label.config(image=photo)
+                image_label.photo = photo  # Keep a reference to the PhotoImage object
+
+                # Update the label text
+                index_label.config(text=f"Image {index + 1} of {len(file_paths)}")
+
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to open image: {e}")
+
+        def prev_image():
+            if current_index[0] > 0:
+                current_index[0] -= 1
+                update_image(current_index[0])
+
+        def next_image():
+            if current_index[0] < len(file_paths) - 1:
+                current_index[0] += 1
+                update_image(current_index[0])
+
+        # Create a Frame to hold the image and buttons
+        frame = tk.Frame(image_window)
+        frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+        # Create an Image Label
+        image_label = tk.Label(frame)
         image_label.pack()
+
+        # Create navigation buttons
+        nav_frame = tk.Frame(frame)
+        nav_frame.pack(pady=10)
+
+        prev_button = tk.Button(nav_frame, text="Previous", command=prev_image)
+        prev_button.pack(side=tk.LEFT, padx=5)
+
+        next_button = tk.Button(nav_frame, text="Next", command=next_image)
+        next_button.pack(side=tk.LEFT, padx=5)
+
+        # Create an Index Label
+        index_label = tk.Label(frame, text="")
+        index_label.pack(pady=5)
+
+        # Show the first image
+        update_image(current_index[0])
+
     else:
         messagebox.showinfo("Attachment Not Available!")
+
 
 
 def print_item():

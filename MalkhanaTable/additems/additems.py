@@ -240,22 +240,7 @@ def insert_data():
     crime_minute = int(minute_var.get())
     crime_time = f"{crime_hour:02d}:{crime_minute:02d}"
 
-    if file_path:
-        with open(file_path, 'rb') as file:
-            image_data = file.read()
-    else:
-        messagebox.showinfo("Error , Add Attachment.!")
-
     try:
-        conn = sqlite3.connect('databases/attachments.db')
-        cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS attachments (
-                            barcode INTEGER PRIMARY KEY,
-                            attachment_data BLOB
-                        );''')
-        conn.commit()
-        conn.close()
-        # Connect to the database (or create if it doesn't exist)
         conn = sqlite3.connect('databases/items_in_malkhana.db')
 
         # Create a cursor to execute SQL commands
@@ -275,7 +260,7 @@ def insert_data():
                             where_kept TEXT,
                             description_of_items TEXT,
                             entry_time TEXT,
-                            attachments BLOB
+                            attachments TEXT
                         );''')
 
         entry_time = datetime.datetime.now()
@@ -286,12 +271,8 @@ def insert_data():
                           crime_location, crime_date, crime_time, crime_witness, 
                           crime_inspector,item_status,where_kept,description_of_items,entry_time,attachments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                        (barcodee, fir_no, seized_items, ipc_section, crime_location, crime_date,
-                        crime_time, crime_witness, crime_inspector, item_status, where_kept, description_of_items, entry_time, image_data))
+                        crime_time, crime_witness, crime_inspector, item_status, where_kept, description_of_items, entry_time, file_entry))
 
-        if file_path:
-            save_attachment(barcodee, file_path)
-
-        # Commit the changes
         conn.commit()
         conn.close()
         activity = "\nAdded item barcode no: "+ str(barcodee)
@@ -316,31 +297,17 @@ def insert_data():
         messagebox.showerror("Error", f"Error occurred: {str(e)}")
 
 
+
 def browse_file():
-    global file_path, file_entry
+    global file_paths, file_entry
 
-    # Ask user to select a file for attachment
-    file_path = filedialog.askopenfilename()
-    if file_path:
-        file_entry = file_path
+    # Ask user to select multiple files for attachment
+    file_paths = filedialog.askopenfilenames()
+    if file_paths:
+        file_entry = ';'.join(file_paths)  # Concatenate file paths with a semicolon as delimiter
+        messagebox.showinfo("Files Selected", "Selected files: \n" + "\n".join(file_paths))
 
 
-def save_attachment(barcode, file_path):
-    with open(file_path, 'rb') as file:
-        attachment_data = file.read()
-
-    conn = sqlite3.connect('databases/attachments.db')
-    cursor = conn.cursor()
-
-    # Delete any existing entry for the barcode
-    cursor.execute("DELETE FROM attachments WHERE barcode = ?", (barcode,))
-
-    # Insert the new attachment
-    cursor.execute(
-        "INSERT INTO attachments (barcode, attachment_data) VALUES (?, ?)", (barcode, attachment_data))
-
-    conn.commit()
-    conn.close()
 
 
 def go_back():

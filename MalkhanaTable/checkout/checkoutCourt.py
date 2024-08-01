@@ -14,44 +14,67 @@ import logger as lu
 
 checkout_frame = None
 
-
 def checkout_destroyer():
     if checkout_frame is not None:
         checkout_frame.destroy()
 
+def autofill_details():
+    barcode = barcode_entry.get()
+    if not barcode:
+        messagebox.showwarning("Warning", "Barcode cannot be empty.")
+        return
 
-def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no):
+    conn = sqlite3.connect("databases/items_in_malkhana.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        fir_no_entry.delete(0, tk.END)
+        seized_items_entry.delete(0, tk.END)
+        court_name_entry.delete(0, tk.END)
+        cnr_number_entry.delete(0, tk.END)
+        fir_no_entry.insert(0, result[1])
+        seized_items_entry.insert(0, result[2])
+    else:
+        messagebox.showerror("Error", "Barcode not found in the database.")
+
+def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
     con = sqlite3.connect('databases/items_in_malkhana.db')
     cursor = con.cursor()
     cursor.execute(
-        "UPDATE items SET item_status='court' where barcode = ?", (barcode,))
+        "UPDATE items SET item_status='court' WHERE barcode = ?", (barcode,))
     con.commit()
     con.close()
+    
     conn = sqlite3.connect("databases/court_records.db")
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS court_records (
-    barcode TEXT UNIQUE,
-    fir_no TEXT UNIQUE,
-    seized_items TEXT,
-    checkout_date TEXT,
-    checkout_time TEXT,
-    taken_by_whom TEXT,
-    checkin_date TEXT,
-    checkin_time TEXT,
-    order_details TEXT,
-    entry_time TEXT
+        barcode TEXT UNIQUE,
+        fir_no TEXT,
+        seized_items TEXT,
+        checkout_date TEXT,
+        checkout_time TEXT,
+        taken_by_whom TEXT,
+        court_name TEXT,
+        cnr_number TEXT ,
+        checkin_date TEXT,
+        checkin_time TEXT,
+        order_details TEXT,
+        entry_time TEXT
     );''')
+    
     entry_time = datetime.datetime.now()
-    cursor.execute("INSERT INTO court_records (barcode,fir_no,seized_items,checkout_date,checkout_time,taken_by_whom,entry_time) values(?,?,?,?,?,?,?)",
-                   (barcode, fir_no, seized_items, checkout_date, checkout_time, taken_by_whom, entry_time))
+    cursor.execute("INSERT INTO court_records (barcode, fir_no, seized_items, checkout_date, checkout_time, taken_by_whom, court_name, cnr_number, entry_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                   (barcode, fir_no, seized_items, checkout_date, checkout_time, taken_by_whom, court_name, cnr_number, entry_time))
     conn.commit()
     conn.close()
-    messagebox.showinfo("Successful", "Succesfully checked out from Malkhana")
-    log.update_logs(barcode, "CheckOut Into Court",
-                    checkout_date, checkout_time)
+    
+    messagebox.showinfo("Successful", "Successfully checked out from Malkhana")
+    log.update_logs(barcode, "CheckOut Into Court", checkout_date, checkout_time)
     activity = "Item checked out to Court barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
-
 
 def checkouttocourt():
     barcode = barcode_entry.get()
@@ -60,9 +83,11 @@ def checkouttocourt():
     taken_by_whom = taken_by_whom_entry.get()
     checkout_date = checkout_date_entry.get_date()
     checkout_time = f"{hour_var.get()}:{minute_var.get()}"
+    court_name = court_name_entry.get()
+    cnr_number = cnr_number_entry.get()
 
     barcode_checker(barcode, checkout_date, checkout_time,
-                    taken_by_whom, seized_items, fir_no)
+                    taken_by_whom, seized_items, fir_no, court_name, cnr_number)
 
     # Clear the input fields after checkout
     barcode_entry.delete(0, tk.END)
@@ -70,17 +95,16 @@ def checkouttocourt():
     seized_items_entry.delete(0, tk.END)
     taken_by_whom_entry.delete(0, tk.END)
     checkout_date_entry.set_date(None)  # Clear the date entry
-
+    court_name_entry.delete(0, tk.END)
+    cnr_number_entry.delete(0, tk.END)
 
 def checkouttofsl_page():
     global checkout_frame
     checkout_destroyer()
     cof.checkouttoFSL_page(checkout_frame)
 
-
 def checkouttocourt_page(root):
-    root.destroy()
-    global checkout_frame, barcode_entry, fir_no_entry, seized_items_entry, taken_by_whom_entry, checkout_date_entry, hour_var, minute_var
+    global checkout_frame, barcode_entry, fir_no_entry, seized_items_entry, taken_by_whom_entry, checkout_date_entry, hour_var, minute_var, court_name_entry, cnr_number_entry
     checkout_destroyer()
     checkout_frame = tk.Frame(root.master)
     checkout_frame.master.title("Checkout to Court")
@@ -142,13 +166,25 @@ def checkouttocourt_page(root):
         checkout_frame, background="#FFFFFF", font=textbox_font)
     taken_by_whom_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(checkout_frame, text="Crime Date:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(checkout_frame, text="Court Name:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
-    crime_date_entry = DateEntry(checkout_frame, font=textbox_font,
-                                 width=12, background='darkblue', foreground='white', borderwidth=2)
-    crime_date_entry.pack(padx=10, pady=5, anchor="w")
+    court_name_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    court_name_entry.pack(padx=10, pady=5, anchor="w")
 
-    tk.Label(checkout_frame, text="Crime Time:", background="#f6f4f2", font=font_style).pack(
+    tk.Label(checkout_frame, text="CNR Number:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    cnr_number_entry = tk.Entry(
+        checkout_frame, background="#FFFFFF", font=textbox_font)
+    cnr_number_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(checkout_frame, text="Check Out Date:", background="#f6f4f2", font=font_style).pack(
+        padx=10, pady=5, anchor="w")
+    checkout_date_entry = DateEntry(checkout_frame, font=textbox_font,
+                                    width=12, background='darkblue', foreground='white', borderwidth=2)
+    checkout_date_entry.pack(padx=10, pady=5, anchor="w")
+
+    tk.Label(checkout_frame, text="Check Out Time:", background="#f6f4f2", font=font_style).pack(
         padx=10, pady=5, anchor="w")
 
     time_frame = tk.Frame(checkout_frame, bg="#f6f4f2")
@@ -174,6 +210,10 @@ def checkouttocourt_page(root):
                                 background="#f6f4f2", command=checkouttocourt, font=button_font, width=button_width, height=button_height)
     checkout_button.pack(padx=10, side=tk.LEFT)
 
+    autofill_button = tk.Button(checkout_frame, text="Autofill Details",
+                                background="#f6f4f2", command=autofill_details, font=button_font, width=button_width, height=button_height)
+    autofill_button.pack(padx=10, pady=5, side=tk.LEFT)
+
     # Back Button
     back_button = tk.Button(checkout_frame, text="Back",
                             background="#f6f4f2", command=go_back, font=button_font, width=button_width, height=button_height)
@@ -184,18 +224,15 @@ def checkouttocourt_page(root):
                             background="#f6f4f2", command=go_home, font=button_font, width=button_width, height=button_height)
     home_button.pack(padx=10, pady=5, side=tk.LEFT)
 
-
 def go_back():
     checkout_destroyer()
     co.COpage(checkout_frame)
-
 
 def go_home():
     checkout_destroyer()
     Homepage.open_homepage(checkout_frame)
 
-
-def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no):
+def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
@@ -204,25 +241,28 @@ def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized
 
     if not result:
         messagebox.showerror("Barcode not Found",
-                             "Barcode doesnt exist in the database.")
+                             "Barcode doesn't exist in the database.")
         # Clear the input fields after showing the error
         barcode_entry.delete(0, tk.END)
         fir_no_entry.delete(0, tk.END)
         seized_items_entry.delete(0, tk.END)
         taken_by_whom_entry.delete(0, tk.END)
         checkout_date_entry.set_date(None)  # Clear the date entry
+        court_name_entry.delete(0, tk.END)
+        cnr_number_entry.delete(0, tk.END)
         return
     already_outornot(barcode, checkout_date, checkout_time,
-                     taken_by_whom, seized_items, fir_no)
+                     taken_by_whom, seized_items, fir_no, court_name, cnr_number)
     # Clear the input fields after successful checkout
     barcode_entry.delete(0, tk.END)
     fir_no_entry.delete(0, tk.END)
     seized_items_entry.delete(0, tk.END)
     taken_by_whom_entry.delete(0, tk.END)
     checkout_date_entry.set_date(None)  # Clear the date entry
+    court_name_entry.delete(0, tk.END)
+    cnr_number_entry.delete(0, tk.END)
 
-
-def already_outornot(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no):
+def already_outornot(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
     conn = sqlite3.connect("databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute(
@@ -231,7 +271,7 @@ def already_outornot(barcode, checkout_date, checkout_time, taken_by_whom, seize
     conn.close()
     if result and result[0] in ("malkhana", "Malkhana"):
         update_item_status(barcode, checkout_date, checkout_time,
-                           taken_by_whom, seized_items, fir_no)
+                           taken_by_whom, seized_items, fir_no, court_name, cnr_number)
     else:
         messagebox.showerror("Item not found",
                              "Item is not present in Malkhana.")
@@ -240,3 +280,5 @@ def already_outornot(barcode, checkout_date, checkout_time, taken_by_whom, seize
         seized_items_entry.delete(0, tk.END)
         taken_by_whom_entry.delete(0, tk.END)
         checkout_date_entry.set_date(None)
+        court_name_entry.delete(0, tk.END)
+        cnr_number_entry.delete(0, tk.END)

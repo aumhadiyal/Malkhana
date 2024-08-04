@@ -16,8 +16,3 @@ submission in the Court.
 D) Record details of person takin any item from the Malkhana with timestamp.
 
 
-
-UserIds and Passwords              aumhadiyal=2502    aumthakkar=0803   kevinhirole=0106   vedantkahar=2603
-
-modify the Insert Function parameters as per wish 
-                          

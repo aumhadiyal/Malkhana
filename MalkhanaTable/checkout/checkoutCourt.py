@@ -24,7 +24,7 @@ def autofill_details():
         messagebox.showwarning("Warning", "Barcode cannot be empty.")
         return
 
-    conn = sqlite3.connect("databases/items_in_malkhana.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
     result = cursor.fetchone()
@@ -41,28 +41,29 @@ def autofill_details():
         messagebox.showerror("Error", "Barcode not found in the database.")
 
 def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
-    con = sqlite3.connect('databases/items_in_malkhana.db')
+    con = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
     cursor = con.cursor()
     cursor.execute(
-        "UPDATE items SET item_status='court' WHERE barcode = ?", (barcode,))
+        "UPDATE items SET item_status='COURT' WHERE barcode = ?", (barcode,))
     con.commit()
     con.close()
     
-    conn = sqlite3.connect("databases/court_records.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/court_records.db")
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS court_records (
-        barcode TEXT UNIQUE,
+        barcode TEXT ,
         fir_no TEXT,
         seized_items TEXT,
         checkout_date TEXT,
         checkout_time TEXT,
         taken_by_whom TEXT,
         court_name TEXT,
-        cnr_number TEXT ,
+        cnr_number TEXT UNIQUE,
         checkin_date TEXT,
         checkin_time TEXT,
         order_details TEXT,
-        entry_time TEXT
+        entry_time TEXT,
+        court_report_path TEXT
     );''')
     
     entry_time = datetime.datetime.now()
@@ -72,7 +73,7 @@ def update_item_status(barcode, checkout_date, checkout_time, taken_by_whom, sei
     conn.close()
     
     messagebox.showinfo("Successful", "Successfully checked out from Malkhana")
-    log.update_logs(barcode, "CheckOut Into Court", checkout_date, checkout_time)
+    log.update_logs(barcode, "Checked Out To Court", checkout_date, checkout_time)
     activity = "Item checked out to Court barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
 
@@ -86,6 +87,9 @@ def checkouttocourt():
     court_name = court_name_entry.get()
     cnr_number = cnr_number_entry.get()
 
+    if not barcode or not fir_no or not seized_items or not taken_by_whom or not checkout_date or not checkout_time or not court_name or not cnr_number:
+                    messagebox.showerror("Error", "All fields must be filled out to check out an item.")
+                    return
     barcode_checker(barcode, checkout_date, checkout_time,
                     taken_by_whom, seized_items, fir_no, court_name, cnr_number)
 
@@ -233,7 +237,7 @@ def go_home():
     Homepage.open_homepage(checkout_frame)
 
 def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
-    conn = sqlite3.connect("databases/items_in_malkhana.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
     result = cursor.fetchall()
@@ -263,13 +267,13 @@ def barcode_checker(barcode, checkout_date, checkout_time, taken_by_whom, seized
     cnr_number_entry.delete(0, tk.END)
 
 def already_outornot(barcode, checkout_date, checkout_time, taken_by_whom, seized_items, fir_no, court_name, cnr_number):
-    conn = sqlite3.connect("databases/items_in_malkhana.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT item_status FROM items WHERE barcode = ?", (barcode,))
     result = cursor.fetchone()
     conn.close()
-    if result and result[0] in ("malkhana", "Malkhana"):
+    if result and result[0] in ("MALKHANA", "MALKHANA"):
         update_item_status(barcode, checkout_date, checkout_time,
                            taken_by_whom, seized_items, fir_no, court_name, cnr_number)
     else:

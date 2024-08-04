@@ -1,4 +1,5 @@
-import tkinter as tk 
+import tkinter as tk
+from tkinter import filedialog 
 import MalkhanaTable.additems.additems as a
 import home.Homepage as Homepage
 import MalkhanaTable.checkin.checkinpage as cp
@@ -15,41 +16,57 @@ fsl_checkin_frame = None
 
 
 def update_item_status(barcode, checkin_date, checkin_time,
-                       order_no, examiner, examiner_report):
-    con = sqlite3.connect('databases/items_in_malkhana.db')
+                       order_no, examiner, examiner_report,fsl_report_path):
+    
+    global file_path,report_file_label 
+    con = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
     cursor = con.cursor()
     cursor.execute(
-        "UPDATE items SET item_status='malkhana' where barcode = ?", (barcode,))
+        "UPDATE items SET item_status='MALKHANA' where barcode = ?", (barcode,))
     con.commit()
     con.close()
-    conn = sqlite3.connect("databases/fsl_records.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/fsl_records.db")
     cursor = conn.cursor()
-    cursor.execute("UPDATE fsl_records SET checkin_date = ?,checkin_time=?,examiner_name=?,fsl_report = ? WHERE order_no = ?",
-                   (checkin_date, checkin_time, examiner, examiner_report, order_no))
+    cursor.execute("UPDATE fsl_records SET checkin_date = ?,checkin_time=?,examiner_name=?,fsl_report = ?,fsl_report_path=? WHERE order_no = ?",
+                   (checkin_date, checkin_time, examiner, examiner_report,fsl_report_path, order_no))
     barcode_entry.delete(0, tk.END)
     examiner_entry.delete(0, tk.END)
     checkin_date_entry.set_date(None)
     order_no_entry.delete(0, tk.END)
     examiner_report_entry.delete("1.0", tk.END)
+    file_path = None
+    report_file_label.config(text="No file selected")  # Reset the file label
+
+
     conn.commit()
     conn.close()
     messagebox.showinfo("Successful", "Succesfully entered into Malkhana")
-    log.update_logs(barcode, "Checkin From FSL",
+    log.update_logs(barcode, "Checked In From FSL",
                     checkin_date, checkin_time)
     activity = "Item checked in from FSL barcode no: "+barcode
     lu.log_activity(login.current_user, activity)
 
 
 def checkin():
+    global file_path
     barcode = barcode_entry.get()
     checkin_time = f"{hour_var.get()}:{minute_var.get()}"
     checkin_date = checkin_date_entry.get_date()
     order_no = order_no_entry.get()
     examiner = examiner_entry.get()
     examiner_report = examiner_report_entry.get("1.0", "end-1c")
+    
+    fsl_report_path = file_path
+    
 
+    if not barcode or not checkin_date or not checkin_time or not order_no or not examiner or not examiner_report:
+        messagebox.showerror("Error", "All fields must be filled in to check in an item.")
+        return
+    if not fsl_report_path:
+        messagebox.showerror("Error", "Select a FSL Report file (.pdf).")
+        return    
     barcode_checker(barcode, checkin_date, checkin_time,
-                    order_no, examiner, examiner_report)
+                    order_no, examiner, examiner_report,fsl_report_path)
 
 
 def checkinfromcourt():
@@ -60,7 +77,7 @@ def checkinfromcourt():
 
 def checkinfromfsl(prev_checkin_page):
     prev_checkin_page.destroy()
-    global fsl_checkin_frame, barcode_entry, order_no_entry, checkin_date_entry, hour_var, minute_var, examiner_report_entry, examiner_entry
+    global fsl_checkin_frame, barcode_entry, order_no_entry, checkin_date_entry, hour_var, minute_var, examiner_report_entry, examiner_entry,report_file_label
     fsL_checkin_destroyer()
     fsl_checkin_frame = tk.Frame(prev_checkin_page.master)
     fsl_checkin_frame.master.title("Checkin From FSL")
@@ -148,6 +165,27 @@ def checkinfromfsl(prev_checkin_page):
         fsl_checkin_frame, height=5, background="#FFFFFF", font=textbox_font)
     examiner_report_entry.pack(padx=10, pady=5, anchor="w")
 
+        # Label for report file path
+    tk.Label(fsl_checkin_frame, text="Report File Path:", background="#f6f4f2", font=font_style).pack(padx=10, pady=5, anchor="w")
+
+    # Label to display the selected file name
+    report_file_label = tk.Label(fsl_checkin_frame, text="No file selected", background="#FFFFFF", font=textbox_font)
+    report_file_label.pack(padx=10, pady=5, anchor="w")
+
+    def browse_report_file():
+        """Open a file dialog to select a report file and update the label with the file name."""
+        global file_path
+        file_path = filedialog.askopenfilename(title="Select Report File", filetypes=(("PDF Files", "*.pdf"), ("All Files", "*.*")))
+        if file_path:
+            # Extract and display the file name
+            file_name = file_path.split('/')[-1]
+            report_file_label.config(text=f"Selected File: {file_name}")
+
+    # Browse button for selecting the report file
+    browse_button = tk.Button(fsl_checkin_frame, text="Browse", command=browse_report_file, font=font_style)
+    browse_button.pack(padx=10, pady=5, anchor="w")
+
+
     button_font = ('Helvetica', 12)
     # Adjusted button sizes
     button_width = 20
@@ -185,8 +223,10 @@ def fsL_checkin_destroyer():
 
 
 def barcode_checker(barcode, checkin_date, checkin_time,
-                    order_no, examiner, examiner_report):
-    conn = sqlite3.connect("databases/items_in_malkhana.db")
+                    order_no, examiner, examiner_report,fsl_report_path):
+    
+    global file_path,report_file_label 
+    conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE barcode = ?", (barcode,))
     result = cursor.fetchall()
@@ -199,29 +239,37 @@ def barcode_checker(barcode, checkin_date, checkin_time,
         barcode_entry.delete(0, tk.END)
         examiner_entry.delete(0, tk.END)
         checkin_date_entry.set_date(None)
+        order_no_entry.delete(0, tk.END)
         examiner_report_entry.delete("1.0", tk.END)
+        file_path = None
+        report_file_label.config(text="No file selected")  # Reset the file label
         return
 
     already_inornot(barcode, checkin_date, checkin_time,
-                    order_no, examiner, examiner_report)
+                    order_no, examiner, examiner_report,fsl_report_path)
     # Clear the input fields after successful checkout
     barcode_entry.delete(0, tk.END)
     examiner_entry.delete(0, tk.END)
     checkin_date_entry.set_date(None)
+    order_no_entry.delete(0, tk.END)
     examiner_report_entry.delete("1.0", tk.END)
+    file_path = None
+    report_file_label.config(text="No file selected")  # Reset the file label
 
 
 def already_inornot(barcode, checkin_date, checkin_time,
-                    order_no, examiner, examiner_report):
-    conn = sqlite3.connect("databases/items_in_malkhana.db")
+                    order_no, examiner, examiner_report,fsl_report_path):
+    
+    global file_path,report_file_label 
+    conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT item_status FROM items WHERE barcode = ?", (barcode,))
     result = cursor.fetchone()
     conn.close()
-    if result and result[0] in ("fsl", "FSL"):
+    if result and result[0] in ("FSL", "FSL"):
         update_item_status(barcode, checkin_date, checkin_time,
-                           order_no, examiner, examiner_report)
+                           order_no, examiner, examiner_report,fsl_report_path)
 
     else:
         messagebox.showerror("Item Exists In Malkhana/Court",
@@ -229,4 +277,7 @@ def already_inornot(barcode, checkin_date, checkin_time,
         barcode_entry.delete(0, tk.END)
         examiner_entry.delete(0, tk.END)
         checkin_date_entry.set_date(None)
+        order_no_entry.delete(0, tk.END)
         examiner_report_entry.delete("1.0", tk.END)
+        file_path = None
+        report_file_label.config(text="No file selected")  # Reset the file label

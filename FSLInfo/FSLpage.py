@@ -100,7 +100,7 @@ def viewfsl(prev_malkhana_frame):
     # Add data to the treeview from the database
     try:
         # Connect to the database (or create if it doesn't exist)
-        conn = sqlite3.connect('databases/fsl_records.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/fsl_records.db')
 
         # Create a cursor to execute SQL commands
         cursor = conn.cursor()
@@ -163,7 +163,7 @@ def viewfsl(prev_malkhana_frame):
         nonlocal total_entries, data
         tree.delete(*tree.get_children())
         try:
-            conn = sqlite3.connect("databases/fsl_records.db")
+            conn = sqlite3.connect("E:/Malkhana/databases/fsl_records.db")
             cursor = conn.cursor()
             cursor.execute(
                 '''SELECT * FROM fsl_records ORDER BY entry_time DESC''')
@@ -247,6 +247,10 @@ def viewfsl(prev_malkhana_frame):
                              background="#9a9a9a", command=show_all, font=("Helvetica", 13))
     show_all_btn.grid(row=2, column=2, padx=(100, 0), pady=5)
 
+    view_attachment_button = tk.Button(search_frame, background="#9a9a9a",
+                                       text="View Attachment", command=view_attachment, font=("Helvetica", 13))
+    view_attachment_button.grid(row=1, column=6, padx=15, pady=5)
+
     print_details_button = tk.Button(search_frame, background="#9a9a9a",
                                      text="Print Item Details", command=print_item, font=("Helvetica", 13))
     print_details_button.grid(row=1, column=7, padx=15, pady=5)
@@ -278,7 +282,7 @@ def search_items(tree, search_field, search_text):
 
     # Add data to the treeview from the database based on the search criteria
     try:
-        conn = sqlite3.connect('databases/fsl_records.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/fsl_records.db')
         cursor = conn.cursor()
 
         cursor.execute(f'''
@@ -364,3 +368,110 @@ def printDetails():
     global viewfsl_frame
     fsl_destroyer()
     p.printPage(viewfsl_frame)
+
+
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+from PIL import Image, ImageTk
+import fitz  # PyMuPDF
+
+def view_attachment():
+    selected_item = tree.focus()
+    order_no = tree.item(selected_item, 'values')[3]
+
+    conn = sqlite3.connect('E:/Malkhana/databases/fsl_records.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT fsl_report_path FROM fsl_records WHERE order_no = ?", (order_no,))
+    attachment_data = cursor.fetchone()
+
+    conn.close()
+    if not attachment_data:
+        messagebox.showerror("Error", "No File Uploaded Yet.")
+        return
+    if attachment_data:
+        file_path = attachment_data[0]
+
+        # Create a new window to display the PDF
+        pdf_window = tk.Toplevel(viewfsl_frame)
+        pdf_window.title("View PDF")
+        pdf_window.state('zoomed')
+
+        pdf_document = None
+        current_page = [0]  # Use a list to allow updates inside nested functions
+
+        def open_pdf():
+            nonlocal pdf_document
+            try:
+                pdf_document = fitz.open(file_path)
+                if len(pdf_document) > 0:
+                    update_page(current_page[0])
+                else:
+                    messagebox.showerror("Error", "No pages found in PDF.")
+                    pdf_document.close()
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to open PDF file: {e}")
+
+        def update_page(page_number):
+            if not pdf_document:
+                open_pdf()
+            if pdf_document:
+                try:
+                    # Check if the page number is valid
+                    if page_number < 0 or page_number >= len(pdf_document):
+                        messagebox.showerror("Error", "Page number out of range.")
+                        return
+                    
+                    page = pdf_document.load_page(page_number)
+                    pix = page.get_pixmap()
+                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    photo = ImageTk.PhotoImage(img)
+
+                    page_label.config(image=photo)
+                    page_label.photo = photo  # Keep a reference to the PhotoImage object
+
+                    # Update the label text
+                    index_label.config(text=f"Page {page_number + 1} of {len(pdf_document)}")
+
+                except Exception as e:
+                    messagebox.showerror("Error", f"Failed to open PDF page: {e}")
+
+        def prev_page():
+            if current_page[0] > 0:
+                current_page[0] -= 1
+                update_page(current_page[0])
+
+        def next_page():
+            if current_page[0] < len(pdf_document) - 1:
+                current_page[0] += 1
+                update_page(current_page[0])
+
+        # Create a Frame to hold the PDF and buttons
+        frame = tk.Frame(pdf_window)
+        frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+        # Create a Page Label
+        page_label = tk.Label(frame)
+        page_label.pack()
+
+        # Create navigation buttons
+        nav_frame = tk.Frame(frame)
+        nav_frame.pack(pady=10)
+
+        prev_button = tk.Button(nav_frame, text="Previous", command=prev_page)
+        prev_button.pack(side=tk.LEFT, padx=5)
+
+        next_button = tk.Button(nav_frame, text="Next", command=next_page)
+        next_button.pack(side=tk.LEFT, padx=5)
+
+        # Create an Index Label
+        index_label = tk.Label(frame, text="")
+        index_label.pack(pady=5)
+
+        # Open the PDF and show the first page
+        open_pdf()
+
+    else:
+        messagebox.showinfo("Attachment Not Available!")

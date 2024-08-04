@@ -68,13 +68,15 @@ def view_court(prev_malkhana_frame):
         "Checkout Date",
         "Checkout Time",
         "Undertaking Officer",
+        "Court Name",
+        "CNR Number",
         "Checkin Date",
         "Checkin Time",
         "Order Details"
     )
 
     # Format columns
-    tree.column("#0", width=0, stretch=tk.YES)  # Hidden first column
+    tree.column("#0", width=0, stretch=tk.NO)  # Hidden first column
     tree.column("Barcode", anchor=tk.W, width=100,
                 stretch=tk.YES, minwidth=100)
     tree.column("FIR Number", anchor=tk.W, width=100, stretch=tk.YES)
@@ -82,6 +84,8 @@ def view_court(prev_malkhana_frame):
     tree.column("Checkout Date", anchor=tk.W, width=100, stretch=tk.YES)
     tree.column("Checkout Time", anchor=tk.W, width=100, stretch=tk.YES)
     tree.column("Undertaking Officer", anchor=tk.W, width=150, stretch=tk.YES)
+    tree.column("Court Name", anchor=tk.W, width=100, stretch=tk.YES)
+    tree.column("CNR Number", anchor=tk.W, width=100, stretch=tk.YES)
     tree.column("Checkin Date", anchor=tk.W, width=100, stretch=tk.YES)
     tree.column("Checkin Time", anchor=tk.W, width=100, stretch=tk.YES)
     tree.column("Order Details", anchor=tk.W, width=100, stretch=tk.YES)
@@ -95,6 +99,8 @@ def view_court(prev_malkhana_frame):
     tree.heading("Checkout Time", text="Checkout Time", anchor=tk.W)
     tree.heading("Undertaking Officer",
                  text="Undertaking Officer", anchor=tk.W)
+    tree.heading("Court Name",  text="Court Name", anchor=tk.W)
+    tree.heading("CNR Number",  text="CNR Number", anchor=tk.W)    
     tree.heading("Checkin Date", text="Checkin Date", anchor=tk.W)
     tree.heading("Checkin Time", text="Checkin Time", anchor=tk.W)
     tree.heading("Order Details", text="Order Details", anchor=tk.W)
@@ -102,7 +108,7 @@ def view_court(prev_malkhana_frame):
     # Add data to the treeview from the database
     try:
         # Connect to the database (or create if it doesn't exist)
-        conn = sqlite3.connect('databases/court_records.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/court_records.db')
 
         # Create a cursor to execute SQL commands
         cursor = conn.cursor()
@@ -165,7 +171,7 @@ def view_court(prev_malkhana_frame):
         nonlocal total_entries, data
         tree.delete(*tree.get_children())
         try:
-            conn = sqlite3.connect("databases/court_records.db")
+            conn = sqlite3.connect("E:/Malkhana/databases/court_records.db")
             cursor = conn.cursor()
             cursor.execute(
                 '''SELECT * FROM court_records ORDER BY entry_time DESC''')
@@ -248,6 +254,9 @@ def view_court(prev_malkhana_frame):
     show_all_btn = tk.Button(search_frame, text="Show All",
                              background="#9a9a9a", command=show_all, font=("Helvetica", 13))
     show_all_btn.grid(row=2, column=2, padx=(100, 0), pady=5)
+    view_attachment_button = tk.Button(search_frame, background="#9a9a9a",
+                                       text="View Attachment", command=view_attachment, font=("Helvetica", 13))
+    view_attachment_button.grid(row=1, column=6, padx=15, pady=5)
 
     print_details_button = tk.Button(search_frame, background="#9a9a9a",
                                      text="Print Item Details", command=print_item, font=("Helvetica", 13))
@@ -279,7 +288,7 @@ def search_items(tree, search_field, search_text):
 
     # Add data to the treeview from the database based on the search criteria
     try:
-        conn = sqlite3.connect('databases/court_records.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/court_records.db')
         cursor = conn.cursor()
 
         cursor.execute(f'''
@@ -307,6 +316,8 @@ def convert_to_column(field_name):
         "Checkout Date": "checkout_date",
         "Checkout Time": "checkout_time",
         "Undertaking Officer": "taken_by_whom",
+        "Court Name" : "court_name",
+        "CNR Number":"cnr_number",
         "Checkin Date": "checkin_date",
         "Checkin Time": "checkin_time",
         "Order Details": "order_details",
@@ -331,6 +342,8 @@ def convert_to_column(field_name):
         "Checkout Date": "checkout_date",
         "Checkout Time": "checkout_time",
         "Undertaking Officer": "taken_by_whom",
+        "Court Name" : "court_name",
+        "CNR Number":"cnr_number",        
         "Checkin Date": "checkin_date",
         "Checkin Time": "checkin_time",
         "Order Details": "order_details"
@@ -391,3 +404,110 @@ def printDetails():
     global court_frame
     court_destroyer()
     p.printPage(court_frame)
+
+
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+from PIL import Image, ImageTk
+import fitz  # PyMuPDF
+
+def view_attachment():
+    selected_item = tree.focus()
+    cnr_number = tree.item(selected_item, 'values')[7]
+
+    conn = sqlite3.connect('E:/Malkhana/databases/court_records.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT court_report_path FROM court_records WHERE cnr_number = ?", (cnr_number,))
+    attachment_data = cursor.fetchone()
+
+    conn.close()
+    if not attachment_data:
+        messagebox.showerror("Error", "No File Uploaded Yet.")
+        return
+    if attachment_data:
+        file_path = attachment_data[0]
+
+        # Create a new window to display the PDF
+        pdf_window = tk.Toplevel(court_frame)
+        pdf_window.title("View PDF")
+        pdf_window.state('zoomed')
+
+        pdf_document = None
+        current_page = [0]  # Use a list to allow updates inside nested functions
+
+        def open_pdf():
+            nonlocal pdf_document
+            try:
+                pdf_document = fitz.open(file_path)
+                if len(pdf_document) > 0:
+                    update_page(current_page[0])
+                else:
+                    messagebox.showerror("Error", "No pages found in PDF.")
+                    pdf_document.close()
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to open PDF file: {e}")
+
+        def update_page(page_number):
+            if not pdf_document:
+                open_pdf()
+            if pdf_document:
+                try:
+                    # Check if the page number is valid
+                    if page_number < 0 or page_number >= len(pdf_document):
+                        messagebox.showerror("Error", "Page number out of range.")
+                        return
+                    
+                    page = pdf_document.load_page(page_number)
+                    pix = page.get_pixmap()
+                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    photo = ImageTk.PhotoImage(img)
+
+                    page_label.config(image=photo)
+                    page_label.photo = photo  # Keep a reference to the PhotoImage object
+
+                    # Update the label text
+                    index_label.config(text=f"Page {page_number + 1} of {len(pdf_document)}")
+
+                except Exception as e:
+                    messagebox.showerror("Error", f"Failed to open PDF page: {e}")
+
+        def prev_page():
+            if current_page[0] > 0:
+                current_page[0] -= 1
+                update_page(current_page[0])
+
+        def next_page():
+            if current_page[0] < len(pdf_document) - 1:
+                current_page[0] += 1
+                update_page(current_page[0])
+
+        # Create a Frame to hold the PDF and buttons
+        frame = tk.Frame(pdf_window)
+        frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+        # Create a Page Label
+        page_label = tk.Label(frame)
+        page_label.pack()
+
+        # Create navigation buttons
+        nav_frame = tk.Frame(frame)
+        nav_frame.pack(pady=10)
+
+        prev_button = tk.Button(nav_frame, text="Previous", command=prev_page)
+        prev_button.pack(side=tk.LEFT, padx=5)
+
+        next_button = tk.Button(nav_frame, text="Next", command=next_page)
+        next_button.pack(side=tk.LEFT, padx=5)
+
+        # Create an Index Label
+        index_label = tk.Label(frame, text="")
+        index_label.pack(pady=5)
+
+        # Open the PDF and show the first page
+        open_pdf()
+
+    else:
+        messagebox.showinfo("Attachment Not Available!")

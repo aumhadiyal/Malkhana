@@ -20,7 +20,7 @@ def log_activity(user, activity):
         'Time': today_time
     }
 
-    file_path = 'databases/activity_log.xlsx'
+    file_path = 'E:/Malkhana/databases/activity_log.xlsx'
 
     # Write the log entry to Excel
     try:

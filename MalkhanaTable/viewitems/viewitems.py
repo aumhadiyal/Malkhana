@@ -117,7 +117,7 @@ def viewitems(prev_malkhana_frame):
     # Add data to the treeview from the database
     try:
         # Connect to the database (or create if it doesn't exist)
-        conn = sqlite3.connect('databases/items_in_malkhana.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
 
         # Create a cursor to execute SQL commands
         cursor = conn.cursor()
@@ -180,13 +180,13 @@ def viewitems(prev_malkhana_frame):
         nonlocal total_entries, data
         tree.delete(*tree.get_children())
         try:
-            conn = sqlite3.connect("databases/items_in_malkhana.db")
+            conn = sqlite3.connect("E:/Malkhana/databases/items_in_malkhana.db")
             cursor = conn.cursor()
             cursor.execute('''SELECT * FROM items ORDER BY entry_time DESC''')
             data = cursor.fetchall()
             total_entries = len(data)
             update_treeview(current_page)
-            conn.commit()
+            conn.commit() 
             conn.close()
         except Exception as e:
             tk.messagebox.showerror("Error", f"Error occurred: {str(e)}")
@@ -201,10 +201,7 @@ def viewitems(prev_malkhana_frame):
         total_pages = math.ceil(total_entries / entries_per_page)
         if current_page < total_pages:
             update_treeview(current_page + 1)
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
-    # Function to apply the selected filters
-
+            
     def apply_filters():
         selected_columns = []
         for column, var in checkbox_vars.items():
@@ -298,7 +295,7 @@ def search_items(tree, search_field, search_text):
 
     # Add data to the treeview from the database based on the search criteria
     try:
-        conn = sqlite3.connect('databases/items_in_malkhana.db')
+        conn = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
         cursor = conn.cursor()
 
         cursor.execute(f'''
@@ -381,11 +378,15 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk
+
 def view_attachment():
     selected_item = tree.focus()
     barcode = tree.item(selected_item, 'values')[0]
 
-    conn = sqlite3.connect('databases/items_in_malkhana.db')
+    conn = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
     cursor = conn.cursor()
 
     cursor.execute(
@@ -401,12 +402,17 @@ def view_attachment():
         # Create a new window to display the images
         image_window = tk.Toplevel(viewitems_frame)
         image_window.title("View Attachments")
-
+        image_window.state('zoomed')
         current_index = [0]  # Use a list to allow updates inside nested functions
 
         def update_image(index):
             try:
+                # Open the image
                 image = Image.open(file_paths[index])
+
+                # Resize the image to fixed dimensions
+                image = image.resize((1280, 720), Image.Resampling.LANCZOS)
+
                 photo = ImageTk.PhotoImage(image)
 
                 image_label.config(image=photo)
@@ -434,7 +440,7 @@ def view_attachment():
 
         # Create an Image Label
         image_label = tk.Label(frame)
-        image_label.pack()
+        image_label.pack(fill=tk.BOTH, expand=True)
 
         # Create navigation buttons
         nav_frame = tk.Frame(frame)

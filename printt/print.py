@@ -62,8 +62,7 @@ def printPage(prev_homepage_frame):
     selections = {
         "Items": tk.BooleanVar(),
         "FSL Records": tk.BooleanVar(),
-        "Logs": tk.BooleanVar(),
-        "Attachments": tk.BooleanVar()
+        "Logs": tk.BooleanVar()
     }
 
     for text, var in selections.items():
@@ -90,12 +89,14 @@ def print_details(barcode, selections):
 
         current_time = str(datetime.datetime.now()).replace(":", "")
         filename = f"{barcode}_{current_time}.xlsx"
+        folder_path = "E:/SPM Test Files/mmsprints/"
+        full_path = f"{folder_path}{filename}"
 
         # Create Excel file with pandas
-        with pd.ExcelWriter(filename, mode='w') as writer:
+        with pd.ExcelWriter(full_path, mode='w') as writer:
             if selections["Items"].get():
                 # Fetch data from items_in_malkhana.db and write to Items sheet
-                conn_items = sqlite3.connect('databases/items_in_malkhana.db')
+                conn_items = sqlite3.connect('E:/Malkhana/databases/items_in_malkhana.db')
                 query_items = "SELECT * FROM items WHERE barcode = ?"
                 df_items = pd.read_sql_query(query_items, conn_items, params=(barcode,))
                 conn_items.close()
@@ -103,7 +104,7 @@ def print_details(barcode, selections):
 
             if selections["FSL Records"].get():
                 # Fetch data from fsl_records.db and write to FSL Records sheet
-                conn_fsl = sqlite3.connect('databases/fsl_records.db')
+                conn_fsl = sqlite3.connect('E:/Malkhana/databases/fsl_records.db')
                 query_fsl = "SELECT * FROM fsl_records WHERE barcode = ?"
                 df_fsl = pd.read_sql_query(query_fsl, conn_fsl, params=(barcode,))
                 conn_fsl.close()
@@ -111,43 +112,18 @@ def print_details(barcode, selections):
 
             if selections["Logs"].get():
                 # Fetch data from logs.db and write to Logs sheet
-                conn_logs = sqlite3.connect('databases/logs.db')
+                conn_logs = sqlite3.connect('E:/Malkhana/databases/logs.db')
                 query_logs = "SELECT * FROM logs WHERE barcode = ?"
                 df_logs = pd.read_sql_query(query_logs, conn_logs, params=(barcode,))
                 conn_logs.close()
                 df_logs.to_excel(writer, sheet_name='Logs', index=False)
 
-            if selections["Attachments"].get():
-                # Fetch image data from attachments.db and write to Attachments sheet
-                conn_attachments = sqlite3.connect('databases/attachments.db')
-                query_attachments = "SELECT attachment_data FROM attachments WHERE barcode = ?"
-                df_attachments = pd.read_sql_query(query_attachments, conn_attachments, params=(barcode,))
-                conn_attachments.close()
-
-                if not df_attachments.empty:
-                    # Write a placeholder DataFrame to Attachments sheet
-                    df_attachments.to_excel(writer, sheet_name='Attachments', index=False)
-
-        # Load the workbook with openpyxl
-        wb = load_workbook(filename)
-        ws = wb['Attachments']
-
-        if selections["Attachments"].get() and not df_attachments.empty:
-            for idx, row in df_attachments.iterrows():
-                image_data = base64.b64decode(row['attachment_data'])
-                image = PILImage.open(io.BytesIO(image_data))
-                img_path = f"temp_image_{idx}.png"
-                image.save(img_path)
-
-                img = Image(img_path)
-                img.anchor = f'A{idx + 2}'  # Adjust the cell to place the image
-                ws.add_image(img)
-
-        wb.save(filename)
 
         messagebox.showinfo("Success", "Data exported to Excel successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
+    activity = f"Printed Details Of Barcode no: {barcode}"
+    lu.log_activity(login.current_user, activity)
 
 def print_destroyer():
     global print_frame

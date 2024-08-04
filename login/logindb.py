@@ -4,7 +4,7 @@ import sqlite3
 
 
 def initialize_db():
-    conn = sqlite3.connect("databases/login_database.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/login_database.db")
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -21,7 +21,7 @@ def initialize_db():
 
 
 def add_user(username, password, level):
-    conn = sqlite3.connect("databases/login_database.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/login_database.db")
     cursor = conn.cursor()
     cursor.execute("INSERT INTO users (username, password,level) VALUES (?, ?, ?)",
                    (username, password, level))
@@ -32,7 +32,7 @@ def add_user(username, password, level):
 
 
 def check_credentials(username, password):
-    conn = sqlite3.connect("databases/login_database.db")
+    conn = sqlite3.connect("E:/Malkhana/databases/login_database.db")
     cursor = conn.cursor()
     cursor.execute("SELECT password FROM users WHERE username=?", (username,))
     stored_password = cursor.fetchone()
